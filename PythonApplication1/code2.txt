@@ -1,0 +1,11 @@
+
+
+for(int var=lox;ssdf>234;++lox);
+
+int var=234;   var = 
+
+var2
+
+;
+
+System.out.println('Hi');

@@ -37,9 +37,12 @@ indents_relative_to_expression_start = False
 
 ### Brace placement options
 
-# Before parentheses
+# Before
 space_before_keyword = True
 space_before_method = True
+
+# Within
+space_within_operator = True
 
 
 

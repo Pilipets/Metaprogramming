@@ -1,30 +1,30 @@
 import javalang as jl
 import enum
+import logging
 from config import *
 
+logging.basicConfig(filename='app.log', filemode='w', format='%(name)s - %(levelname)s - %(message)s')
+
+class BlockType(enum.Enum):
+    OpenBrace = 0
 
 def my_method():
     with open("code2.txt","r") as f: javacode = f.read()
     
     tokens = jl.tokenizer.tokenize(javacode, ignore_errors= True)
     output = ''
-    stack = [None]
+    stack = [jl.tokenizer.JavaToken('')]
     indent_level = 0
     idx = 0
     tokens = list(tokens)
-    for x in tokens:
-        if isinstance(x, jl.tokenizer.EndOfInput):
-            print('End of input')
-    tokens.append(jl.tokenizer.EndOfInput())
+    pre = None
 
     for idx in range(len(tokens)):
         print(tokens[idx])
         cur = tokens[idx]
         add_output = cur.value
+
         if cur.value == '(':
-            if idx == 0: # report error
-                continue
-            pre = tokens[idx-1]
             if isinstance(pre, jl.tokenizer.Identifier):
                 stack.append(pre)
                 add_output = (' ' if space_before_method else '') + add_output
@@ -32,30 +32,36 @@ def my_method():
                 if pre.value in ('for', 'while', 'if', 'catch', 'try', 'synchronized'):
                     stack.append(pre)
                     add_output = (' ' if space_before_keyword else '') + add_output
-                else: # report error
-                    pass
+                else:
+                    logging.warning('Incorrect position of the \'(\', {}', cur)
             else: # expression parentheses
-                #stack.append(BlockType.OpenBrace)
+                stack.append(BlockType.OpenBrace)
                 pass
         elif cur.value == ')':
-            if idx == 0: # report error
-                continue
+            if not pre: logging.warning('Incorrect position of the \')\', {}', cur)
             pre = tokens[idx-1]
-            if isinstance(stack[-1], jl.tokenizer.Identifier) or isinstance(stack[-1], jl.tokenizer.Keyword):
+            if isinstance(stack[-1], (jl.tokenizer.Identifier, jl.tokenizer.Keyword)) or stack[-1] in (BlockType.OpenBrace,):
                 stack.pop()
-            else: # expression parentheses
-                pass
+            else:
+                logging.warning('Incorrect position of the \')\', {}', cur)
         elif cur.value == ';':
             if isinstance(stack[-1], jl.tokenizer.Keyword) and stack[-1].value in ('for', 'try'):
-                add_output += ' '
+                pass
             else:
                 add_output += '\n';
+        elif cur.value == '{':
+            pass
+        elif cur.value == '}':
+            pass
+        elif isinstance(cur, jl.tokenizer.Separator) or isinstance(pre, jl.tokenizer.Separator) or not pre:
+            pass
+        elif (space_within_operator and (isinstance(cur, jl.tokenizer.Operator)
+                                         or isinstance(pre, jl.tokenizer.Operator))):
+            add_output = ' ' + add_output
         else:
-            if idx == 0: continue
-            pre = tokens[idx-1]
-            if cur.value == '.' or pre.value in ('.', ';', '('): pass
-            else: add_output = ' ' + add_output
+            add_output = ' ' + add_output
         output += add_output
+        pre = cur
 
     print(output)
 if __name__ == '__main__':

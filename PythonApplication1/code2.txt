@@ -20,9 +20,7 @@ var2
 
 System.out.println('Hi');
 
-{                     { vasr = Mthodf
-
-
+{{ vasr = Mthodf
 (324, 
 
 

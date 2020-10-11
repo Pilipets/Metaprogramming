@@ -39,7 +39,8 @@ indents_relative_to_expression_start = False
 
 # Before
 space_before_keyword = True
-space_before_method = True
+space_before_method = False
+space_before_initialization = True
 
 # After
 space_after_semicolon = True

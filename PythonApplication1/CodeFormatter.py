@@ -25,8 +25,7 @@ class CodeFormatter:
         pre = None
         need_indent_flag = False
 
-        for idx in range(len(tokens)):
-            print(tokens[idx])
+        while idx < len(tokens):
             cur = tokens[idx]
             add_output = cur.value
 
@@ -36,12 +35,21 @@ class CodeFormatter:
                 need_indent_flag = False
 
             # process separators
-            if cur.value == '(':
+            if cur.value == '@':
+                if (idx + 2 < len(tokens) and 
+                    isinstance(tokens[idx+1], jl.tokenizer.Identifier) and 
+                    tokens[idx+2].value == '('):
+                    stack.append(cur)
+                    add_output += tokens[idx+1].value + tokens[idx+2].value
+                    idx += 2
+                else:
+                    logging.warning('Incorrect position of the %s', cur)
+            elif cur.value == '(':
                 if isinstance(pre, jl.tokenizer.Identifier):
                     stack.append(pre)
                     add_output = (' ' if space_before_method else '') + cur.value
                 elif isinstance(pre, jl.tokenizer.Keyword):
-                    if pre.value in ('for', 'while', 'if', 'catch', 'try', 'synchronized'):
+                    if pre.value in ('for', 'while', 'if', 'catch', 'try', 'synchronized', 'switch'):
                         stack.append(pre)
                         add_output = (' ' if space_before_keyword else '') + cur.value
                     else:
@@ -50,9 +58,11 @@ class CodeFormatter:
                     stack.append(cur)
             elif cur.value == ')':
                 if not pre: logging.warning('Incorrect position of the %s', cur)
-                pre = tokens[idx-1]
                 if (isinstance(stack[-1], (jl.tokenizer.Identifier, jl.tokenizer.Keyword)) or 
                     stack[-1].value == '('):
+                    stack.pop()
+                elif stack[-1].value == '@':
+                    add_output += '\n'
                     stack.pop()
                 else:
                     logging.warning('Incorrect position of the %s', cur)
@@ -65,9 +75,12 @@ class CodeFormatter:
             elif cur.value == '{':
                 if idx >= 2 and pre.value == ']' and tokens[idx-2].value == '[':
                     stack.append(jl.tokenizer.JavaToken('[]'))
+                    add_output = (' ' if space_before_initialization else '') + cur.value
+                elif stack[-1].value == '@': pass
                 else:
                     indent_level += 1
-                    stack.append(cur)
+                    if pre and pre.value == 'do': stack.append(pre)
+                    else: stack.append(cur)
                     need_indent_flag = True
                     add_output += '\n'
             elif cur.value == '}':
@@ -76,18 +89,24 @@ class CodeFormatter:
                     stack.pop()
                     need_indent_flag = True
                     add_output += '\n'
+                elif stack[-1].value == 'do':
+                    indent_level -= 1
+                    stack.pop()
                 elif stack[-1].value == '[]':
                     stack.pop()
                 else:
                     logging.warning('Incorrect position of the %s', cur)
             elif cur.value == ',':
                 if (isinstance(stack[-1], jl.tokenizer.Identifier) or
-                    stack[-1].value == '[]'):
+                    stack[-1].value in ('[]', '@')):
                     add_output += add_indent(1, continuation_indent)
             elif isinstance(cur, jl.tokenizer.Operator):
-                if cur.is_assignment() or cur.is_infix():
+                if (cur.value in ('+', '-') and 
+                    isinstance(pre, (jl.tokenizer.Separator, jl.tokenizer.Keyword, jl.tokenizer.Operator))):
+                    pass
+                elif cur.is_assignment() or cur.is_infix() or cur.value in ('?', ':'):
                     if space_within_operator: add_output = ' ' + cur.value + ' '
-            elif (isinstance(cur, (jl.tokenizer.Separator)) or
+            elif (isinstance(cur, jl.tokenizer.Separator) or
                   isinstance(pre, (jl.tokenizer.Separator, jl.tokenizer.Operator)) or 
                   not pre):
                 pass
@@ -95,7 +114,8 @@ class CodeFormatter:
                 add_output = ' ' + add_output
 
             output += add_output
-            pre = cur
+            pre = tokens[idx]
+            idx += 1
 
         print('\n\n')
         return output

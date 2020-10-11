@@ -29,6 +29,15 @@ class CodeFormatter:
             cur = tokens[idx]
             add_output = cur.value
 
+            # process special (class, label, ...)
+            if isinstance(cur, jl.tokenizer.Identifier) and idx + 1 < len(tokens) and tokens[idx+1].value == ':':
+                if not absolute_label_indent: output += add_indent(indent_level, indent)
+                output += add_indent(1, label_indent) + cur.value + ':\n'
+                idx += 2
+                need_indent_flag = True
+                pre = tokens[idx-1]
+                continue
+
             # process indent
             if need_indent_flag:
                 output += add_indent(indent_level - (cur.value == '}'), indent)
@@ -105,16 +114,7 @@ class CodeFormatter:
                     stack[-1].value in ('[]', '@')):
                     add_output += add_indent(1, continuation_indent)
             elif isinstance(cur, jl.tokenizer.Operator):
-                if (cur.is_prefix() and 
-                    (cur.value not in ('+', '-') or
-                     isinstance(pre, (jl.tokenizer.Separator, jl.tokenizer.Keyword, jl.tokenizer.Operator)))):
-                    if (not cur.is_postfix() or 
-                        (idx + 1 < len(tokens) and 
-                        (isinstance(tokens[idx+1], jl.tokenizer.Identifier) or
-                        tokens[idx+1].value == '('))):
-                        add_output += (' ' if space_around_unary else '')
-                else:
-                    if space_around_operator: add_output = ' ' + cur.value + ' '
+                add_output = self._format_operator(pre, cur, idx, tokens)
             elif (isinstance(cur, jl.tokenizer.Separator) or
                   isinstance(pre, (jl.tokenizer.Separator, jl.tokenizer.Operator)) or 
                   not pre):
@@ -128,3 +128,25 @@ class CodeFormatter:
 
         print('\n\n')
         return output
+
+    def _format_operator(self, pre, cur, idx, tokens):
+        if (cur.is_prefix() and 
+            (cur.value not in ('+', '-') or
+             isinstance(pre, (jl.tokenizer.Separator, jl.tokenizer.Keyword, jl.tokenizer.Operator)))):
+            if (not cur.is_postfix() or (idx + 1 < len(tokens) and
+                (isinstance(tokens[idx+1], jl.tokenizer.Identifier) or tokens[idx+1].value == '('))):
+                return (' ' if space_around_unary else '') + cur.value
+        else:
+            flag = False
+            if cur.is_assignment(): flag = space_around_assignment
+            elif cur.value in ('==', '!='): flag = space_around_equality
+            elif cur.value in ('&&', '||'): flag = space_around_logical
+            elif cur.value == '::': flag = space_around_method_reference
+            elif cur.value in ('&', '|', '^'): flag = space_around_bitwise
+            elif cur.value == '->': flag = space_around_lambda_arrow
+            elif cur.value in ('+', '-'): flag = space_around_additive
+            else: flag = space_around_operator
+            if flag: return ' ' + cur.value + ' '
+
+        return cur.value # no additional spaces
+            

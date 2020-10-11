@@ -16,7 +16,7 @@ indent = 4
 
 # the number of spaces (or tabs) to be inserted between the elements of an
 # array, in expressions, method declarations and method calls.
-continuation_indent = 2
+continuation_indent = 1
 
 keep_indents_on_empty_lines = True
 
@@ -40,6 +40,9 @@ indents_relative_to_expression_start = False
 # Before
 space_before_keyword = True
 space_before_method = True
+
+# After
+space_after_semicolon = True
 
 # Within
 space_within_operator = True

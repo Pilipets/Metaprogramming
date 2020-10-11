@@ -35,7 +35,7 @@ public class Foo {
         if (2 < 3) return;
         if (3 < 4) return;
         do {
-            x++;
+            ++x;
         }
         while (x < 10000);
         while (x < 50000) x++;
@@ -99,4 +99,11 @@ class Bar {
 }
 
 interface Abba {
+        Operationable op = new Operationable(){
+         
+                    public int calculate(int x, int y){
+             
+                        return x + y;
+                    }
+                };
 }

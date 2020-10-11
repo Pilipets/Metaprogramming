@@ -45,8 +45,9 @@ space_before_initialization = True
 # After
 space_after_semicolon = True
 
-# Within
-space_within_operator = True
+# Around
+space_around_operator = True
+space_around_unary = True
 
 
 

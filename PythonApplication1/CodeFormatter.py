@@ -87,6 +87,9 @@ class CodeFormatter:
                 if stack[-1].value == '{':
                     indent_level -= 1
                     stack.pop()
+                    if idx + 1 < len(tokens) and tokens[idx+1].value == ';':
+                        add_output += ';'
+                        idx += 1
                     need_indent_flag = True
                     add_output += '\n'
                 elif stack[-1].value == 'do':
@@ -94,6 +97,7 @@ class CodeFormatter:
                     stack.pop()
                 elif stack[-1].value == '[]':
                     stack.pop()
+                elif stack[-1].value == '@': pass
                 else:
                     logging.warning('Incorrect position of the %s', cur)
             elif cur.value == ',':
@@ -101,11 +105,16 @@ class CodeFormatter:
                     stack[-1].value in ('[]', '@')):
                     add_output += add_indent(1, continuation_indent)
             elif isinstance(cur, jl.tokenizer.Operator):
-                if (cur.value in ('+', '-') and 
-                    isinstance(pre, (jl.tokenizer.Separator, jl.tokenizer.Keyword, jl.tokenizer.Operator))):
-                    pass
-                elif cur.is_assignment() or cur.is_infix() or cur.value in ('?', ':'):
-                    if space_within_operator: add_output = ' ' + cur.value + ' '
+                if (cur.is_prefix() and 
+                    (cur.value not in ('+', '-') or
+                     isinstance(pre, (jl.tokenizer.Separator, jl.tokenizer.Keyword, jl.tokenizer.Operator)))):
+                    if (not cur.is_postfix() or 
+                        (idx + 1 < len(tokens) and 
+                        (isinstance(tokens[idx+1], jl.tokenizer.Identifier) or
+                        tokens[idx+1].value == '('))):
+                        add_output += (' ' if space_around_unary else '')
+                else:
+                    if space_around_operator: add_output = ' ' + cur.value + ' '
             elif (isinstance(cur, jl.tokenizer.Separator) or
                   isinstance(pre, (jl.tokenizer.Separator, jl.tokenizer.Operator)) or 
                   not pre):

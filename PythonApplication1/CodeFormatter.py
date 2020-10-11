@@ -33,9 +33,7 @@ class CodeFormatter:
             if isinstance(cur, jl.tokenizer.Identifier) and idx + 1 < len(tokens) and tokens[idx+1].value == ':':
                 if not absolute_label_indent: output += add_indent(indent_level, indent)
                 output += add_indent(1, label_indent) + cur.value + ':\n'
-                idx += 2
-                need_indent_flag = True
-                pre = tokens[idx-1]
+                idx, pre, need_indent_flag = idx+2, tokens[idx-1], True
                 continue
 
             # process indent

@@ -43,22 +43,32 @@ class CodeFormatter:
 
             # process separators
             if cur.value == '@':
-                if (idx + 2 < len(tokens) and 
-                    isinstance(tokens[idx+1], jl.tokenizer.Identifier) and 
-                    tokens[idx+2].value == '('):
+                if (idx + 2 < len(tokens) and tokens[idx+2].value == '(' and
+                    isinstance(tokens[idx+1], jl.tokenizer.Identifier)):
                     stack.append(cur)
-                    add_output += tokens[idx+1].value + tokens[idx+2].value
+                    add_output += (tokens[idx+1].value +
+                                   (' ' if space_before_annotation_p else '') +
+                                   tokens[idx+2].value)
                     idx += 2
                 else:
                     logging.warning('Incorrect position of the %s', cur)
             elif cur.value == '(':
                 if isinstance(pre, jl.tokenizer.Identifier):
                     stack.append(pre)
-                    add_output = (' ' if space_before_method else '') + cur.value
+                    add_output = (' ' if space_before_method_p else '') + cur.value
                 elif isinstance(pre, jl.tokenizer.Keyword):
-                    if pre.value in ('for', 'while', 'if', 'catch', 'try', 'synchronized', 'switch'):
+                    if pre.value in set(['for', 'while', 'if', 'catch', 'try', 'synchronized', 'switch']):
                         stack.append(pre)
-                        add_output = (' ' if space_before_keyword else '') + cur.value
+                        flag = False
+                        if pre.value == 'for': flag = space_before_for_p
+                        elif pre.value == 'while': flag = space_before_while_p
+                        elif pre.value == 'if': flag = space_before_if_p
+                        elif pre.value == 'catch': flag = space_before_catch_p
+                        elif pre.value == 'try': flag = space_before_try_p
+                        elif pre.value == 'synchronized': flag = space_before_synchronized_p
+                        elif pre.value == 'switch': flag = space_before_switch_p
+
+                        if flag: add_output = ' ' + cur.value
                     else:
                         logging.warning('Incorrect position of the %s', cur)
                 else: # expression parentheses or template

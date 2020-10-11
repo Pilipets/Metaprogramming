@@ -27,15 +27,22 @@ do_not_indent_top_level_class_members = False
 
 ### Brace placement options
 
-# Before
-space_before_keyword = True
-space_before_method = False
+# Before parentheses
+space_before_method_p = True
+space_before_if_p = False
+space_before_for_p = True
+space_before_while_p = True
+space_before_switch_p = True
+space_before_try_p = False
+space_before_catch_p = False
+space_before_synchronized_p = True
+space_before_annotation_p = True
 space_before_initialization = True
 
-# After
+# After parentheses
 space_after_semicolon = True
 
-# Around
+# Around parentheses
 space_around_equality = True
 space_around_logical = True
 space_around_bitwise = False

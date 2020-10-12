@@ -5,13 +5,16 @@
     <ProjectGuid>bfb83e25-60d5-4f33-b2d1-99feb77fe543</ProjectGuid>
     <ProjectHome>
     </ProjectHome>
-    <StartupFile>Task1.py</StartupFile>
+    <StartupFile>main.py</StartupFile>
     <SearchPath>
     </SearchPath>
     <WorkingDirectory>.</WorkingDirectory>
     <OutputPath>.</OutputPath>
     <Name>CodeFormatter(Java)</Name>
     <RootNamespace>PythonApplication1</RootNamespace>
+    <LaunchProvider>Standard Python launcher</LaunchProvider>
+    <CommandLineArguments>-h</CommandLineArguments>
+    <EnableNativeCodeDebugging>False</EnableNativeCodeDebugging>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">
     <DebugSymbols>true</DebugSymbols>
@@ -25,18 +28,22 @@
     <Compile Include="src\CodeFormatter.py">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="Task1.py" />
+    <Compile Include="src\FormatterUI.py">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="main.py" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="input\code2.txt" />
     <Content Include="input\code.txt" />
     <Content Include="input\code3.txt" />
-    <Content Include="src\config.py">
+    <Content Include="config\config.py">
       <SubType>Code</SubType>
     </Content>
   </ItemGroup>
   <ItemGroup>
     <Folder Include="input\" />
+    <Folder Include="config\" />
     <Folder Include="src\" />
     <Folder Include="output\" />
   </ItemGroup>

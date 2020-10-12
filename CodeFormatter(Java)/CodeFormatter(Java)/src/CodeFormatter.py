@@ -1,15 +1,11 @@
 import javalang as jl
-import enum
 import logging
-from config import *
+from src.config import *
 
-logging.basicConfig(filename='app.log', filemode='w', 
+logging.basicConfig(filename='output/app.log', filemode='w', 
                     format='%(name)s - %(levelname)s - %(message)s')
 
 class CodeFormatter:
-    class State:
-        pass
-
     def __init__(self):
         # keywords that can be followed by parentheses
         self.p_keywords = set(['for', 'while', 'if', 'catch', 'try', 'synchronized', 'switch'])
@@ -32,13 +28,6 @@ class CodeFormatter:
         while self.idx < len(tokens):
             self.cur = tokens[self.idx]
 
-            # process label - not working because of case, foreach
-            #if isinstance(cur, jl.tokenizer.Identifier) and idx + 1 < len(tokens) and tokens[idx+1].value == ':':
-            #    if not absolute_label_indent: output += add_indent(indent_level, indent)
-            #    output += add_indent(1, label_indent) + cur.value + ':\n'
-            #    state.idx, state.pre, state.need_indent_flag = state.idx+2, tokens[idx-1], True
-            #    continue
-
             # process indent
             if self.need_indent_flag:
                 output += add_indent(self.indent_level - (self.cur.value == '}'), indent)
@@ -56,6 +45,7 @@ class CodeFormatter:
                     self.idx += 2
                 else:
                     logging.error('Incorrect position of the %s', self.cur)
+
             elif isinstance(self.cur, jl.tokenizer.Separator):
                 add_output = self._format_separator(tokens)
 
@@ -117,7 +107,8 @@ class CodeFormatter:
                     elif temp.value == 'synchronized': flag = space_before_synchronized_b
 
                     if flag: add_output += ' '
-                else:
+
+                elif self.idx + 1 < len(tokens) and tokens[self.idx+1].value != ';':
                     add_output += ' '
                 stack.pop()
 

@@ -29,6 +29,7 @@
   <ItemGroup>
     <Content Include="code2.txt" />
     <Content Include="code.txt" />
+    <Content Include="code3.txt" />
     <Content Include="config.py">
       <SubType>Code</SubType>
     </Content>

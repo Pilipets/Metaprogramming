@@ -29,18 +29,40 @@ do_not_indent_top_level_class_members = False
 
 # Before parentheses
 space_before_method_p = True
-space_before_if_p = False
+space_before_if_p = True
 space_before_for_p = True
-space_before_while_p = True
+space_before_while_p = False
 space_before_switch_p = True
 space_before_try_p = False
 space_before_catch_p = False
 space_before_synchronized_p = True
 space_before_annotation_p = True
-space_before_initialization = True
 
-# After parentheses
+# Before brace
+space_before_class_b = False
+space_before_method_b = True
+space_before_if_b = True
+space_before_else_b = True
+space_before_for_b = True
+space_before_while_b = True
+space_before_do_b = True
+space_before_switch_b = False
+space_before_try_b = False
+space_before_catch_b = False
+space_before_finally_b = True
+space_before_synchronized_b = True
+space_before_initialization_b = True
+space_before_annotation_b = False
+
+# Before keywords
+space_before_while_keyword = False
+space_before_else_keyword = False
+space_before_catch_keyword = True
+space_before_finally_keyword = False
+
+# Within try, catch
 space_after_semicolon = True
+space_before_semicolon = False
 
 # Around parentheses
 space_around_equality = True
@@ -48,10 +70,11 @@ space_around_logical = True
 space_around_bitwise = False
 space_around_assignment = True
 space_around_method_reference = False
-space_around_unary = True
+space_around_unary = False
 space_around_lambda_arrow = False
 space_around_additive = True
-space_around_operator = True
+space_around_operator = False
+space_around_ternary = True
 
 
 

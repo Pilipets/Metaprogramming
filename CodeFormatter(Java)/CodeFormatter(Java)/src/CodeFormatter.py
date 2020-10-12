@@ -17,7 +17,7 @@ class CodeFormatter:
         self.add_indent = lambda x, y: ' ' * x * y * tab_size
         if not use_tab_character: self.add_indent = lambda x,y: ' ' * x * y
 
-        output = ''
+        self.output = ''
         self.stack = [jl.tokenizer.JavaToken('')]
         self.indent_level, self.idx = 0, 0
         self.pre, self.cur = None, None
@@ -29,8 +29,9 @@ class CodeFormatter:
             self.cur = tokens[self.idx]
 
             # process indent
-            if self.need_indent_flag:
-                output += add_indent(self.indent_level - (self.cur.value == '}'), indent)
+            if (self.need_indent_flag and 
+                not self.cur.value in ('}', 'case', 'default')):
+                self.output += add_indent(self.indent_level, indent)
                 self.need_indent_flag = False
 
             add_output = self.cur.value
@@ -52,18 +53,34 @@ class CodeFormatter:
             elif isinstance(self.cur, jl.tokenizer.Operator):
                 add_output = self._format_operator(tokens)
 
+            elif self.cur.value in ('case', 'default'):
+                if self.cur.value == 'default':
+                    var = 3
+                if self.stack[-1].value == ':':
+                    self.stack.pop()
+                    if not self.need_indent_flag:
+                        logging.error('Incorrect position of the %s', self.cur)
+                    self.indent_level -= 1
+
+                self.need_indent_flag = False
+                self.output += add_indent(self.indent_level, indent)
+                self.stack.append(self.cur)
+
             elif (not self.pre or isinstance(self.pre, (jl.tokenizer.Separator, jl.tokenizer.Operator))):
                 pass
 
             else:
                 add_output = ' ' + add_output
 
-            output += add_output
+            self.output += add_output
             self.pre = tokens[self.idx]
             self.idx += 1
 
+        if len(self.stack) > 1:
+            logging.error('Error encountered when formatting for lexems %s', self.stack[1:])
+
         print('\n\n')
-        return output
+        return self.output
     
     def _format_separator(self, tokens):
         ''' Used for formatting cur if it's a separator'''
@@ -115,6 +132,8 @@ class CodeFormatter:
             elif isinstance(stack[-1], jl.tokenizer.Identifier):
                 if self.idx + 1 < len(tokens) and tokens[self.idx+1].value == '{':
                     if space_before_method_b: add_output += ' '
+
+                # tricky here is handling throw x,y after ')', but before '{'
                 stack.pop()
 
             elif stack[-1].value == '(':
@@ -167,6 +186,9 @@ class CodeFormatter:
 
                     if flag: add_output = ' ' + cur.value
 
+                elif stack[-1].value in ('case', 'default'):
+                    stack[-1] = cur
+
                 else:
                     stack.append(cur)
 
@@ -182,12 +204,16 @@ class CodeFormatter:
                 pass
 
             elif isinstance(stack[-1], jl.tokenizer.Keyword):
+                self.indent_level -= 1
                 if stack[-1].value == 'do':
                     if self.idx + 1 < len(tokens) and tokens[self.idx+1].value == 'while':
                         if space_before_while_keyword: add_output = ' ' + cur.value
                         self.need_indent_flag = False
                     else:
                         logging.error('Incorrect position of the %s', stack[-1])
+
+                    self.need_indent_flag = False
+                    self.output += add_indent(self.indent_level, indent)
 
                 else:
                     if stack[-1].value in ('try') and self.idx + 1 < len(tokens):
@@ -197,16 +223,20 @@ class CodeFormatter:
                             if space_before_finally_keyword: add_output = ' ' + cur.value
 
                     self.need_indent_flag = True
+                    self.output += add_indent(self.indent_level, indent)
                     add_output += '\n'
 
-                self.indent_level -= 1
                 stack.pop()
 
-            elif stack[-1].value == '{':
+            elif stack[-1].value in ('{', ':'):
                 if self.idx + 1 < len(tokens):
                     if tokens[self.idx+1].value == ';':
                         add_output += ';'
                         self.idx += 1
+
+                    elif stack[-1].value == ':':
+                        self.indent_level -= 1
+                        stack.pop()
 
                     else:
                         flag = False
@@ -220,12 +250,14 @@ class CodeFormatter:
                         if flag: add_output = ' ' + add_output
 
                 self.indent_level -= 1
+                self.output += add_indent(self.indent_level, indent)
                 self.need_indent_flag = True
                 add_output += '\n'
                 stack.pop()
 
             else:
                 logging.error('Incorrect position of the %s', cur)
+
 
         elif cur.value == ',':
             if (isinstance(stack[-1], jl.tokenizer.Identifier) or
@@ -244,7 +276,7 @@ class CodeFormatter:
             isinstance(pre, (jl.tokenizer.Separator, jl.tokenizer.Keyword, jl.tokenizer.Operator)))):
             if (not cur.is_postfix() or (self.idx + 1 < len(tokens) and
                 (isinstance(tokens[self.idx+1], jl.tokenizer.Identifier) or tokens[self.idx+1].value == '('))):
-                return cur.value + (' ' if space_around_unary else '')
+                add_output += (' ' if space_around_unary else '')
         else:
             flag = False
             if cur.is_assignment(): flag = space_around_assignment
@@ -256,11 +288,24 @@ class CodeFormatter:
             elif cur.value in ('+', '-'): flag = space_around_additive
             elif cur.value == ':':
                 if stack[-1].value == 'for': flag = False
-                else: flag = space_around_ternary
-            elif cur.value == '?': flag = space_around_ternary
+                elif stack[-1].value == '?':
+                    flag = space_around_ternary
+                    stack.pop()
+                elif stack[-1].value in ('case', 'default'):
+                    if self.idx+1 < len(tokens) and tokens[self.idx+1].value != '{':
+                        self.indent_level += 1
+                        self.need_indent_flag = True
+                        add_output += '\n'
+                        stack[-1] = cur
+                    else:
+                        add_output += ' '
+
+            elif cur.value == '?':
+                flag = space_around_ternary
+                stack.append(cur)
             else: flag = space_around_operator
 
-            if flag: return ' ' + cur.value + ' '
+            if flag: add_output = ' ' + cur.value + ' '
 
         return add_output
             

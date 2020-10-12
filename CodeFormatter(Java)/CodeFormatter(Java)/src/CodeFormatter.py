@@ -28,6 +28,16 @@ class CodeFormatter:
         while self.idx < len(tokens):
             self.cur = tokens[self.idx]
 
+            # process special tokens that mightn't follow indent rules
+            if (isinstance(self.cur, jl.tokenizer.Identifier) and self.idx + 1 < len(tokens)
+                and tokens[self.idx+1].value == ':' and self.stack[-1].value not in ('for', '?')):
+                if not absolute_label_indent: output += add_indent(indent_level, indent)
+                self.output += add_indent(1, label_indent) + self.cur.value + ':\n'
+                self.idx += 2
+                self.need_indent_flag = True
+                self.pre = tokens[self.idx-1]
+                continue
+
             # process indent
             if (self.need_indent_flag and 
                 not self.cur.value in ('}', 'case', 'default')):
@@ -36,6 +46,7 @@ class CodeFormatter:
 
             add_output = self.cur.value
 
+            # process tokens
             if self.cur.value == '@':
                 if (self.idx + 2 < len(tokens) and tokens[self.idx+2].value == '('
                     and isinstance(tokens[self.idx+1], jl.tokenizer.Identifier)):

@@ -317,7 +317,9 @@ class CodeFormatter:
             flag = False
             if cur.is_assignment(): flag = space_around_assignment
             elif cur.value in ('==', '!='): flag = space_around_equality
+            elif cur.value in ('<', '>', '<=', '>='): flag = space_around_relational
             elif cur.value in ('&&', '||'): flag = space_around_logical
+            elif cur.value in ('<<', '>>', '>>>'): flag = space_around_shift
             elif cur.value == '::': flag = space_around_method_reference
             elif cur.value in ('&', '|', '^'): flag = space_around_bitwise
             elif cur.value == '->': flag = space_around_lambda_arrow
@@ -341,7 +343,7 @@ class CodeFormatter:
                          and pre.value == '<') and self.idx + 1 < len(tokens)):
                     flag = space_around_ternary
                     stack.append(cur)
-                else:
+                elif self.idx + 1 < len(tokens) and tokens[self.idx+1].value != '>':
                     add_output += ' '
             else: flag = space_around_operator
 

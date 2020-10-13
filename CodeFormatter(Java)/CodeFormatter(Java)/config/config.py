@@ -64,10 +64,12 @@ space_around_equality = True
 space_around_logical = True
 space_around_bitwise = False
 space_around_assignment = True
+space_around_relational = False
 space_around_method_reference = False
 space_around_unary = False
 space_around_lambda_arrow = False
 space_around_additive = True
+space_around_shift = True
 space_around_operator = False
 space_around_ternary = True
 

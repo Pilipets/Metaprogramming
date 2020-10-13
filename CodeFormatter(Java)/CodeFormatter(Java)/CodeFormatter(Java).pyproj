@@ -13,7 +13,8 @@
     <Name>CodeFormatter(Java)</Name>
     <RootNamespace>PythonApplication1</RootNamespace>
     <LaunchProvider>Standard Python launcher</LaunchProvider>
-    <CommandLineArguments>-v -f C:\Users\Druid\source\repos\Metaprogramming\CodeFormatter(Java)\CodeFormatter(Java)\input\formatted_code2.java</CommandLineArguments>
+    <CommandLineArguments>
+    </CommandLineArguments>
     <EnableNativeCodeDebugging>False</EnableNativeCodeDebugging>
     <InterpreterArguments>
     </InterpreterArguments>

@@ -1,6 +1,7 @@
-from src.CodeFormatter import *
-import sys
 import os
+import sys
+
+from src.CodeFormatter import CodeFormatter, jl
 
 class FormatterUI:
     def __init__(self, *args, **kwargs):
@@ -10,7 +11,8 @@ class FormatterUI:
         "------------------This is simple Python formatter for Java code---------------------\n"
         "Available execution templates are:\n"
         "1) name, action{--help, -h};\n"
-        "2) name, action{--beautify, -b, --verify, -v}, template={path|default}, option{-(p|d|f)}, path.\n"
+        "2) name, action{--beautify, -b, --verify, -v}, "
+        "template={path|default}, option{-(p|d|f)}, path.\n"
         "-------------------------------------------------------------------------------------")
 
     @staticmethod
@@ -28,8 +30,8 @@ class FormatterUI:
                 for root, dirs, files in os.walk(path):
                     for file in files:
                         if (file.endswith('.java') and not file.startswith('formatted_')
-                            and not file.startswith('verified_')):
-                             res.append(os.path.join(root, file))
+                                and not file.startswith('verified_')):
+                            res.append(os.path.join(root, file))
                 return res
 
         elif option == '-d':
@@ -38,7 +40,7 @@ class FormatterUI:
             else:
                 for file in os.listdir(path):
                     if (file.endswith('.java') and not file.startswith('formatted_')
-                        and not file.startswith('verified_')):
+                            and not file.startswith('verified_')):
                         res.append(os.path.join(path, file))
                 return res
 
@@ -66,7 +68,7 @@ class FormatterUI:
         for file in files:
             with open(file, "r") as f: javacode = f.read()
 
-            tokens = jl.tokenizer.tokenize(javacode, ignore_errors= True)
+            tokens = jl.tokenizer.tokenize(javacode, ignore_errors=True)
             try:
                 output = func(tokens)
             except BaseException as ex:
@@ -99,7 +101,7 @@ class FormatterUI:
         else:
             # name, action{--beautify, -b, --verify, -v}, {--config, -c}=path, option{-(p|d|f)}, in_path
             if len(params) > 5:
-                FormatterUI.report_error("incorrect amount of the script arguments, given - %s" % len(params))
+                FormatterUI.report_error("incorrect amount(%d) of the script arguments" % len(params))
 
             action = [c for c in ('-b', '--beautify', '--verify', '-v') if c in params]
             if len(action) > 1:

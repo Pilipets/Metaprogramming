@@ -13,6 +13,28 @@ class CodeFormatter:
         # keywords that can be followed by brace
         self.b_keywords = set(['try', 'do', 'finally', 'else', 'if'])
 
+    def verify(self, tokens):
+        tokens = list(tokens)
+        output = self.format(tokens)
+        res_tokens = list(jl.tokenizer.tokenize(output))
+
+        if len(res_tokens) != len(tokens):
+            err_msg = ('Internal error: tokens size mismatch(%d vs %d)' % len(res_tokens), len(tokens))
+            logging.error(err_msg)
+            raise AssertionError(err_msg)
+        
+        output = "Ignorring whitespaces, %d tokens received!!!\n" % len(tokens)
+        mismatch_cnt = 1
+        diff_func = lambda x, y: (x[y+1].position.line-x[y].position.line, x[y+1].position.column-x[y].position.column)
+        for idx in range(len(tokens)-1):
+            diff1, diff2 = diff_func(res_tokens, idx), diff_func(tokens, idx)
+
+            if diff1 != diff2:
+                output += ("%d. Incorrect relative position of the %s\n" % (mismatch_cnt, res_tokens[idx]))
+                mismatch_cnt += 1
+        
+        return output
+
     def format(self, tokens):
         self.add_indent = lambda x, y: ' ' * x * y * tab_size
         if not use_tab_character: self.add_indent = lambda x,y: ' ' * x * y
@@ -22,15 +44,18 @@ class CodeFormatter:
         self.indent_level, self.idx = 0, 0
         self.pre, self.cur = None, None
         self.need_indent_flag = False
-        add_indent = self.add_indent
 
-        tokens = list(tokens)
+        add_indent, stack = self.add_indent, self.stack
+
+        if not isinstance(tokens, list):
+            tokens = list(tokens)
+
         while self.idx < len(tokens):
             self.cur = tokens[self.idx]
 
             # process special tokens that mightn't follow indent rules
             if (isinstance(self.cur, jl.tokenizer.Identifier) and self.idx + 1 < len(tokens)
-                and tokens[self.idx+1].value == ':' and self.stack[-1].value not in ('for', '?')):
+                and tokens[self.idx+1].value == ':' and stack[-1].value not in ('for', '?')):
                 if not absolute_label_indent: output += add_indent(indent_level, indent)
                 self.output += add_indent(1, label_indent) + self.cur.value + ':\n'
                 self.idx += 2
@@ -50,7 +75,7 @@ class CodeFormatter:
             if self.cur.value == '@':
                 if (self.idx + 2 < len(tokens) and tokens[self.idx+2].value == '('
                     and isinstance(tokens[self.idx+1], jl.tokenizer.Identifier)):
-                    self.stack.append(self.cur)
+                    stack.append(self.cur)
                     add_output += (tokens[self.idx+1].value +
                                    (' ' if space_before_annotation_p else '') +
                                    tokens[self.idx+2].value)
@@ -67,15 +92,15 @@ class CodeFormatter:
             elif self.cur.value in ('case', 'default'):
                 if self.cur.value == 'default':
                     var = 3
-                if self.stack[-1].value == ':':
-                    self.stack.pop()
+                if stack[-1].value == ':':
+                    stack.pop()
                     if not self.need_indent_flag:
                         logging.error('Incorrect position of the %s', self.cur)
                     self.indent_level -= 1
 
                 self.need_indent_flag = False
                 self.output += add_indent(self.indent_level, indent)
-                self.stack.append(self.cur)
+                stack.append(self.cur)
 
             elif (not self.pre or isinstance(self.pre, (jl.tokenizer.Separator, jl.tokenizer.Operator))):
                 pass
@@ -87,10 +112,9 @@ class CodeFormatter:
             self.pre = tokens[self.idx]
             self.idx += 1
 
-        if len(self.stack) > 1:
-            logging.error('Error encountered when formatting for lexems %s', self.stack[1:])
+        if len(stack) > 1:
+            logging.error('Error encountered when formatting for lexems %s', stack[1:])
 
-        print('\n\n')
         return self.output
     
     def _format_separator(self, tokens):

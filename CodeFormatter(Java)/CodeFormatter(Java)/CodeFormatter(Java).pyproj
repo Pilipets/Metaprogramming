@@ -13,9 +13,10 @@
     <Name>CodeFormatter(Java)</Name>
     <RootNamespace>PythonApplication1</RootNamespace>
     <LaunchProvider>Standard Python launcher</LaunchProvider>
-    <CommandLineArguments>
-    </CommandLineArguments>
+    <CommandLineArguments>-v -f C:\Users\Druid\source\repos\Metaprogramming\CodeFormatter(Java)\CodeFormatter(Java)\input\formatted_code2.java</CommandLineArguments>
     <EnableNativeCodeDebugging>False</EnableNativeCodeDebugging>
+    <InterpreterArguments>
+    </InterpreterArguments>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">
     <DebugSymbols>true</DebugSymbols>
@@ -35,8 +36,8 @@
     <Compile Include="main.py" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="input\code2.txt" />
-    <Content Include="input\code.txt" />
+    <Content Include="input\code2.java" />
+    <Content Include="input\code.java" />
     <Content Include="input\code3.txt" />
     <Content Include="config\config.py">
       <SubType>Code</SubType>

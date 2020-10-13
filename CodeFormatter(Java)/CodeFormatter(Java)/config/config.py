@@ -22,11 +22,6 @@ label_indent = 2
 # relative to previous indent levels.
 absolute_label_indent = True
 
-# Select this checkbox to have top level class members located at the class declaration indentation level.
-do_not_indent_top_level_class_members = False
-
-### Brace placement options
-
 # Before parentheses
 space_before_method_p = True
 space_before_if_p = True

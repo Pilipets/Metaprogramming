@@ -6,7 +6,8 @@ if __name__ == '__main__':
     else:
         with open("input/code.txt", "r") as f: javacode = f.read()
    
-        tokens = jl.tokenizer.tokenize(javacode, ignore_errors= True)
-        formatter = CodeFormatter()
-        output = formatter.format(tokens)
-        print(output)
+        tokens = list(jl.tokenizer.tokenize(javacode, ignore_errors= True))
+        print(val)
+        #formatter = CodeFormatter()
+        #output = formatter.format(tokens)
+        #print(output)

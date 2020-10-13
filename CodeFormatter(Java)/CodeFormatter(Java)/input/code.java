@@ -44,9 +44,19 @@ public class Foo {
 
     private class InnerClass implements I1, I2 {
         public void bar() throws E1, E2 {
+            List<?>           listUknown = new ArrayList<A>();
+List<? extends A> listUknown = new ArrayList<A>();
+List<? super   A> listUknown = new ArrayList<A>();
         }
     }
+
+    public void processElements(List<? extends A> elements){
+   for(A a : elements){
+      System.out.println(a.getValue());
+   }
 }
+}
+
 
 @Annotation(param1 = "value1", param2 = "value2")
 @SuppressWarnings({"ALL"})

@@ -310,7 +310,8 @@ class CodeFormatter:
         if (cur.is_prefix() and (cur.value not in ('+', '-') or
             isinstance(pre, (jl.tokenizer.Separator, jl.tokenizer.Keyword, jl.tokenizer.Operator)))):
             if (not cur.is_postfix() or (self.idx + 1 < len(tokens) and
-                (isinstance(tokens[self.idx+1], jl.tokenizer.Identifier) or tokens[self.idx+1].value == '('))):
+                (isinstance(tokens[self.idx+1], (jl.tokenizer.Identifier,))
+                            or tokens[self.idx+1].value == '('))):
                 add_output += (' ' if space_around_unary else '')
         else:
             flag = False
@@ -336,8 +337,12 @@ class CodeFormatter:
                         add_output += ' '
 
             elif cur.value == '?':
-                flag = space_around_ternary
-                stack.append(cur)
+                if (not (isinstance(pre, jl.tokenizer.Operator)
+                         and pre.value == '<') and self.idx + 1 < len(tokens)):
+                    flag = space_around_ternary
+                    stack.append(cur)
+                else:
+                    add_output += ' '
             else: flag = space_around_operator
 
             if flag: add_output = ' ' + cur.value + ' '

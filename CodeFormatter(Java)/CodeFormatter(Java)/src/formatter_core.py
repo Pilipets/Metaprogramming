@@ -1,7 +1,7 @@
 import logging
 import javalang as jl
 
-from config.config import *
+from config.config_handler import *
 
 logging.basicConfig(filename='output/app.log', filemode='w',
                     format='%(name)s - %(levelname)s - %(message)s')

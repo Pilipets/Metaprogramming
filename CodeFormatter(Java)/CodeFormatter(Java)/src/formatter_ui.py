@@ -2,6 +2,7 @@ import os
 import sys
 
 from src.formatter_core import FormatterCore, jl
+from config.config_handler import load_config
 
 class FormatterUI:
     def __init__(self, *args, **kwargs):
@@ -69,7 +70,7 @@ class FormatterUI:
                     javacode = fin.read()
 
                 output = func(jl.tokenizer.tokenize(javacode, ignore_errors=True))
-            except BaseException as ex:
+            except Exception as ex:
                 print("Exception received when formatting file={}, ex={}".format(file, ex))
                 errors_cnt += 1
                 output = ''
@@ -80,7 +81,7 @@ class FormatterUI:
             if format_flag:
                 result_file = os.path.join(head, 'formatted_' + tail)
             else:
-                result_file = os.path.join(head, os.path.splitext(tail)[0] + '.log')
+                result_file = os.path.join(head, 'verified_' + os.path.splitext(tail)[0] + '.log')
 
             with open(result_file, "w") as fout:
                 fout.write(output)
@@ -114,8 +115,15 @@ class FormatterUI:
             else:
                 action = action[0] if action else '-b'
 
-            if '--config' in params or '-c' in params:
-                FormatterUI.report_error("config path isn't supported")
+            config = [c for c in params if c.startswith('--config') or c.startswith('-c')]
+            if len(config) > 1 or (len(config) == 1 and config[0].count('=') == 0):
+                FormatterUI.report_error("incorrect config file options")
+
+            config = config[0].split('=', 1)[1]
+            try:
+                load_config(config)
+            except Exception as ex:
+                FormatterUI.report_error("error encountered when loading config file, %s" % ex)
 
             option = [c for c in ('-p', '-d', '-f') if c in params]
             if len(option) > 1 or len(option) == 0:

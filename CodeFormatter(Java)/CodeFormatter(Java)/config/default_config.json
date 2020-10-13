@@ -1,0 +1,69 @@
+{
+  "tabs_indents_menu": {
+    "use_tab_character": false,
+    "tab_size": 4,
+    "indent": 4,
+    "continuation_indent": 1,
+    "label_indent": 2,
+    "absolute_label_indent": false
+  },
+
+  "spaces_menu": {
+
+    "before_parentheses": {
+      "space_before_method_p": true,
+      "space_before_if_p": true,
+      "space_before_for_p": true,
+      "space_before_while_p": false,
+      "space_before_switch_p": true,
+      "space_before_try_p": false,
+      "space_before_catch_p": false,
+      "space_before_synchronized_p": true,
+      "space_before_annotation_p": true
+    },
+
+    "before_braces": {
+      "space_before_class_b": false,
+      "space_before_method_b": true,
+      "space_before_if_b": true,
+      "space_before_else_b": true,
+      "space_before_for_b": true,
+      "space_before_while_b": true,
+      "space_before_do_b": true,
+      "space_before_switch_b": false,
+      "space_before_try_b": false,
+      "space_before_catch_b": false,
+      "space_before_finally_b": true,
+      "space_before_synchronized_b": true,
+      "space_before_initialization_b": true,
+      "space_before_annotation_b": false
+    },
+
+    "before_keywords": {
+      "space_before_while_keyword": false,
+      "space_before_else_keyword": false,
+      "space_before_catch_keyword": true,
+      "space_before_finally_keyword": false
+    },
+
+    "within_keywords": {
+      "space_after_semicolon": true,
+      "space_before_semicolon": false
+    },
+
+    "around_parentheses": {
+      "space_around_equality": true,
+      "space_around_logical": true,
+      "space_around_bitwise": false,
+      "space_around_assignment": true,
+      "space_around_relational": false,
+      "space_around_method_reference": false,
+      "space_around_unary": false,
+      "space_around_lambda_arrow": false,
+      "space_around_additive": true,
+      "space_around_shift": true,
+      "space_around_operator": false,
+      "space_around_ternary":  true
+    }
+  }
+}

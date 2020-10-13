@@ -37,10 +37,13 @@
     <Compile Include="main.py" />
   </ItemGroup>
   <ItemGroup>
+    <Content Include="config\default_config.json">
+      <SubType>Code</SubType>
+    </Content>
     <Content Include="input\code2.java" />
     <Content Include="input\code.java" />
     <Content Include="input\code3.txt" />
-    <Content Include="config\config.py">
+    <Content Include="config\config_handler.py">
       <SubType>Code</SubType>
     </Content>
   </ItemGroup>

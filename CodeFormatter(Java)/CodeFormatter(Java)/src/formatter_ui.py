@@ -1,7 +1,7 @@
 import os
 import sys
 
-from src.CodeFormatter import CodeFormatter, jl
+from src.formatter_core import FormatterCore, jl
 
 class FormatterUI:
     def __init__(self, *args, **kwargs):
@@ -16,8 +16,8 @@ class FormatterUI:
         "-------------------------------------------------------------------------------------")
 
     @staticmethod
-    def report_error(x):
-        print("Error: {}, use --help for more details!".format(x))
+    def report_error(err):
+        print("Error: {}, use --help for more details!".format(err))
         sys.exit()
 
     @staticmethod
@@ -52,25 +52,23 @@ class FormatterUI:
             else:
                 return [path]
 
-    @staticmethod
-    def process_files(action, files, in_path):
-        formatter = CodeFormatter()
+        return res
 
-        format_flag = False
-        if action in ('--beautify', '-b'):
-            func = formatter.format
-            format_flag = True
-        elif action in ('--verify', '-v'):
-            func = formatter.verify
-            format_flag = False
+    @staticmethod
+    def process_files(action, files):
+        formatter = FormatterCore()
+
+        format_flag, func = True, formatter.format
+        if action in ('--verify', '-v'):
+            format_flag, func = False, formatter.verify
 
         success_cnt, errors_cnt = 0, 0
         for file in files:
-            with open(file, "r") as f: javacode = f.read()
-
-            tokens = jl.tokenizer.tokenize(javacode, ignore_errors=True)
             try:
-                output = func(tokens)
+                with open(file, "r") as fin:
+                    javacode = fin.read()
+
+                output = func(jl.tokenizer.tokenize(javacode, ignore_errors=True))
             except BaseException as ex:
                 print("Exception received when formatting file={}, ex={}".format(file, ex))
                 errors_cnt += 1
@@ -79,8 +77,13 @@ class FormatterUI:
                 success_cnt += 1
 
             head, tail = os.path.split(file)
-            result_file = os.path.join(head, ('formatted_' if format_flag else 'verified_') + tail)
-            with open(result_file, "w") as f: f.write(output)
+            if format_flag:
+                result_file = os.path.join(head, 'formatted_' + tail)
+            else:
+                result_file = os.path.join(head, os.path.splitext(tail)[0] + '.log')
+
+            with open(result_file, "w") as fout:
+                fout.write(output)
 
         print('Processed %d files successfully, %d files with errors' % (success_cnt, errors_cnt))
 
@@ -96,18 +99,20 @@ class FormatterUI:
             if len(params) != 2:
                 FormatterUI.report_error("option '%s' isn't supported by the script" % sys.argv[1])
 
-            print(help_text)
+            print(FormatterUI.help_text)
 
         else:
-            # name, action{--beautify, -b, --verify, -v}, {--config, -c}=path, option{-(p|d|f)}, in_path
+            # name, action{--beautify, -b, --verify, -v},
+            # {--config, -c}=path, option{-(p|d|f)}, in_path
             if len(params) > 5:
-                FormatterUI.report_error("incorrect amount(%d) of the script arguments" % len(params))
+                FormatterUI.report_error(
+                    "incorrect amount(%d) of the script arguments"% len(params))
 
             action = [c for c in ('-b', '--beautify', '--verify', '-v') if c in params]
             if len(action) > 1:
                 FormatterUI.report_error("incorrect usage of action flags %s" % action)
             else:
-                action = action[0] if len(action) else '-b'
+                action = action[0] if action else '-b'
 
             if '--config' in params or '-c' in params:
                 FormatterUI.report_error("config path isn't supported")
@@ -118,7 +123,5 @@ class FormatterUI:
             else:
                 option = option[0]
 
-            in_path = sys.argv[-1]
-
-            files = FormatterUI.prepare_formatting_files(option, in_path)
-            FormatterUI.process_files(action, files, in_path)
+            files = FormatterUI.prepare_formatting_files(option, sys.argv[-1])
+            FormatterUI.process_files(action, files)

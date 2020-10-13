@@ -1,13 +1,13 @@
 import sys
 
-from src.FormatterUI import FormatterUI, CodeFormatter, jl
+from src.formatter_ui import FormatterUI, FormatterCore, jl
 
 def debug():
     with open("input/code.java", "r") as fin:
         javacode = fin.read()
 
     tokens = list(jl.tokenizer.tokenize(javacode, ignore_errors=True))
-    formatter = CodeFormatter()
+    formatter = FormatterCore()
     output = formatter.format(tokens)
     print(output)
 

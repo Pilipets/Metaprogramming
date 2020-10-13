@@ -28,10 +28,10 @@
     <EnableUnmanagedDebugging>false</EnableUnmanagedDebugging>
   </PropertyGroup>
   <ItemGroup>
-    <Compile Include="src\CodeFormatter.py">
+    <Compile Include="src\formatter_core.py">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="src\FormatterUI.py">
+    <Compile Include="src\formatter_ui.py">
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="main.py" />

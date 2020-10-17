@@ -1,8 +1,7 @@
 import json
 
-
 def load_config(path):
-    configt_dict = {}
+    config_dic = {}
 
     with open(path, 'r') as fin:
         config_dict = json.loads(fin.read())
@@ -27,7 +26,7 @@ def load_config(path):
                           'absolute_label_indent'
                           ))
 
-    spaces_menu = configt_dict.get('spaces_menu', None)
+    spaces_menu = config_dic.get('spaces_menu', None)
     if spaces_menu:
         set_params_from_list(spaces_menu, 'before_parentheses',
                              ('space_before_method_p',
@@ -55,7 +54,8 @@ def load_config(path):
                               'space_before_finally_b',
                               'space_before_synchronized_b',
                               'space_before_initialization_b',
-                              'space_before_annotation_b'
+                              'space_before_annotation_b',
+                              'space_before_lambda_b'
                               ))
 
         set_params_from_list(spaces_menu, 'before_keywords',
@@ -68,6 +68,10 @@ def load_config(path):
         set_params_from_list(spaces_menu, 'within_keywords',
                              ('space_after_semicolon',
                               'space_before_semicolon'
+                              ))
+
+        set_params_from_list(spaces_menu, 'type_arguments',
+                             ('space_around_colon_for_each'
                               ))
 
         set_params_from_list(spaces_menu, 'around_parentheses',
@@ -84,6 +88,22 @@ def load_config(path):
                               'space_around_operator',
                               'space_around_ternary'
                               ))
+
+
+
+    set_params_from_list(config_dict, 'wrapping_and_braces',
+                         ('brace_in_class_declaration',
+                          'brace_in_method_declaration',
+                          'brace_in_lambda_declaration',
+                          'brace_other',
+                          'new_line_before_else',
+                          'new_line_while',
+                          'indent_case_branches',
+                          'catch_on_new_line',
+                          'finally_on_new_line'
+                          ))
+
+
 
 ### Config file for the code formatter
 
@@ -109,12 +129,12 @@ label_indent = 2
 # If this checkbox is selected, label indentation is counted as an
 # absolute number of spaces. Otherwise, label indentation is counted
 # relative to previous indent levels.
-absolute_label_indent = True
+absolute_label_indent = False
 
 ### Spaces
 
 # Before parentheses
-space_before_method_p = True
+space_before_method_p = False
 space_before_if_p = True
 space_before_for_p = True
 space_before_while_p = False
@@ -125,37 +145,42 @@ space_before_synchronized_p = True
 space_before_annotation_p = True
 
 # Before brace
-space_before_class_b = False
+space_before_class_b = True
 space_before_method_b = True
 space_before_if_b = True
 space_before_else_b = True
 space_before_for_b = True
 space_before_while_b = True
 space_before_do_b = True
-space_before_switch_b = False
+space_before_switch_b = True
 space_before_try_b = False
-space_before_catch_b = False
+space_before_catch_b = True
 space_before_finally_b = True
 space_before_synchronized_b = True
 space_before_initialization_b = True
 space_before_annotation_b = False
+space_before_lambda_b = True
 
 # Before keywords
-space_before_while_keyword = False
-space_before_else_keyword = False
+space_before_while_keyword = True
+space_before_else_keyword = True
 space_before_catch_keyword = True
-space_before_finally_keyword = False
+space_before_finally_keyword = True
 
-# Within try, catch
+# type arguments
+space_after_comma = False
+
+# other in for, try, ...
 space_after_semicolon = True
 space_before_semicolon = False
+space_around_colon_for_each = True
 
 # Around parentheses
 space_around_equality = True
 space_around_logical = True
 space_around_bitwise = False
 space_around_assignment = True
-space_around_relational = False
+space_around_relational = True
 space_around_method_reference = False
 space_around_unary = False
 space_around_lambda_arrow = False
@@ -163,3 +188,23 @@ space_around_additive = True
 space_around_shift = True
 space_around_operator = False
 space_around_ternary = True
+
+# braces placement
+# next_line, end_of_line
+brace_in_class_declaration = 'end_of_line'
+brace_in_method_declaration = 'end_of_line'
+brace_in_lambda_declaration = 'next_line'
+brace_other = 'end_of_line'
+
+# if statement
+new_line_before_else = True
+
+# do ... while
+new_line_while = False
+
+# switch statement
+indent_case_branches = True
+
+# try statement
+catch_on_new_line = False
+finally_on_new_line = False

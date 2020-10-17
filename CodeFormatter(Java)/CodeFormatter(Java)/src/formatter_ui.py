@@ -1,7 +1,7 @@
 import os
 import sys
 
-from src.formatter_core import FormatterCore, jl
+from .formatter_core import FormatterCore, java_lexer
 from config.config_handler import load_config
 
 class FormatterUI:
@@ -69,7 +69,7 @@ class FormatterUI:
                 with open(file, "r") as fin:
                     javacode = fin.read()
 
-                output = func(jl.tokenizer.tokenize(javacode, ignore_errors=True))
+                output = func(java_lexer.tokenize(javacode, raise_errors=False))
             except Exception as ex:
                 print("Exception received when formatting file={}, ex={}".format(file, ex))
                 errors_cnt += 1
@@ -89,13 +89,29 @@ class FormatterUI:
         print('Processed %d files successfully, %d files with errors' % (success_cnt, errors_cnt))
 
     @staticmethod
+    def run_debug():
+        with open("input/code.java", "r") as fin:
+            javacode = fin.read()
+
+        for x in java_lexer.tokenize(javacode, raise_errors=False):
+            print(x)
+
+
+        #formatter = FormatterCore()
+        #output = formatter.format(tokens)
+        #print(output)
+
+    @staticmethod
     def handle_parameters():
         params = set(sys.argv)
 
-        if len(sys.argv) != len(params):
+        if len(sys.argv) != len(params) or len(params) < 2:
             FormatterUI.report_error('incorrect parameters amount of the script')
 
-        if '-h' in params or '--help' in params:
+        if '--admin' in params:
+            FormatterUI.run_debug()
+
+        elif '-h' in params or '--help' in params:
             # name, action{--help, -h}
             if len(params) != 2:
                 FormatterUI.report_error("option '%s' isn't supported by the script" % sys.argv[1])

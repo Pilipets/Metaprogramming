@@ -13,8 +13,7 @@
     <Name>CodeFormatter(Java)</Name>
     <RootNamespace>PythonApplication1</RootNamespace>
     <LaunchProvider>Standard Python launcher</LaunchProvider>
-    <CommandLineArguments>
-    </CommandLineArguments>
+    <CommandLineArguments>--admin</CommandLineArguments>
     <EnableNativeCodeDebugging>False</EnableNativeCodeDebugging>
     <InterpreterArguments>
     </InterpreterArguments>
@@ -35,6 +34,12 @@
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="main.py" />
+    <Compile Include="src\tokenizer\java_lexer.py">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="src\tokenizer\java_tokens.py">
+      <SubType>Code</SubType>
+    </Compile>
   </ItemGroup>
   <ItemGroup>
     <Content Include="config\default_config.json">
@@ -50,6 +55,7 @@
   <ItemGroup>
     <Folder Include="input\" />
     <Folder Include="config\" />
+    <Folder Include="src\tokenizer\" />
     <Folder Include="src\" />
     <Folder Include="output\" />
   </ItemGroup>

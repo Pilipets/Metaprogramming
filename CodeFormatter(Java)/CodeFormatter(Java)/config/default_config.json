@@ -36,7 +36,8 @@
       "space_before_finally_b": true,
       "space_before_synchronized_b": true,
       "space_before_initialization_b": true,
-      "space_before_annotation_b": false
+      "space_before_annotation_b": false,
+      "space_before_lambda_b": true
     },
 
     "before_keywords": {
@@ -44,6 +45,10 @@
       "space_before_else_keyword": false,
       "space_before_catch_keyword": true,
       "space_before_finally_keyword": false
+    },
+
+    "type_arguments": {
+      "space_around_colon_for_each": true
     },
 
     "within_keywords": {
@@ -63,7 +68,22 @@
       "space_around_additive": true,
       "space_around_shift": true,
       "space_around_operator": false,
-      "space_around_ternary":  true
+      "space_around_ternary": true
     }
+  },
+
+  "wrapping_and_braces": {
+    "brace_in_class_declaration": "end_of_line",
+    "brace_in_method_declaration": "end_of_line",
+    "brace_in_lambda_declaration": "next_line",
+    "brace_other": "end_of_line",
+
+    "new_line_before_else": true,
+    "new_line_while": false,
+
+    "indent_case_branches": true,
+
+    "catch_on_new_line": false,
+    "finally_on_new_line": false
   }
 }

@@ -79,9 +79,10 @@ public class Foo<T extends Bar & Abba, U> {
                     }
                 } else {
                     synchronized (this) {
-                        switch (e.getCode()) {
-                            //...
-                        }
+                        switch (e.getCode())
+                        if (var > 3) while (x < 50000) {x++; var = 5; }
+                        if (var > 3) for (x < 50000) x++; var = 5;
+                        for(x - 3; 32; 233);
                     }
                 }
             } catch (MyException e) {
@@ -105,6 +106,16 @@ public class Foo<T extends Bar & Abba, U> {
 class Bar {
     static <U, T> U mess(T t) {
         return null;
+    }
+
+    public void setup() {
+        Connection conn = getConnection();
+        assert conn != null;
+    }
+
+    public void setup() {
+        Connection conn = getConnection();
+        assert conn != null : "Connection is null";
     }
 }
 

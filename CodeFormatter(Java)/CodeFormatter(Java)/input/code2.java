@@ -31,3 +31,15 @@ Method(Flod(),
                             as, 'dfg')) 
 
            <<= 23; }}
+
+
+     {{           switch (a) {
+                    case 0:
+                        doCase0();
+                        break;
+                    case 23: {
+                        doDefault();
+                        }
+                    case:
+                    default:
+       }}         }

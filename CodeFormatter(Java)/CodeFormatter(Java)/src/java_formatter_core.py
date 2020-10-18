@@ -121,6 +121,8 @@ class JavaFormatterCore:
 
         if len(stack) > 1:
             logging.error('Error encountered when formatting for lexems %s', stack[1:])
+        else:
+            tokens.pop()
 
         return self.output
 

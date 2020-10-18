@@ -130,14 +130,14 @@ class JavaFormatterUI:
                 action = action[0] if action else '-b'
 
             config = [c for c in params if c.startswith('--config=') or c.startswith('-c=')]
-            if len(config) > 1 or not config:
+            if len(config) > 1:
                 JavaFormatterUI.report_error("incorrect config file options")
-
-            config = config[0].split('=', 1)[1]
-            try:
-                load_config(config)
-            except Exception as ex:
-                JavaFormatterUI.report_error("error encountered when loading config file, %s" % ex)
+            elif len(config) == 1:
+                config = config[0].split('=', 1)[1]
+                try:
+                    load_config(config)
+                except Exception as ex:
+                    JavaFormatterUI.report_error("error encountered when loading config file, %s" % ex)
 
             option = [c for c in ('-p', '-d', '-f') if c in params]
             if len(option) > 1 or len(option) == 0:

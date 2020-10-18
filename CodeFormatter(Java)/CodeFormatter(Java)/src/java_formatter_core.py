@@ -1,10 +1,12 @@
-import logging
+import logging, sys, os
 
 from src.tokenizer import java_lexer
 from config.config_handler import *
 
-logging.basicConfig(filename='output/app.log', filemode='w',
-                    format='%(name)s - %(levelname)s - %(message)s')
+logging.basicConfig(
+    filename=os.path.join(os.path.split(sys.argv[0])[0], 'output','app.log'),
+    filemode='w', format='%(name)s - %(levelname)s - %(message)s'
+    )
 
 class JavaFormatterCore:
     def __init__(self):

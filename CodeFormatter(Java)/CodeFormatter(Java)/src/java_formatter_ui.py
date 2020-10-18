@@ -90,7 +90,7 @@ class JavaFormatterUI:
 
     @staticmethod
     def run_debug():
-        with open("input/code3.txt", "r") as fin:
+        with open(os.path.join("input", "code3.txt"), "r") as fin:
             javacode = fin.read()
 
         tokens_stream = java_lexer.tokenize(javacode, raise_errors=False)

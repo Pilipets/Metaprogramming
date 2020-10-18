@@ -9,12 +9,31 @@ class JavaFormatterUI:
         raise NotImplementedError("not intended to initialize the class")
 
     help_text = (
-        "------------------This is simple Python formatter for Java code---------------------\n"
-        "Available execution templates are:\n"
-        "1) name, action{--help, -h};\n"
-        "2) name, action{--beautify, -b, --verify, -v}, "
-        "(--config|-c)=path, option{-(p|d|f)}, input_path.\n"
-        "-------------------------------------------------------------------------------------")
+"------------------Java code formatting or prettifying console application---------------------\n"
+"Description:\n"
+"    Briefly, the app uses command-line arguments to either format or verify .java files collected\n"
+"    from the given directory, project, file location. The user can adjust formatting, verification\n"
+"    options through a custom or default configuration file.\n\n"
+"Usage instructions:\n"
+"    1. Use --admin command-line option to run run_debug(...) method from java_formatter_ui.py\n"
+"       - debug purposes. You can modify this method as you want.\n"
+"    2. Use --help cmd argument to print the description info.\n"
+"    3. The app supports up to 4 additional arguments:\n"
+"      -> input_path{'string'} - required argument. It is a relative or absolute path to the\n"
+"         folder, project, file, that is expecting to be processed by the app;\n"
+"      -> option{-(p|d|f)} - required argument. Specifies the execution policy - directory\n"
+"         recursively, directory without recursion, one file. The app uses the input path and\n"
+"         provided option argument to get the files with .java format that don't start with\n"
+"         'formatted_', 'verified_' prefixes - those prefixes are reserved;\n"
+"      -> (--config|-c)=path - optional argument. If not provided, options from config/config_handler.py\n"
+"         are used. Specifies the code formatting options - the user can view all the supported\n"
+"         options in the config/default_config.json file;\n"
+"      -> action{--beautify, -b, --verify, -v} - optional argument. Specifies the execution mode:\n"
+"         either formats or verifies the input files considering config and 'option' argument,\n"
+"         locates the result files in the input_path directory with the prefixes 'formatted_' and\n"
+"         'verified_' respectively.\n"
+"-----------------------------------------------------------------------------------------------------\n"
+"                             Feel free to modify the code as you wish!!!\n")
 
     @staticmethod
     def report_error(err):
@@ -33,17 +52,16 @@ class JavaFormatterUI:
                         if (file.endswith('.java') and not file.startswith('formatted_')
                                 and not file.startswith('verified_')):
                             res.append(os.path.join(root, file))
-                return res
 
         elif option == '-d':
             if not os.path.isdir(path):
                 JavaFormatterUI.report_error("given path=%s isn't a directory" % path)
             else:
                 for file in os.listdir(path):
-                    if (file.endswith('.java') and not file.startswith('formatted_')
+                    if os.path.isfile(os.path.join(path, file)) and (
+                            file.endswith('.java') and not file.startswith('formatted_')
                             and not file.startswith('verified_')):
                         res.append(os.path.join(path, file))
-                return res
 
         elif option == '-f':
             if not path.endswith('.java'):
@@ -51,7 +69,7 @@ class JavaFormatterUI:
             elif not os.path.isfile(path):
                 JavaFormatterUI.report_error("given path=%s isn't a file" % path)
             else:
-                return [path]
+                res = [path]
 
         return res
 

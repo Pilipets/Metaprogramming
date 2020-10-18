@@ -13,7 +13,7 @@
     <Name>CodeFormatter(Java)</Name>
     <RootNamespace>PythonApplication1</RootNamespace>
     <LaunchProvider>Standard Python launcher</LaunchProvider>
-    <CommandLineArguments>--admin</CommandLineArguments>
+    <CommandLineArguments>--help</CommandLineArguments>
     <EnableNativeCodeDebugging>False</EnableNativeCodeDebugging>
     <InterpreterArguments>
     </InterpreterArguments>

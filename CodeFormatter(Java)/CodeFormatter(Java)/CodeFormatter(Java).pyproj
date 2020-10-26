@@ -5,7 +5,7 @@
     <ProjectGuid>bfb83e25-60d5-4f33-b2d1-99feb77fe543</ProjectGuid>
     <ProjectHome>
     </ProjectHome>
-    <StartupFile>main.py</StartupFile>
+    <StartupFile>java_formatter_app.py</StartupFile>
     <SearchPath>
     </SearchPath>
     <WorkingDirectory>.</WorkingDirectory>
@@ -28,13 +28,13 @@
     <EnableUnmanagedDebugging>false</EnableUnmanagedDebugging>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="java_formatter_app.py" />
     <Compile Include="src\java_formatter_core.py">
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="src\java_formatter_ui.py">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="main.py" />
     <Compile Include="src\tokenizer\java_lexer.py">
       <SubType>Code</SubType>
     </Compile>

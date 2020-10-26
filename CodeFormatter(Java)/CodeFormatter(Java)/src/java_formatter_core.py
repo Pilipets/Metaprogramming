@@ -3,10 +3,10 @@ import logging, sys, os
 from src.tokenizer import java_lexer
 from config.config_handler import *
 
-logging.basicConfig(
-    filename=os.path.join(os.path.split(sys.argv[0])[0], 'output','app.log'),
-    filemode='w', format='%(name)s - %(levelname)s - %(message)s'
-    )
+#logging.basicConfig(
+#    filename=os.path.join(os.path.split(sys.argv[0])[0], 'output', 'app.log'),
+#    filemode='w', format='%(name)s - %(levelname)s - %(message)s'
+#    )
 
 class JavaFormatterCore:
     def __init__(self):
@@ -24,7 +24,8 @@ class JavaFormatterCore:
         self.need_indent_flag = False
 
     def _report_token_err(self, err):
-        logging.error('Incorrect usage of the %s', err)
+        pass
+        #logging.error('Incorrect usage of the %s', err)
 
     def _reset(self):
         self.add_indent = lambda x, y: ' ' * x * y * tab_size
@@ -45,7 +46,7 @@ class JavaFormatterCore:
         if len(res_tokens) != len(tokens):
             err_msg = ('Internal error: tokens size mismatch(%d vs %d)'
                        % len(res_tokens), len(tokens))
-            logging.error(err_msg)
+            #logging.error(err_msg)
             raise AssertionError(err_msg)
 
         output = "Ignorring whitespaces, %d tokens received!!!\n" % len(tokens)
@@ -120,7 +121,8 @@ class JavaFormatterCore:
             self.idx += 1
 
         if len(stack) > 1:
-            logging.error('Error encountered when formatting for lexems %s', stack[1:])
+            pass
+            #logging.error('Error encountered when formatting for lexems %s', stack[1:])
         else:
             tokens.pop()
 

@@ -32,6 +32,10 @@ class JavaFormatterUI:
 "         either formats or verifies the input files considering config and 'option' argument,\n"
 "         locates the result files in the input_path directory with the prefixes 'formatted_' and\n"
 "         'verified_' respectively.\n"
+"    4. To RUN the application, you must execute java_formatter_app.py script with the respective\n"
+"       arguments, ending with the input_path.\n"
+"       Example: python3 CodeFormatter\(Java\)/java_formatter_app.py -b -d\n"
+"       --config=/mnt/c/Users/Someone/app_config.json /mnt/e/Documents/input_files\n"
 "-----------------------------------------------------------------------------------------------------\n"
 "                             Feel free to modify the code as you wish!!!\n")
 

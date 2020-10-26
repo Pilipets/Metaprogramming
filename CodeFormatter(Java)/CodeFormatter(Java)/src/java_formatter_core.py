@@ -1,7 +1,7 @@
 import logging, sys, os
 
 from src.tokenizer import java_lexer
-from config.config_handler import *
+import config.config_handler as cf
 
 logging.basicConfig(
     filename=os.path.join(os.path.split(sys.argv[0])[0], 'output', 'app.log'),
@@ -27,8 +27,8 @@ class JavaFormatterCore:
         logging.error('Incorrect usage of the %s', err)
 
     def _reset(self):
-        self.add_indent = lambda x, y: ' ' * x * y * tab_size
-        if not use_tab_character:
+        self.add_indent = lambda x, y: ' ' * x * y * cf.tab_size
+        if not cf.use_tab_character:
             self.add_indent = lambda x, y: ' ' * x * y
 
         self.output = ''
@@ -90,7 +90,7 @@ class JavaFormatterCore:
                         and isinstance(tokens[self.idx+1], java_lexer.Identifier)):
                     stack.append(self.cur)
                     add_output += (tokens[self.idx+1].value +
-                                   (' ' if space_before_annotation_p else '') +
+                                   (' ' if cf.space_before_annotation_p else '') +
                                    tokens[self.idx+2].value)
                     self.idx += 2
                 elif isinstance(tokens[self.idx+1], java_lexer.Identifier):
@@ -140,7 +140,7 @@ class JavaFormatterCore:
             else:
                 stack.append(cur)
 
-            self.output += add_indent(self.indent_level, indent)
+            self.output += add_indent(self.indent_level, cf.indent)
             self.need_indent_flag = False
 
         elif cur.value == 'new':
@@ -161,7 +161,7 @@ class JavaFormatterCore:
     def _format_indent(self):
         ''' Used for inserting indent before current token'''
         if self.need_indent_flag and not self.cur.value in ('}', 'case', 'default'):
-            self.output += self.add_indent(self.indent_level, indent)
+            self.output += self.add_indent(self.indent_level, cf.indent)
             self.need_indent_flag = False
 
     def _format_special(self, tokens):
@@ -169,9 +169,9 @@ class JavaFormatterCore:
         if (isinstance(self.cur, java_lexer.Identifier)
                 and tokens[self.idx+1].value == ':'
                 and self.stack[-1].value not in ('for', '?', 'assert')):
-            if not absolute_label_indent:
-                self.output += self.add_indent(self.indent_level, indent)
-            self.output += self.add_indent(1, label_indent) + self.cur.value + ':\n'
+            if not cf.absolute_label_indent:
+                self.output += self.add_indent(self.indent_level, cf.indent)
+            self.output += self.add_indent(1, cf.label_indent) + self.cur.value + ':\n'
             self.idx += 2
             self.need_indent_flag = True
             self.pre = tokens[self.idx-1]
@@ -189,19 +189,19 @@ class JavaFormatterCore:
                 # method call or object creating
                 if stack[-1].value == 'new': stack.append(cur)
                 else: stack.append(pre)
-                add_output = (' ' if space_before_method_p else '')  + cur.value
+                add_output = (' ' if cf.space_before_method_p else '')  + cur.value
 
             elif isinstance(pre, java_lexer.Keyword):
                 if pre.value in self.p_keywords:
                     stack.append(pre)
                     flag = False
-                    if pre.value == 'for': flag = space_before_for_p
-                    elif pre.value == 'while': flag = space_before_while_p
-                    elif pre.value == 'if': flag = space_before_if_p
-                    elif pre.value == 'catch': flag = space_before_catch_p
-                    elif pre.value == 'try': flag = space_before_try_p
-                    elif pre.value == 'synchronized': flag = space_before_synchronized_p
-                    elif pre.value == 'switch': flag = space_before_switch_p
+                    if pre.value == 'for': flag = cf.space_before_for_p
+                    elif pre.value == 'while': flag = cf.space_before_while_p
+                    elif pre.value == 'if': flag = cf.space_before_if_p
+                    elif pre.value == 'catch': flag = cf.space_before_catch_p
+                    elif pre.value == 'try': flag = cf.space_before_try_p
+                    elif pre.value == 'synchronized': flag = cf.space_before_synchronized_p
+                    elif pre.value == 'switch': flag = cf.space_before_switch_p
 
                     if flag:
                         add_output = ' ' + cur.value
@@ -214,19 +214,19 @@ class JavaFormatterCore:
             if isinstance(stack[-1], java_lexer.Keyword):
                 if stack[-1].value in self.p_keywords:
                     if tokens[self.idx+1].value == '{':
-                        if brace_other == 'next_line':
+                        if cf.brace_other == 'next_line':
                             add_output += '\n'
                             self.need_indent_flag = True
 
                         else:
                             temp, flag = stack[-1], False
-                            if temp.value == 'for': flag = space_before_for_b
-                            elif temp.value == 'if': flag = space_before_if_b
-                            elif temp.value == 'while': flag = space_before_while_b
-                            elif temp.value == 'try': flag = space_before_try_b
-                            elif temp.value == 'switch': flag = space_before_switch_b
-                            elif temp.value == 'catch': flag = space_before_catch_b
-                            elif temp.value == 'synchronized': flag = space_before_synchronized_b
+                            if temp.value == 'for': flag = cf.space_before_for_b
+                            elif temp.value == 'if': flag = cf.space_before_if_b
+                            elif temp.value == 'while': flag = cf.space_before_while_b
+                            elif temp.value == 'try': flag = cf.space_before_try_b
+                            elif temp.value == 'switch': flag = cf.space_before_switch_b
+                            elif temp.value == 'catch': flag = cf.space_before_catch_b
+                            elif temp.value == 'synchronized': flag = cf.space_before_synchronized_b
 
                             if flag: add_output += ' '
 
@@ -251,11 +251,11 @@ class JavaFormatterCore:
                 # without new
                 if tokens[self.idx+1].value == '{':
                     # method declaration
-                    if brace_in_method_declaration == 'next_line':
+                    if cf.brace_in_method_declaration == 'next_line':
                         add_output += '\n'
                         self.need_indent_flag = True
 
-                    elif space_before_method_b:
+                    elif cf.space_before_method_b:
                         add_output += ' '
 
                     stack.append(cur)
@@ -304,8 +304,8 @@ class JavaFormatterCore:
 
         elif cur.value == ';':
             if isinstance(stack[-1], java_lexer.Keyword) and stack[-1].value in ('for', 'try'):
-                if space_before_semicolon: add_output = ' ' + cur.value
-                elif space_after_semicolon: add_output += ' '
+                if cf.space_before_semicolon: add_output = ' ' + cur.value
+                elif cf.space_after_semicolon: add_output += ' '
             else:
                 self.need_indent_flag = True
                 add_output += '\n'
@@ -336,11 +336,11 @@ class JavaFormatterCore:
 
         elif cur.value == '{':
             if stack[-1].value == '[]':
-                if space_before_initialization_b: add_output = ' ' + cur.value
+                if cf.space_before_initialization_b: add_output = ' ' + cur.value
                 stack.append(cur)
 
             elif stack[-1].value == '@':
-                if space_before_annotation_b: add_output = ' ' + cur.value
+                if cf.space_before_annotation_b: add_output = ' ' + cur.value
                 stack.append(cur)
 
             else:
@@ -348,15 +348,15 @@ class JavaFormatterCore:
                     stack.append(pre)
                     stack.append(cur)
 
-                    if brace_other == 'next_line':
-                        self.output += '\n' + add_indent(self.indent_level, indent)
+                    if cf.brace_other == 'next_line':
+                        self.output += '\n' + add_indent(self.indent_level, cf.indent)
 
                     else:
                         flag = False
-                        if pre.value == 'try': flag = space_before_try_b
-                        elif pre.value == 'do': flag = space_before_do_b
-                        elif pre.value == 'finally': flag = space_before_finally_b
-                        elif pre.value == 'else': flag = space_before_else_b
+                        if pre.value == 'try': flag = cf.space_before_try_b
+                        elif pre.value == 'do': flag = cf.space_before_do_b
+                        elif pre.value == 'finally': flag = cf.space_before_finally_b
+                        elif pre.value == 'else': flag = cf.space_before_else_b
 
                         if flag:
                             add_output = ' ' + cur.value
@@ -365,31 +365,31 @@ class JavaFormatterCore:
                     if (isinstance(stack[-2], java_lexer.Keyword)
                             and stack[-2].value in self.p_keywords):
                         # whitespaces set in ')'
-                        if stack[-2].value == 'switch' and not indent_case_branches:
+                        if stack[-2].value == 'switch' and not cf.indent_case_branches:
                             self.indent_level -= 1
 
                     # elif isinstance(stack[-2], java_lexer.Identifier): pass
                     stack[-1] = cur
 
                 elif stack[-1].value in ('class', 'interface'):
-                    if brace_in_class_declaration == 'next_line':
-                        self.output += '\n' + add_indent(self.indent_level, indent)
-                    elif space_before_class_b:
+                    if cf.brace_in_class_declaration == 'next_line':
+                        self.output += '\n' + add_indent(self.indent_level, cf.indent)
+                    elif cf.space_before_class_b:
                         add_output = ' ' + add_output
                     stack.append(cur)
 
                 elif isinstance(pre, java_lexer.Operator) and pre.value == '->':
-                    if brace_in_lambda_declaration == 'next_line':
-                        self.output += '\n' + add_indent(self.indent_level, indent)
-                    elif space_before_lambda_b and not space_around_lambda_arrow:
+                    if cf.brace_in_lambda_declaration == 'next_line':
+                        self.output += '\n' + add_indent(self.indent_level, cf.indent)
+                    elif cf.space_before_lambda_b and not cf.space_around_lambda_arrow:
                         add_output = ' ' + add_output
 
                     stack.append(pre)
 
                 elif stack[-1].value == 'throws':
-                    if brace_in_method_declaration == 'next_line':
-                        self.output += '\n' + self.add_indent(self.indent_level, indent)
-                    elif space_before_method_b:
+                    if cf.brace_in_method_declaration == 'next_line':
+                        self.output += '\n' + self.add_indent(self.indent_level, cf.indent)
+                    elif cf.space_before_method_b:
                         add_output = ' ' + add_output
 
                     stack[-1] = cur
@@ -407,7 +407,7 @@ class JavaFormatterCore:
         elif cur.value == '}':
             if stack[-1].value == '->':
                 self.indent_level -= 1
-                self.output += add_indent(self.indent_level, indent)
+                self.output += add_indent(self.indent_level, cf.indent)
                 self.need_indent_flag = False
                 stack.pop()
 
@@ -420,10 +420,10 @@ class JavaFormatterCore:
                     if stack[-2].value in self.b_keywords:
                         if stack[-2].value == 'do':
                             if tokens[self.idx+1].value == 'while':
-                                if new_line_while:
+                                if cf.new_line_while:
                                     add_output += '\n'
                                     self.need_indent_flag = True
-                                elif space_before_while_keyword:
+                                elif cf.space_before_while_keyword:
                                     add_output += ' '
                             else:
                                 add_output += '\n'
@@ -432,17 +432,17 @@ class JavaFormatterCore:
                         elif stack[-2].value == 'try':
                             if self.idx + 1 < len(tokens):
                                 if tokens[self.idx+1].value == 'catch':
-                                    if catch_on_new_line:
+                                    if cf.catch_on_new_line:
                                         add_output += '\n'
                                         self.need_indent_flag = True
-                                    elif space_before_catch_keyword:
+                                    elif cf.space_before_catch_keyword:
                                         add_output += ' '
 
                                 elif tokens[self.idx+1].value == 'finally':
-                                    if finally_on_new_line:
+                                    if cf.finally_on_new_line:
                                         add_output += '\n'
                                         self.need_indent_flag = True
-                                    elif space_before_finally_keyword:
+                                    elif cf.space_before_finally_keyword:
                                         add_output += ' '
 
                                 else:
@@ -460,10 +460,10 @@ class JavaFormatterCore:
 
                         if stack[-2].value == 'if':
                             if tokens[self.idx+1].value == 'else':
-                                if new_line_before_else:
+                                if cf.new_line_before_else:
                                     self.need_indent_flag = True
                                     add_output += '\n'
-                                elif space_before_else_keyword:
+                                elif cf.space_before_else_keyword:
                                     add_output += ' '
 
                             elif tokens[self.idx+1].value != ';':
@@ -472,17 +472,17 @@ class JavaFormatterCore:
 
                         elif stack[-2].value in ('try', 'catch'):
                             if tokens[self.idx+1].value == 'catch':
-                                if catch_on_new_line:
+                                if cf.catch_on_new_line:
                                     add_output += '\n'
                                     self.need_indent_flag = True
-                                elif space_before_catch_keyword:
+                                elif cf.space_before_catch_keyword:
                                     add_output += ' '
 
                             elif tokens[self.idx+1].value == 'finally':
-                                if finally_on_new_line:
+                                if cf.finally_on_new_line:
                                     add_output += '\n'
                                     self.need_indent_flag = True
-                                elif space_before_finally_keyword:
+                                elif cf.space_before_finally_keyword:
                                     add_output += ' '
 
                             else:
@@ -543,7 +543,7 @@ class JavaFormatterCore:
 
                 self.indent_level -= 1
                 if indent_flag_needed:
-                    self.output += add_indent(self.indent_level, indent)
+                    self.output += add_indent(self.indent_level, cf.indent)
 
                 # clear stack if something is there
                 # better to use state machine here
@@ -564,8 +564,8 @@ class JavaFormatterCore:
 
         elif cur.value == ',':
             if stack[-1].value in ('[]', '@', '(') or isinstance(stack[-1], java_lexer.Identifier):
-                if space_after_comma:
-                    add_output += add_indent(1, continuation_indent)
+                if cf.space_after_comma:
+                    add_output += add_indent(1, cf.continuation_indent)
 
         return add_output
 
@@ -616,12 +616,12 @@ class JavaFormatterCore:
             if (cur.value not in {'++', '--'} or (
                     isinstance(tokens[self.idx+1], (java_lexer.Identifier, java_lexer.Literal))
                     or tokens[self.idx+1].value == '(')):
-                add_output += (' ' if space_around_unary else '')
+                add_output += (' ' if cf.space_around_unary else '')
 
         else:
             flag = False
-            if cur.is_assignment(): flag = space_around_assignment
-            elif cur.value in ('==', '!='): flag = space_around_equality
+            if cur.is_assignment(): flag = cf.space_around_assignment
+            elif cur.value in ('==', '!='): flag = cf.space_around_equality
             elif cur.value in ('<', '>', '<=', '>='):
                 if cur.value == '<':
                     idx, res = _consume_template(self.idx + 1)
@@ -633,19 +633,19 @@ class JavaFormatterCore:
                             res += ' '
                         return res
 
-                flag = space_around_relational
-            elif cur.value in ('&&', '||'): flag = space_around_logical
-            elif cur.value in ('<<', '>>', '>>>'): flag = space_around_shift
-            elif cur.value == '::': flag = space_around_method_reference
-            elif cur.value in ('&', '|', '^'): flag = space_around_bitwise
-            elif cur.value == '->': flag = space_around_lambda_arrow
-            elif cur.value in ('+', '-'): flag = space_around_additive
+                flag = cf.space_around_relational
+            elif cur.value in ('&&', '||'): flag = cf.space_around_logical
+            elif cur.value in ('<<', '>>', '>>>'): flag = cf.space_around_shift
+            elif cur.value == '::': flag = cf.space_around_method_reference
+            elif cur.value in ('&', '|', '^'): flag = cf.space_around_bitwise
+            elif cur.value == '->': flag = cf.space_around_lambda_arrow
+            elif cur.value in ('+', '-'): flag = cf.space_around_additive
             elif cur.value == ':':
                 if stack[-1].value == 'for':
-                    flag = space_around_colon_for_each
+                    flag = cf.space_around_colon_for_each
 
                 elif stack[-1].value == '?':
-                    flag = space_around_ternary
+                    flag = cf.space_around_ternary
                     stack.pop()
 
                 elif stack[-1].value in ('case', 'default'):
@@ -656,7 +656,7 @@ class JavaFormatterCore:
                         stack[-1] = cur
 
                     else:
-                        if brace_other == 'new_line':
+                        if cf.brace_other == 'new_line':
                             self.need_indent_flag = True
                             add_output += '\n'
                         else:
@@ -669,10 +669,10 @@ class JavaFormatterCore:
 
             elif cur.value == '?':
                 stack.append(cur)
-                flag = space_around_ternary
+                flag = cf.space_around_ternary
 
             else:
-                flag = space_around_operator
+                flag = cf.space_around_operator
 
             if flag: add_output = ' ' + cur.value + ' '
 

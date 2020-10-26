@@ -11,7 +11,7 @@
   "spaces_menu": {
 
     "before_parentheses": {
-      "space_before_method_p": true,
+      "space_before_method_p": false,
       "space_before_if_p": true,
       "space_before_for_p": true,
       "space_before_while_p": false,
@@ -74,9 +74,9 @@
 
   "wrapping_and_braces": {
     "brace_in_class_declaration": "end_of_line",
-    "brace_in_method_declaration": "end_of_line",
+    "brace_in_method_declaration": "next_line",
     "brace_in_lambda_declaration": "next_line",
-    "brace_other": "end_of_line",
+    "brace_other": "next_line",
 
     "new_line_before_else": true,
     "new_line_while": false,

@@ -17,5 +17,5 @@ Briefly, the app uses command-line arguments to either format or verify .java fi
         <li><b>action{--beautify, -b, --verify, -v}</b> - optional argument. Specifies the execution mode: either formats or verifies the input files considering config and <b>'option'</b> argument, locates the result files in the input_path directory with the prefixes <i>'formatted_'</i> and <i>'verified_'</i> respectively.</li>
         </ul>
    </li>
-   <li>To <b>RUN</b> the application, you must execute <i>java_formatter_app.py</i> script with the provided arguments, ending with the <i>input_path</i>.</li>
+   <li>To <b>RUN</b> the application, you must execute <i>java_formatter_app.py</i> script with the respective arguments, ending with the <i>input_path</i>.</li>
 </ol>

@@ -13,7 +13,7 @@
     <Name>CodeFormatter(Java)</Name>
     <RootNamespace>PythonApplication1</RootNamespace>
     <LaunchProvider>Standard Python launcher</LaunchProvider>
-    <CommandLineArguments>-v -d --config=C:\Users\Druid\source\repos\Metaprogramming\CodeFormatter(Java)\CodeFormatter(Java)\config\example_config.json input</CommandLineArguments>
+    <CommandLineArguments>-v -p --config=C:\Users\Druid\source\repos\Metaprogramming\CodeFormatter(Java)\CodeFormatter(Java)\config\example_config.json E:\Downloads\Java</CommandLineArguments>
     <EnableNativeCodeDebugging>False</EnableNativeCodeDebugging>
     <InterpreterArguments>
     </InterpreterArguments>

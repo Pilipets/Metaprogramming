@@ -8,6 +8,9 @@ logging.basicConfig(
     filemode='w', format='%(name)s - %(levelname)s - %(message)s'
     )
 
+class FormatterError(Exception):
+    pass
+
 class JavaFormatterCore:
     def __init__(self):
         # keywords that can be followed by parentheses
@@ -15,6 +18,9 @@ class JavaFormatterCore:
 
         # keywords that can be followed by brace
         self.b_keywords = set(['try', 'do', 'finally', 'else'])
+
+        # keywords that are special - followed by space, expression
+        self.s_keywords = set(['assert', 'return'])
 
         self.add_indent = None
         self.output = ''
@@ -44,9 +50,9 @@ class JavaFormatterCore:
 
         if len(res_tokens) != len(tokens):
             err_msg = ('Internal error: tokens size mismatch(%d vs %d)'
-                       % len(res_tokens), len(tokens))
+                       % (len(res_tokens), len(tokens)))
             logging.error(err_msg)
-            raise AssertionError(err_msg)
+            raise FormatterError(err_msg)
 
         output = "Ignorring whitespaces, %d tokens received!!!\n" % len(tokens)
         mismatch_cnt = 1
@@ -119,8 +125,11 @@ class JavaFormatterCore:
             self.pre = tokens[self.idx]
             self.idx += 1
 
+
         if len(stack) > 1:
-            logging.error('Error encountered when formatting for lexems %s', stack[1:])
+            err_msg = 'Error encountered when formatting for lexems:\n%s' % '\n'.join(str(x) for x in stack[1:])
+            logging.error(err_msg)
+            raise FormatterError(err_msg)
         else:
             tokens.pop()
 
@@ -137,7 +146,8 @@ class JavaFormatterCore:
                 self.indent_level -= 1
                 if not self.need_indent_flag:
                     self._report_token_err(self.cur)
-            else:
+            elif stack[-1].value == 'switch' or (
+                    len(stack) > 2 and stack[-1].value == '{' and stack[-2].value =='switch'):
                 stack.append(cur)
 
             self.output += add_indent(self.indent_level, cf.indent)
@@ -192,6 +202,9 @@ class JavaFormatterCore:
                 add_output = (' ' if cf.space_before_method_p else '')  + cur.value
 
             elif isinstance(pre, java_lexer.Keyword):
+                if pre.value in self.s_keywords:
+                    add_output = ' ' + add_output
+
                 if pre.value in self.p_keywords:
                     stack.append(pre)
                     flag = False
@@ -205,6 +218,10 @@ class JavaFormatterCore:
 
                     if flag:
                         add_output = ' ' + cur.value
+
+                elif pre.value in self.s_keywords or pre.value in ('this', 'super'):
+                    stack.append(cur)
+
                 else:
                     self._report_token_err(cur)
             else: # expression
@@ -250,7 +267,7 @@ class JavaFormatterCore:
             elif isinstance(stack[-1], java_lexer.Identifier):
                 # without new
                 if tokens[self.idx+1].value == '{':
-                    # method declaration
+                    # method declaration + implementation
                     if cf.brace_in_method_declaration == 'next_line':
                         add_output += '\n'
                         self.need_indent_flag = True
@@ -267,7 +284,7 @@ class JavaFormatterCore:
                     stack.append(tokens[self.idx])
 
                 else:
-                    # method call
+                    # method call or declaration
                     stack.pop()
 
             elif stack[-1].value == '(':
@@ -297,10 +314,16 @@ class JavaFormatterCore:
                 add_output += ']'
                 if self.idx + 2 < len(tokens):
                     if tokens[self.idx+2].value == '{':
+                        if stack[-1].value == 'new': # new Type[] { ... }
+                            stack.pop()
                         stack.append(java_lexer.JavaToken('[]'))
                     elif tokens[self.idx+2].value != ')':
                         add_output += ' '
                 self.idx += 1
+
+            elif stack[-1].value == 'new':
+                # new ... [ - array creation
+                stack.pop()
 
         elif cur.value == ';':
             if isinstance(stack[-1], java_lexer.Keyword) and stack[-1].value in ('for', 'try'):
@@ -313,20 +336,25 @@ class JavaFormatterCore:
                 # clear stack for current statement if something is there
                 # better to use state machine here
                 while len(stack) > 1:
-                    if stack[-1].value == 'assert': stack.pop()
-                    elif (stack[-1].value == 'indent' and len(stack) > 2
-                          and isinstance(stack[-2], java_lexer.Keyword)
-                          and stack[-2].value in self.p_keywords):
-                        self.indent_level -= 1
+                    if stack[-1].value == 'assert':
+                        stack.pop()
+
+                    elif stack[-1].value == 'throws' and isinstance(stack[-2], java_lexer.Identifier):
+                        # Method declaration
                         stack.pop()
                         stack.pop()
 
-                    elif (stack[-1].value == ')' and len(stack) > 2
-                          and isinstance(stack[-2], java_lexer.Keyword)
-                          and stack[-2].value in self.p_keywords):
-                        # p_keyword(...);
-                        stack.pop()
-                        stack.pop()
+                    elif isinstance(stack[-2], java_lexer.Keyword) and stack[-2].value in self.p_keywords:
+                        # p_keyword(...); p_keyword(...) without braces
+                        if stack[-1].value == 'indent':
+                            self.indent_level -= 1
+
+                        if stack[-1].value in ('indent', ')'):
+                            stack.pop()
+                            stack.pop()
+
+                        else:
+                            break
 
                     else:
                         break
@@ -493,10 +521,6 @@ class JavaFormatterCore:
                             add_output += '\n'
                             self.need_indent_flag = True
 
-                        else:
-                            pass
-                            # self.indent_level += 1
-
                         stack.pop() # {
                         stack.pop() # p_keyword
 
@@ -536,10 +560,13 @@ class JavaFormatterCore:
                     stack.pop()
                     stack.pop()
 
-                else:
+                elif tokens[self.idx+1].value != ';':
                     stack.pop()
                     add_output += '\n'
                     self.need_indent_flag = True
+
+                else:
+                    stack.pop()
 
                 self.indent_level -= 1
                 if indent_flag_needed:
@@ -575,7 +602,7 @@ class JavaFormatterCore:
         def _consume_template(idx):
             # template can include |<|,|>|?|extends|super|&|Identifier|SimpleType
 
-            if idx < len(tokens) and tokens[idx].value == '>': return '<>'
+            if idx < len(tokens) and tokens[idx].value == '>': return idx+1, '<>'
 
             # Simple automata to handle complex cases
             open_cnt, add_output, state = 1, '<', 1
@@ -610,13 +637,15 @@ class JavaFormatterCore:
         pre, cur, stack = self.pre, self.cur, self.stack
         add_output = cur.value
 
-        if (cur.is_prefix() and (cur.value not in {'+', '-'} or (
+        if (cur.is_prefix() and (cur.value not in ('+', '-') or (
                 isinstance(pre, (java_lexer.Separator, java_lexer.Keyword, java_lexer.Operator))
                 and pre.value != ')'))):
-            if (cur.value not in {'++', '--'} or (
+            if (cur.value not in ('++', '--') or (
                     isinstance(tokens[self.idx+1], (java_lexer.Identifier, java_lexer.Literal))
                     or tokens[self.idx+1].value == '(')):
                 add_output += (' ' if cf.space_around_unary else '')
+                if pre.value in self.s_keywords:
+                    add_output = ' ' + add_output
 
         else:
             flag = False
@@ -626,7 +655,7 @@ class JavaFormatterCore:
                 if cur.value == '<':
                     idx, res = _consume_template(self.idx + 1)
                     if res:
-                        # new Type<...>
+                        # new Type<...> or in class, struct declaration, variable type
                         self.idx = idx - 1
                         if (idx < len(tokens) and isinstance(tokens[idx], java_lexer.Identifier)
                                 and isinstance(pre, java_lexer.Identifier)):

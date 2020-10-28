@@ -89,7 +89,7 @@ class JavaFormatterUI:
         success_cnt, errors_cnt = 0, 0
         for file in files:
             try:
-                with open(file, "r") as fin:
+                with open(file, "r", encoding='utf-8') as fin:
                     javacode = fin.read()
 
                 output = func(java_lexer.tokenize(javacode, raise_errors=False))
@@ -106,14 +106,14 @@ class JavaFormatterUI:
             else:
                 result_file = os.path.join(head, 'verified_' + os.path.splitext(tail)[0] + '.log')
 
-            with open(result_file, "w") as fout:
+            with open(result_file, "w", encoding='utf-8') as fout:
                 fout.write(output)
 
         print('Processed %d files successfully, %d files with errors' % (success_cnt, errors_cnt))
 
     @staticmethod
     def run_debug():
-        with open(os.path.join("input", "code3.txt"), "r") as fin:
+        with open(os.path.join("input", "code3.txt"), "r", encoding='utf-8') as fin:
             javacode = fin.read()
 
         tokens_stream = java_lexer.tokenize(javacode, raise_errors=False)

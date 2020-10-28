@@ -114,6 +114,9 @@ class JavaFormatterCore:
             elif isinstance(self.cur, java_lexer.Keyword):
                 add_output = self._format_keyword(tokens)
 
+            elif isinstance(self.cur, java_lexer.Comment):
+                add_output = self._format_comment(tokens)
+
             elif (not self.pre or isinstance(self.pre, (java_lexer.Separator, java_lexer.Operator))
                   or len(self.output) == 0 or self.output[-1].isspace()):
                 pass
@@ -134,6 +137,24 @@ class JavaFormatterCore:
             tokens.pop()
 
         return self.output
+
+    def _format_comment(self, tokens):
+        add_output, add_indent = self.cur.value, self.add_indent
+        idx, cur = self.idx, self.cur
+
+        self.need_indent_flag = True
+        if cur.value.startswith('//'):
+            return add_output
+
+        lines = [x.strip() for x in cur.value.split('\n')]
+
+        indent_str = '\n' +  add_indent(self.indent_level, cf.indent)
+        if cur.value.startswith('/**'): # javadoc
+            indent_str += ' '
+
+        add_output = indent_str.join(lines) + '\n'
+        self.need_indent_flag = True
+        return add_output
 
     def _format_keyword(self, tokens):
         cur, stack, add_indent = self.cur, self.stack, self.add_indent

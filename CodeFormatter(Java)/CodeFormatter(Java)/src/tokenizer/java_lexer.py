@@ -60,9 +60,8 @@ class JavaLexer():
                 self.next_idx = self.idx + 1
 
             elif prefix in ("//", "/*"):
+                token_type = Comment
                 self.read_comment()
-                # Ignore comments for the moment
-                continue
 
             elif prefix == '..' and self.read_operator():
                 token_type = Operator
@@ -178,7 +177,7 @@ class JavaLexer():
             self.start_of_line = start_of_line
             self.current_line += self.data.count('\n', self.idx, idx)
 
-        self.idx = idx
+        self.next_idx = idx
         return comment
 
     def read_decimal_float_or_integer(self):

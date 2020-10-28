@@ -36,6 +36,9 @@ class Literal(JavaToken):
 # Literal includes integers, strings, bool, and so on
 # For the moment it doesn't matter
 
+class Comment(JavaToken):
+    pass
+
 class Separator(JavaToken):
     VALUES_SET = {'(', ')', '{', '}', '[', ']', ';', ',', '.'}
 

@@ -56,10 +56,10 @@ class JavaFormatterCore:
 
         output = "Ignorring whitespaces, %d tokens received!!!\n" % len(tokens)
         mismatch_cnt = 1
-        diff_func = lambda x, y: (x[y+1].position.line-x[y].position.line,
-                                  x[y+1].position.column-x[y].position.column)
+        diff_func = lambda x, y: (x[y].position.line-x[y-1].position.line,
+                                  x[y].position.column-x[y-1].position.column)
 
-        for idx in range(len(tokens)-1):
+        for idx in range(1, len(tokens)):
             diff1, diff2 = diff_func(res_tokens, idx), diff_func(tokens, idx)
 
             if diff1 != diff2:
@@ -146,11 +146,12 @@ class JavaFormatterCore:
         if cur.value.startswith('//'):
             return add_output
 
-        lines = [x.strip() for x in cur.value.split('\n')]
+        lines = [x for x in cur.value.split('\n')]
+        #lines = [x.strip() for x in cur.value.split('\n')]
 
         indent_str = '\n' +  add_indent(self.indent_level, cf.indent)
-        if cur.value.startswith('/**'): # javadoc
-            indent_str += ' '
+        #if cur.value.startswith('/**'): # javadoc
+        #    indent_str += ' '
 
         add_output = indent_str.join(lines) + '\n'
         self.need_indent_flag = True

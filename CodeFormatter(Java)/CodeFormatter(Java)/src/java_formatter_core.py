@@ -92,18 +92,7 @@ class JavaFormatterCore:
 
             # process tokens
             if self.cur.value == '@':
-                if (self.idx + 2 < len(tokens) and tokens[self.idx+2].value == '('
-                        and isinstance(tokens[self.idx+1], java_lexer.Identifier)):
-                    stack.append(self.cur)
-                    add_output += (tokens[self.idx+1].value +
-                                   (' ' if cf.space_before_annotation_p else '') +
-                                   tokens[self.idx+2].value)
-                    self.idx += 2
-                elif isinstance(tokens[self.idx+1], java_lexer.Identifier):
-                    # decorator
-                    self.need_indent_flag = True
-                    add_output += tokens[self.idx+1].value + '\n'
-                    self.idx += 1
+                add_output = self._format_decorator(tokens)
 
             elif isinstance(self.cur, java_lexer.Separator):
                 add_output = self._format_separator(tokens)
@@ -130,30 +119,63 @@ class JavaFormatterCore:
 
 
         if len(stack) > 1:
-            err_msg = 'Error encountered when formatting for lexems:\n%s' % '\n'.join(str(x) for x in stack[1:])
-            logging.error(err_msg)
+            err_msg = 'Error encountered when formatting file, stack size: %d\n' % (len(stack) - 1)
+            logging.error(err_msg + '\n'.join(str(x) for x in stack[1:]))
             raise FormatterError(err_msg)
         else:
             tokens.pop()
 
         return self.output
 
+    def _format_decorator(self, tokens):
+        idx, add_output, state = self.idx+1, '@', 1
+        while True:
+            temp, next_state, cur = tokens[idx].value, 0, tokens[idx]
+            if state == 1:
+                if isinstance(cur, java_lexer.Identifier):
+                    next_state = 2
+
+            elif state == 2:
+                if cur.value == '.': next_state = 1
+                elif cur.value == '(':
+                    if cf.space_before_annotation_p: temp = ' ' + temp
+                    next_state = -1
+                else: next_state = -2
+
+            if not (idx < len(tokens) and next_state > 0):
+                break
+            state, idx, add_output = next_state, idx+1, add_output+temp
+
+        if next_state == -1:
+            idx += 1
+            add_output += temp
+            self.stack.append(tokens[self.idx])
+        elif next_state == -2:
+            self.need_indent_flag = True
+            add_output += '\n'
+
+        self.idx = idx - 1
+        return add_output
+
     def _format_comment(self, tokens):
-        add_output, add_indent = self.cur.value, self.add_indent
+        add_indent = self.add_indent
         idx, cur = self.idx, self.cur
 
         self.need_indent_flag = True
         if cur.value.startswith('//'):
-            return add_output
+            return cur.value
 
-        lines = [x for x in cur.value.split('\n')]
-        #lines = [x.strip() for x in cur.value.split('\n')]
+        add_output = ''
+        lines = [x.strip() for x in cur.value.split('\n')]
 
         indent_str = '\n' +  add_indent(self.indent_level, cf.indent)
-        #if cur.value.startswith('/**'): # javadoc
-        #    indent_str += ' '
+        if cur.value.startswith('/*'):
+            indent_str += ' '
+            if (cur.value.startswith('/**') and (
+                len(self.output) > 0 and self.output[-1] != '\n')):
+                add_output = '\n' + add_indent(self.indent_level, cf.indent)
 
-        add_output = indent_str.join(lines) + '\n'
+        add_output += indent_str.join(lines) + '\n'
         self.need_indent_flag = True
         return add_output
 
@@ -182,7 +204,9 @@ class JavaFormatterCore:
                 stack.append(cur)
 
         elif cur.value in ('class', 'assert', 'interface'):
-            stack.append(cur)
+            if (not self.pre or self.pre.value != '.'
+                and stack[-1].value in ('', '{')):
+                stack.append(cur)
 
         if (self.pre and not isinstance(self.pre, (java_lexer.Separator, java_lexer.Operator))
                 and len(self.output) > 0 and not self.output[-1].isspace()):
@@ -200,7 +224,7 @@ class JavaFormatterCore:
         ''' Used for formatting labels that mightn't follow indent rules'''
         if (isinstance(self.cur, java_lexer.Identifier)
                 and tokens[self.idx+1].value == ':'
-                and self.stack[-1].value not in ('for', '?', 'assert')):
+                and self.stack[-1].value not in ('for', '?', 'assert', 'case', 'default')):
             if not cf.absolute_label_indent:
                 self.output += self.add_indent(self.indent_level, cf.indent)
             self.output += self.add_indent(1, cf.label_indent) + self.cur.value + ':\n'
@@ -244,8 +268,13 @@ class JavaFormatterCore:
                 elif pre.value in self.s_keywords or pre.value in ('this', 'super'):
                     stack.append(cur)
 
+                elif pre.value in ('throw', 'case'):
+                    add_output = ' ' + add_output
+                    stack.append(cur)
+
                 else:
                     self._report_token_err(cur)
+
             else: # expression
                 stack.append(cur)
 
@@ -630,7 +659,10 @@ class JavaFormatterCore:
             open_cnt, add_output, state = 1, '<', 1
             while idx < len(tokens) and state > 0 and open_cnt > 0:
                 temp, next_state, cur = tokens[idx].value, -1, tokens[idx]
-                if state == 1:
+
+                if isinstance(cur, java_lexer.Comment):
+                    next_state = state
+                elif state == 1:
                     if cur.value == '?': next_state = 2
                     elif isinstance(cur, java_lexer.Identifier): next_state = 4
                     elif isinstance(cur, java_lexer.SimpleType): next_state = 5
@@ -640,15 +672,23 @@ class JavaFormatterCore:
                     elif cur.value == '>': next_state, open_cnt = 5, open_cnt-1
                 elif state == 3:
                     if isinstance(cur, java_lexer.Identifier): next_state = 4
+                    elif isinstance(cur, java_lexer.SimpleType): next_state = 4
                 elif state == 4:
                     if cur.value in ('extends', 'super'): next_state, temp = 3, ' ' + temp + ' '
                     elif cur.value == '<': next_state, open_cnt = 1, open_cnt+1
                     elif cur.value == '>': next_state, open_cnt = 5, open_cnt-1
                     elif cur.value == ',': next_state, temp = 1, temp + ' '
                     elif cur.value == '&': next_state, temp = 3, ' ' + temp + ' '
+                    elif cur.value == '.': next_state = 6
+                    elif cur.value == '[': next_state = 7
                 elif state == 5:
                     if cur.value == '>': next_state, open_cnt = 5, open_cnt-1
+                    elif cur.value == '[': next_state = 7
                     elif cur.value == ',': next_state, temp = 1, temp + ' '
+                elif state == 6:
+                    if isinstance(cur, java_lexer.Identifier): next_state = 4
+                elif state == 7:
+                    if cur.value == ']': next_state = 5
 
                 state, idx, add_output = next_state, idx+1, add_output+temp
 

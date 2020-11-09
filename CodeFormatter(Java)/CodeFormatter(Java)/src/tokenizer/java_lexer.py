@@ -34,7 +34,7 @@ class JavaLexer():
         end_line = self.data.find('\n', self.idx)
         line = self.data[start_line:end_line].strip()
 
-        message = '"%s" at %s, position %d: %d' % (message, char, line_number, line)
+        message = '"%s" at %s, position %d: %s' % (message, char, line_number, line)
         self.errors.append(LexerError(message))
 
         if self.raise_errors:
@@ -60,8 +60,10 @@ class JavaLexer():
                 self.next_idx = self.idx + 1
 
             elif prefix in ("//", "/*"):
-                token_type = Comment
-                self.read_comment()
+                res = self.read_comment()
+                token = Comment(res[0], res[1])
+                yield token
+                continue
 
             elif prefix == '..' and self.read_operator():
                 token_type = Operator
@@ -168,17 +170,18 @@ class JavaLexer():
             self.report_error('Unfinished comment block')
             comment = self.data[self.idx:]
             self.idx = self.length
-            return comment
+            return comment, Position(self.current_line, self.idx - self.start_of_line)
 
         comment = self.data[self.idx:idx]
-        start_of_line = self.data.rfind('\n', self.idx, idx)
+        position = Position(self.current_line, self.idx - self.start_of_line)
 
+        start_of_line = self.data.rfind('\n', self.idx, idx)
         if start_of_line != -1:
             self.start_of_line = start_of_line
             self.current_line += self.data.count('\n', self.idx, idx)
 
-        self.next_idx = idx
-        return comment
+        self.idx = idx
+        return comment, position
 
     def read_decimal_float_or_integer(self):
         initial_i = self.idx

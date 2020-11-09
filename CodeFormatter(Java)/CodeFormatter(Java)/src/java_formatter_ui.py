@@ -116,7 +116,7 @@ class JavaFormatterUI:
         with open(os.path.join("input", "code3.txt"), "r", encoding='utf-8') as fin:
             javacode = fin.read()
 
-        tokens_stream = java_lexer.tokenize(javacode, raise_errors=False)
+        tokens_stream = java_lexer.tokenize(javacode, raise_errors=True)
         formatter = JavaFormatterCore()
         output = formatter.format(tokens_stream)
         print(output)

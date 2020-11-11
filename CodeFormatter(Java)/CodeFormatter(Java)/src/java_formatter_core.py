@@ -140,7 +140,8 @@ class JavaFormatterCore:
                 elif cur.value == '(':
                     if cf.space_before_annotation_p: temp = ' ' + temp
                     next_state = -1
-                else: next_state = -2
+                else:
+                    next_state = -2
 
             if not (idx < len(tokens) and next_state > 0):
                 break
@@ -150,7 +151,7 @@ class JavaFormatterCore:
             idx += 1
             add_output += temp
             self.stack.append(tokens[self.idx])
-        elif next_state == -2:
+        elif next_state == -2 and not(isinstance(self.stack[-1], (java_lexer.Identifier))):
             self.need_indent_flag = True
             add_output += '\n'
 

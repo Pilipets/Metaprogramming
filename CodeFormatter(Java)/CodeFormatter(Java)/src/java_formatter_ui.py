@@ -118,7 +118,7 @@ class JavaFormatterUI:
 
         tokens_stream = java_lexer.tokenize(javacode, raise_errors=True)
         formatter = JavaFormatterCore()
-        output = formatter.format(tokens_stream)
+        output = formatter.verify(tokens_stream)
         print(output)
 
     @staticmethod

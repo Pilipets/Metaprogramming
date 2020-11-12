@@ -27,12 +27,24 @@
     <Compile Include="java_modifier_app.py">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="src\core\java_modifier_core.py" />
     <Compile Include="src\java_modifier_ui.py">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="src\core\java_modifier_utils.py">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="src\core\tokenizer\java_lexer.py" />
+    <Compile Include="src\core\tokenizer\java_tokens.py" />
   </ItemGroup>
   <ItemGroup>
+    <Folder Include="input\" />
     <Folder Include="src\" />
+    <Folder Include="src\core\" />
+    <Folder Include="src\core\tokenizer\" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="input\code.java" />
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)\Python Tools\Microsoft.PythonTools.targets" />
   <!-- Uncomment the CoreCompile target to enable the Build command in

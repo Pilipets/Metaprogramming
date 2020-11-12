@@ -1,6 +1,6 @@
-import os
-import sys
-import string
+import os, sys, string
+
+from src.core.java_modifier_core import JavaModifierCore
 
 class JavaModifierUI:
     def __init__(self, *args, **kwargs):
@@ -15,7 +15,7 @@ class JavaModifierUI:
         sys.exit()
 
     @staticmethod
-    def prepare_formatting_files(option, path):
+    def get_processing_file_paths(option, path):
         res = []
         if option == '-p':
             if not os.path.isdir(path):
@@ -53,7 +53,14 @@ class JavaModifierUI:
 
     @staticmethod
     def run_debug():
-        pass
+        javacode = ''
+        with open(os.path.join("input", "code.java"), "r", encoding='utf-8') as fin:
+            javacode = fin.read()
+
+        core = JavaModifierCore()
+        core.initialize_modify()
+        core.modify_one(javacode)
+        print('Done')
 
     @staticmethod
     def handle_parameters():

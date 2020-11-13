@@ -59,4 +59,18 @@
 
         if not end: return False
         return True
+
+    @classmethod
+    def try_method_declaration(cls, idx, tokens):
+        cls.consume_res = None
+
+        if isinstance(tokens[idx], java_lexer.SimpleType):
+            return cls.try_simple_method_declaration(idx, tokens, False)
+
+        elif tokens[idx].value == 'void':
+            return cls.try_void_method_declaration(idx, tokens, False)
+
+        elif isinstance(tokens[idx], java_lexer.Identifier):
+            if cls.try_var_declaration(idx, tokens, False):
+                pass
 '''

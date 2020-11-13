@@ -2,10 +2,14 @@ import logging, sys, os
 
 from .tokenizer import java_lexer
 from .tokenizer.java_lexer import tokenize
-from .utils.java_modifier_utils import ConventionNaming as naming_utils, ModifierError, StructuresConsumer
+from .utils.convention_naming import ConventionNaming
+from .utils.structures_consumer import StructuresConsumer
 from .utils.names_resolver import NamesResolver
 
 from collections import defaultdict
+
+class ModifierError(Exception):
+    pass
 
 class JavaModifierCore:
     def __init__(self):
@@ -13,8 +17,6 @@ class JavaModifierCore:
 
     def initialize_modify(self):
         self.names_resolver = NamesResolver()
-
-        self.output = ''
         self.stack = [java_lexer.JavaToken('')]
         self.idx = 0
         self.pre, self.cur = None, None
@@ -43,7 +45,20 @@ class JavaModifierCore:
 
 
     def _process_separator(self, tokens):
-        pass
+        cur = self.cur
+        stack = self.stack
+
+        if cur.value == '{':
+            stack.append(cur)
+
+        elif cur.value == '}':
+            if stack[-1].value == '{':
+                if (len(stack) > 2 and stack[-2].value in ('class', 'interface')):
+                    stack.pop() # {
+                    stack.pop() # class
+
+                else:
+                    stack.pop()
 
     def _process_keyword(self, tokens):
         idx, cur = self.idx, self.cur
@@ -64,8 +79,14 @@ class JavaModifierCore:
                 stack.append(cur)
                 self.idx = res[-1] - 1
 
-        elif cur.value == 'static' and idx + 1 < len(tokens):
-            pass
+        elif (len(stack) > 2 and stack[-1].value == '{'
+                and stack[-2].value in ('class', 'interface')):
+
+            if StructuresConsumer.try_class_const_declaration(idx, tokens):
+                res = StructuresConsumer.get_consume_res()
+                print('Const:', res[0], res[1])
+
+                self.idx = res[-1] - 1
 
     def _process_simple_type(self, tokens):
         idx = self.idx
@@ -75,7 +96,7 @@ class JavaModifierCore:
             print('Method declaration:', res[0], res[1])
             self.idx = res[-1] - 1
 
-        elif StructuresConsumer.try_var_declaration(idx, tokens, False):
+        elif StructuresConsumer.try_var_declaration(idx, tokens):
             res = StructuresConsumer.get_consume_res()
             print('Var declaration:', res[0], res[1])
             self.idx = res[-1] - 1
@@ -83,7 +104,7 @@ class JavaModifierCore:
     def _process_identifier(self, tokens : list):
         cur = self.cur
 
-        if StructuresConsumer.try_var_declaration(self.idx, tokens):
+        if StructuresConsumer.try_var_declaration(self.idx, tokens, False):
             # Name declaration found
             res = StructuresConsumer.get_consume_res()
             end = res[-1]

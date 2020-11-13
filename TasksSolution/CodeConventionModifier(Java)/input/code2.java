@@ -11,6 +11,7 @@ class _DummyClass {
 			int _temp = 3 + nextMethod();
 			for (var hi = 5; hi < 5; ++hi) {
 				VariousClass[] obj = new ANotherOne[34];
+				static final private const int temp = 5; 
 			}
 		}
 	}
@@ -18,6 +19,7 @@ class _DummyClass {
 }
 
 class WhyNot {
+	final static private Varios<O extends Object>[] myEx = 5; 
 	ComplexType<Ab, int, double[]> complexMethod() {
 
 	}

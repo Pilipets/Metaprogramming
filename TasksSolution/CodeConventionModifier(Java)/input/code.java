@@ -1,3 +1,4 @@
-			for (var hi = 5; hi < 5; ++hi) {
-				VariousClass[] obj = new ANotherOne[34];
-			}
+
+class WhyNot {
+	final static private Varios<O extends Object>[] myEx = 5; 
+	}

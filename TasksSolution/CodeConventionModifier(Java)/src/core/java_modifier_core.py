@@ -2,11 +2,9 @@ import logging, sys, os
 
 from .tokenizer import java_lexer
 from .tokenizer.java_lexer import tokenize
-from .utils.convention_naming import ConventionNaming
+from .utils.convention_naming import ConventionNaming, NameType
 from .utils.structures_consumer import StructuresConsumer
 from .utils.names_resolver import NamesResolver
-
-from collections import defaultdict
 
 class ModifierError(Exception):
     pass
@@ -44,6 +42,10 @@ class JavaModifierCore:
             self.idx += 1
 
 
+    def _add_renaming(self, type, name):
+        print(type, name)
+        print()
+
     def _process_separator(self, tokens):
         cur = self.cur
         stack = self.stack
@@ -69,6 +71,8 @@ class JavaModifierCore:
             if StructuresConsumer.try_void_method_declaration(idx, tokens, False):
                 res = StructuresConsumer.get_consume_res()
                 print('Method declaration:', res[0], res[1])
+                
+                self._add_renaming(NameType.METHOD, res[1])
                 self.idx = res[-1] - 1
 
         elif cur.value in ('class', 'interface'):
@@ -76,6 +80,7 @@ class JavaModifierCore:
                 res = StructuresConsumer.get_consume_res()
                 print('Class:', res[0])
 
+                self._add_renaming(NameType.CLASS, res[0])
                 stack.append(cur)
                 self.idx = res[-1] - 1
 
@@ -86,6 +91,7 @@ class JavaModifierCore:
                 res = StructuresConsumer.get_consume_res()
                 print('Const:', res[0], res[1])
 
+                self._add_renaming(NameType.CONST_VARIABLE, res[1])
                 self.idx = res[-1] - 1
 
     def _process_simple_type(self, tokens):
@@ -94,11 +100,15 @@ class JavaModifierCore:
         if StructuresConsumer.try_simple_method_declaration(idx, tokens, False):
             res = StructuresConsumer.get_consume_res()
             print('Method declaration:', res[0], res[1])
+
+            self._add_renaming(NameType.METHOD, res[1])
             self.idx = res[-1] - 1
 
         elif StructuresConsumer.try_var_declaration(idx, tokens):
             res = StructuresConsumer.get_consume_res()
             print('Var declaration:', res[0], res[1])
+
+            self._add_renaming(NameType.VARIABLE, res[1])
             self.idx = res[-1] - 1
 
     def _process_identifier(self, tokens : list):
@@ -112,12 +122,18 @@ class JavaModifierCore:
             # Try method declaration first
             if (end < len(tokens) and tokens[end].value == '('):
                 print('Method declaration:', res[0], res[1])
+
+                self._add_renaming(NameType.METHOD, res[1])
                 self.idx = end
 
             # Method declaration not found, proceed with variable
             else: 
                 print('Var declaration:', res[0], res[1])
+
+                self._add_renaming(NameType.VARIABLE, res[1])
                 self.idx = end-1
 
         else:
             print('Name:', cur.value)
+
+            self._add_renaming(NameType.NAME, cur.value)

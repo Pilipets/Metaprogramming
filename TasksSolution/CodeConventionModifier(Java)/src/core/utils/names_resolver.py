@@ -1,25 +1,18 @@
 from collections import defaultdict
 
 class NamesResolver:
-    class UnitCell:
+    class NamesUnit:
         def __init__(self):
-            self.scope_idx = 0
             self.tokens = []
 
         def add_tokens(self, tokens : list):
             self.tokens = tokens
 
-        def add_scope(self):
-            self.scope_idx += 1
-
-        def pop_scope(self):
-            self.scope_idx += 1
-
     def __init__(self):
         self.path = ''
 
         self.unit_idx = 0
-        self.map = defaultdict(NamesResolver.UnitCell)
+        self.map = defaultdict(NamesResolver.NamesUnit)
 
     @property
     def idx(self):
@@ -36,9 +29,3 @@ class NamesResolver:
 
     def pop_unit(self):
         self.unit_idx -= 1
-
-    def add_scope(self):
-        self.map[self.unit_idx].add_scope()
-
-    def pop_scope(self):
-        self.map[self.unit_idx].pop_scope()

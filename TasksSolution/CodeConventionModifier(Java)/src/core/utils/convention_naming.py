@@ -1,3 +1,12 @@
+from enum import Enum
+
+class NameType(Enum):
+    CLASS = 0
+    METHOD = 1
+    VARIABLE = 2
+    CONST_VARIABLE = 3
+    NAME = 4
+
 class ConventionNaming:
     @staticmethod
     def get_constant_name(name : str):

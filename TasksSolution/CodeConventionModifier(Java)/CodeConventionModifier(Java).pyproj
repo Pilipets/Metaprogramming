@@ -28,10 +28,16 @@
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="src\core\java_modifier_core.py" />
+    <Compile Include="src\core\utils\names_resolver.py">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="src\core\utils\temporary_unused.py">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="src\java_modifier_ui.py">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="src\core\java_modifier_utils.py">
+    <Compile Include="src\core\utils\java_modifier_utils.py">
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="src\core\tokenizer\java_lexer.py" />
@@ -41,9 +47,11 @@
     <Folder Include="input\" />
     <Folder Include="src\" />
     <Folder Include="src\core\" />
+    <Folder Include="src\core\utils\" />
     <Folder Include="src\core\tokenizer\" />
   </ItemGroup>
   <ItemGroup>
+    <Content Include="input\code2.java" />
     <Content Include="input\code.java" />
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)\Python Tools\Microsoft.PythonTools.targets" />

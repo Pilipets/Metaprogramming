@@ -1,7 +1,3 @@
-class Temp_test____VWs$$___ {
-
-}
-
-class TTpTTest____VWs$$___ {
-
-}
+			for (var hi = 5; hi < 5; ++hi) {
+				VariousClass[] obj = new ANotherOne[34];
+			}

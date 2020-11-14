@@ -1,4 +1,4 @@
--class _DummyClass {
+-class DummyClass {
 -
 -       class InnerClass {
 -               int[] var, DummyType<T extends Othes<Object[]>> avr;
@@ -8,8 +8,8 @@
 -               }
 -
 -               {
--                       int _temp = 3 + nextMethod();
--                       for (var hi = 5; hi < 5; ++hi) {
+-                       int temp = 3 + nextMethod();
+-                        for (var hi = 5; hi < 5; ++hi) {
 -                               VariousClass[] obj = new ANotherOne[34];
 -                               static final private const int temp = 5;
 -                       }
@@ -19,12 +19,12 @@
 -}
 -
 -class WhyNot {
--       final static private Varios<O extends Object>[] myEx = 5;
--       ComplexType<Ab, int, double[]> complexMethod() {
+-       final static private Varios<O extends Object>[] MY_EX = 5;
+ -      ComplexType<Ab, int, double[]> complexMethod() {
 -
 -       }
 -}
 -
--class TTpTTest____VWs$$___ {
+-class TTpTTestVWs {
 -
 -}

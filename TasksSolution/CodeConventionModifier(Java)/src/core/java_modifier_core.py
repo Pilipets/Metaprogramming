@@ -2,7 +2,7 @@ import copy, logging
 
 from .tokenizer import java_lexer
 from .tokenizer.java_lexer import tokenize
-from .utils.convention_naming import NameType, get_convention_rename, get_convention_file_path
+from .utils.convention_naming import NameType, get_convention_rename
 from .utils.structures_consumer import StructuresConsumer
 from .utils.names_resolver import NamesResolver
 from .utils.utils import setup_logger, ModifierError
@@ -36,7 +36,6 @@ class JavaModifierCore:
 
         # Preprocessing part
         names = [(idx, copy.copy(x)) for idx, x in enumerate(tokens) if isinstance(x, java_lexer.Identifier)]
-        file_path = get_convention_file_path(file_path)
         self.uuid = names_resolver.new_local_resolver(file_path, tokens, names)
         self.stack = [java_lexer.JavaToken('')]
         self.idx = 0
@@ -107,7 +106,7 @@ class JavaModifierCore:
         f_resolver = self.names_resolver.get_local_resolver(self.uuid)
         g_resolver = self.names_resolver.get_global_resolver()
 
-        if name in (g_resolver):
+        if name in g_resolver:
             return
 
         new_name = get_convention_rename(type, name)

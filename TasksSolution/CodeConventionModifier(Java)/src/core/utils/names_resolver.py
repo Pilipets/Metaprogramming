@@ -1,5 +1,6 @@
 from collections import defaultdict
 from .utils import NamesResolverError, setup_logger, FormatterType
+from .convention_naming import get_convention_file_path
 from ...core.tokenizer.java_lexer import restore_from_tokens
 import copy, logging, os
 
@@ -56,7 +57,12 @@ class LocalResolver(dict):
         logger.debug('{} local names found, {} pending names found'.format(
             super().__len__(), len(self._pending)))
 
+        
+        file_path = get_convention_file_path(self._path)
         out_logger.info('Renaming for file "{}"'.format(self._path).center(80, '-'))
+        if self._path != file_path:
+            out_logger.info('Renaming file: {} -> {}'.format(self._path, file_path))
+
         renamed_mask = [False for _ in range(len(self._renamed_tokens))]
         for cur_idx, (origin_idx, x) in enumerate(self._renamed_tokens):
             new_name, name = x.value, self._tokens[origin_idx].value
@@ -67,7 +73,7 @@ class LocalResolver(dict):
         out_logger.info(''.center(80, '-'))
 
         output_str = restore_from_tokens(self._tokens, self._renamed_tokens)
-        os.makedirs(os.path.dirname(self._path), exist_ok=True)
+        os.makedirs(os.path.dirname(file_path), exist_ok=True)
 
         with open(self._path, "w") as f:
             f.write(output_str)

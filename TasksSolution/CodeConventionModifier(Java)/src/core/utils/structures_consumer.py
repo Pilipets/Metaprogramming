@@ -1,7 +1,6 @@
 from ...core.tokenizer import java_lexer
 
 class StructuresConsumer:
-    idx = 0
     consume_res = None
 
     @classmethod
@@ -18,7 +17,7 @@ class StructuresConsumer:
         if (idx < len(tokens)
                 and isinstance(tokens[idx], java_lexer.Identifier)):
 
-            cls.consume_res = (tokens[idx].value, idx + 1)
+            cls.consume_res = (tokens[idx], idx + 1)
             return True
 
         return False
@@ -44,7 +43,7 @@ class StructuresConsumer:
             end = cls.consume_res[-1]
 
         if not end: return False
-        cls.consume_res = (tokens[start].value, tokens[end-1].value, end)
+        cls.consume_res = (tokens[start], tokens[end-1], end)
         return True
 
     @classmethod
@@ -77,7 +76,7 @@ class StructuresConsumer:
             end = idx+1
 
         if not end: return False
-        cls.consume_res = (tokens[start].value, tokens[end-1].value, end)
+        cls.consume_res = (tokens[start], tokens[end-1], end)
         return True
 
     @classmethod
@@ -151,7 +150,7 @@ class StructuresConsumer:
             end = idx+2
 
         if not end: return False
-        cls.consume_res = (tokens[start].value, tokens[end-2].value, end)
+        cls.consume_res = (tokens[start], tokens[end-2], end)
         return True
 
     @classmethod
@@ -172,6 +171,6 @@ class StructuresConsumer:
             end = idx+2
 
         if not end: return False
-        cls.consume_res = (tokens[start].value, tokens[end-2].value, end)
+        cls.consume_res = (tokens[start], tokens[end-2], end)
         return True
 

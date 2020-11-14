@@ -49,6 +49,7 @@
     <Content Include="config\config_handler.py">
       <SubType>Code</SubType>
     </Content>
+    <Content Include="output\app.log" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="input\" />

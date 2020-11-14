@@ -55,12 +55,15 @@ class JavaModifierUI:
     def run_debug():
         print('START'.center(60, '-'))
         javacode = ''
-        with open(os.path.join("input", "code2.java"), "r", encoding='utf-8') as fin:
+        file_path = os.path.join("input", "code2.java")
+        with open(file_path, "r", encoding='utf-8') as fin:
             javacode = fin.read()
 
         core = JavaModifierCore()
         core.initialize_modify()
-        core.modify_one(javacode)
+        core.modify_one(file_path, javacode)
+        core.finalize_modify()
+
         print('END'.center(60, '-'))
 
     @staticmethod

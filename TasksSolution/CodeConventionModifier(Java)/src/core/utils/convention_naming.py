@@ -6,7 +6,7 @@ class NameType(Enum):
     VARIABLE = 2
     CONST_VARIABLE = 3
     NAME = 4
-
+ 
 class ConventionNaming:
     @staticmethod
     def get_constant_name(name : str):
@@ -56,7 +56,7 @@ class ConventionNaming:
 
     @staticmethod
     def get_method_name(name : str):
-        return get_variable_name(name)
+        return ConventionNaming.get_variable_name(name)
 
     @staticmethod
     def get_variable_name(name : str):
@@ -81,3 +81,19 @@ class ConventionNaming:
                 else: res += x[start:idx]
 
         return res
+
+def get_convention_rename(type : NameType, name : str):
+    if type == NameType.CLASS:
+        return ConventionNaming.get_class_name(name)
+
+    elif type == NameType.METHOD:
+        return ConventionNaming.get_method_name(name)
+
+    elif type == NameType.VARIABLE:
+        return ConventionNaming.get_variable_name(name)
+
+    elif type == NameType.CONST_VARIABLE:
+        return ConventionNaming.get_constant_name(name)
+
+    else:
+        return name

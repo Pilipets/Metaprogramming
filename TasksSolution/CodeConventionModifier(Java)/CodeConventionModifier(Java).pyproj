@@ -14,6 +14,7 @@
     <LaunchProvider>Standard Python launcher</LaunchProvider>
     <CommandLineArguments>--admin</CommandLineArguments>
     <EnableNativeCodeDebugging>False</EnableNativeCodeDebugging>
+    <TestFramework>Pytest</TestFramework>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">
     <DebugSymbols>true</DebugSymbols>
@@ -27,14 +28,17 @@
     <Compile Include="java_modifier_app.py">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="src\core\analyzer\advanced_consumer.py">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="src\core\java_modifier_core.py" />
-    <Compile Include="src\core\utils\convention_naming.py">
+    <Compile Include="src\core\convention\convention_naming.py">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="src\core\utils\names_resolver.py">
+    <Compile Include="src\core\analyzer\names_resolver.py">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="src\core\utils\structures_consumer.py">
+    <Compile Include="src\core\analyzer\structures_consumer.py">
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="src\core\others\temporary_unused.txt">
@@ -48,9 +52,18 @@
     </Compile>
     <Compile Include="src\core\tokenizer\java_lexer.py" />
     <Compile Include="src\core\tokenizer\java_tokens.py" />
+    <Compile Include="tests\test_advanced_consumer.py">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="tests\test_structures_consumer.py">
+      <SubType>Code</SubType>
+    </Compile>
   </ItemGroup>
   <ItemGroup>
     <Folder Include="input\" />
+    <Folder Include="src\core\analyzer\" />
+    <Folder Include="src\core\convention\" />
+    <Folder Include="tests\" />
     <Folder Include="output\" />
     <Folder Include="src\" />
     <Folder Include="src\core\" />
@@ -61,6 +74,9 @@
   <ItemGroup>
     <Content Include="input\code2.java" />
     <Content Include="input\code.java" />
+    <Content Include="output\renamed.log" />
+    <Content Include="output\src.core.java_modifier_core.log" />
+    <Content Include="output\src.core.utils.names_resolver.log" />
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)\Python Tools\Microsoft.PythonTools.targets" />
   <!-- Uncomment the CoreCompile target to enable the Build command in

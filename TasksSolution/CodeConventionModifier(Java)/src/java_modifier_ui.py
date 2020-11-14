@@ -50,9 +50,9 @@ class JavaModifierUI:
         modifier = JavaModifierCore()
         modifier.initialize()
 
-        format_flag, func = True, modifier.modify_one
+        func = modifier.modify_one
         if action in ('--verify', '-v'):
-            format_flag, func = False, modifier.verify_one
+            func = modifier.verify_one
 
         success_cnt, errors_cnt = 0, 0
         for file in files:
@@ -122,5 +122,5 @@ class JavaModifierUI:
             else:
                 option = option[0]
 
-            files = JavaModifierUI.prepare_formatting_files(option, sys.argv[-1])
+            files = JavaModifierUI.get_processing_file_paths(option, sys.argv[-1])
             JavaModifierUI.process_files(action, files)

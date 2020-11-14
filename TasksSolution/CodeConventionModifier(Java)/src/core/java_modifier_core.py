@@ -2,9 +2,9 @@ import copy, logging
 
 from .tokenizer import java_lexer
 from .tokenizer.java_lexer import tokenize
-from .utils.convention_naming import NameType, get_convention_rename
-from .utils.structures_consumer import StructuresConsumer
-from .utils.names_resolver import NamesResolver
+from .convention.convention_naming import NameType, get_convention_rename
+from .analyzer.advanced_consumer import AdvancedStructuresConsumer as Consumer
+from .analyzer.names_resolver import NamesResolver
 from .utils.utils import setup_logger, ModifierError
 
 # Initialize logging
@@ -12,58 +12,84 @@ core_logger = setup_logger(__name__, logging.DEBUG)
 
 # Not thread safe
 class JavaModifierCore:
-    def _reset(self):
-        self.names_resolver = None
-        self.stack = None
-        self.idx = -1
-        self.pre, self.cur = None, None
-        self.uuid = None
-
     def __init__(self):
         self._reset()
 
     def initialize(self):
         core_logger.debug('Initializing modify...'.center(60, '-'))
+
         self.names_resolver = NamesResolver()
+        self.consumer = Consumer()
 
     def verify_one(self, file_path, text):
-        pass
+        self.modify_one(file_path, text, produce_file = False)
 
-    def modify_one(self, file_path, text):
-        # Aliases
-        names_resolver = self.names_resolver
-        tokens = tuple(tokenize(text, raise_errors=True))
-
+    def modify_one(self, file_path, text, produce_file = True):
         # Preprocessing part
-        names = [(idx, copy.copy(x)) for idx, x in enumerate(tokens) if isinstance(x, java_lexer.Identifier)]
-        self.uuid = names_resolver.new_local_resolver(file_path, tokens, names)
-        self.stack = [java_lexer.JavaToken('')]
-        self.idx = 0
-        self.pre, self.cur = None, None
+        self._initialize_one(file_path, text, produce_file)
+
+        #Aliases
+        tokens = self.tokens
+        stack = self.stack
 
         # Analyzing part
         core_logger.debug(f'Analyzing "{file_path}"'.center(60, '-'))
         while self.idx < len(tokens):
             self.cur = tokens[self.idx]
 
-            # process tokens
             if isinstance(self.cur, java_lexer.Identifier):
-                self._process_identifier(tokens)
+                self._process_identifier()
 
             elif isinstance(self.cur, java_lexer.SimpleType):
-                self._process_simple_type(tokens)
+                self._process_simple_type()
 
             elif isinstance(self.cur, java_lexer.Keyword):
-                self._process_keyword(tokens)
+                self._process_keyword()
 
             elif isinstance(self.cur, java_lexer.Separator):
-                self._process_separator(tokens)
+                self._process_separator()
+
+            elif isinstance(self.cur, java_lexer.Operator):
+                self._process_operator()
 
             self.pre = tokens[self.idx]
             self.idx += 1
 
         # Renaming part
+        self._finalize_one(file_path)
+
+    def finalize(self):
+        core_logger.debug('Finalizing modify...'.center(60, '-'))
+
+        self.names_resolver.close_all_resolvers()
+        self._reset()
+
+    def _reset(self):
+        self.names_resolver = None
+        self.consumer = None
+        self.tokens = None
+        self.stack = None
+        self.idx = -1
+        self.pre, self.cur = None, None
+        self.uuid = None
+
+    def _initialize_one(self, file_path, text, produce_file):
+        tokens = tuple(tokenize(text, raise_errors=True))
+        names = [(idx, copy.copy(x)) for idx, x in enumerate(tokens) if isinstance(x, java_lexer.Identifier)]
+
+        self.tokens = tokens
+        self.uuid = self.names_resolver.new_local_resolver(file_path, tokens, names, produce_file)
+        self.stack = [java_lexer.JavaToken('')]
+        self.idx = 0
+        self.pre, self.cur = None, None
+
+    def _finalize_one(self, file_path):
         core_logger.debug(f'Renaming for "{file_path}"'.center(60, '-'))
+
+        if len(self.stack) != 1:
+            raise ModifierError('Invalid Java code semantics encountered, stack size:', len(self.stack))
+
+        names_resolver = self.names_resolver
         f_resolver = names_resolver.get_local_resolver(self.uuid)
         g_resolver = names_resolver.get_global_resolver()
 
@@ -80,61 +106,36 @@ class JavaModifierCore:
             else:
                 f_resolver.add_pending(x)
 
-            print(name, x.value)
+            #print(name, x.value)
 
         if f_resolver.is_pending():
             cnt = f_resolver.get_pending_count()
             core_logger.debug(
                 '{} name conflicts encountered: {}'.format(
-                    cnt,
-                    ', '.join((x for x in f_resolver.get_pending()))
+                    cnt, ', '.join((x for x in f_resolver.get_pending()))
             ))
             core_logger.debug(f'Postponing renaming for "{file_path}"')
 
         else:
             f_resolver.close()
 
-    def finalize(self):
-        core_logger.debug('Finalizing modify...'.center(60, '-'))
 
-        self.names_resolver.close_all_resolvers()
-        self._reset()
+    def _process_operator(self):
+        idx = self.idx
+        tokens, consumer = self.tokens, self.consumer
 
-    def _add_renaming(self, type, name):
+        # Starting with generics method without preceding keywords
+        if consumer.try_method_declaration(idx, tokens):
+            method, idx = consumer.get_consume_res()
 
-        stack = self.stack
-        f_resolver = self.names_resolver.get_local_resolver(self.uuid)
-        g_resolver = self.names_resolver.get_global_resolver()
+            res_str = 'Method declaration: {}'.format(method)
+            print(res_str)
 
-        if name in g_resolver:
-            return
+            self.idx = idx - 1
 
-        new_name = get_convention_rename(type, name)
-        #if name == new_name:
-        #    return
-
-        if stack[-1].value == '' and type == NameType.CLASS:
-            # Process globals
-            g_resolver[name] = new_name
-            print(type, name, new_name)
-
-        elif (len(stack) == 3 and stack[-1].value == '{'
-              and stack[-2].value in ('class', 'interface')
-                and type != NameType.NAME):
-
-            # Process globals
-            g_resolver[name] = new_name
-            print(type, name, new_name)
-
-        else:
-            if name in f_resolver: return
-
-            # Process locals
-            f_resolver[name] = new_name
-            print(type, name, new_name)
-
-    def _process_separator(self, tokens):
+    def _process_separator(self):
         cur = self.cur
+        tokens, consumer = self.tokens, self.consumer
         stack = self.stack
 
         if cur.value == '{':
@@ -156,78 +157,111 @@ class JavaModifierCore:
             if stack[-1].value == '(':
                 stack.pop()
 
-    def _process_keyword(self, tokens):
+    def _process_keyword(self):
         idx, cur = self.idx, self.cur
+        tokens, consumer = self.tokens, self.consumer
         stack = self.stack
 
-        # void
-        if cur.value == 'void':
-            if StructuresConsumer.try_void_method_declaration(idx, tokens, False):
-                res = StructuresConsumer.get_consume_res()
-                core_logger.debug('Method declaration: ({}) ({})'.format(res[0], res[1]))
-                
-                self._add_renaming(NameType.METHOD, res[1].value)
-                self.idx = res[-1] - 1
+        # we know at least 1 keyword would be there
+        consumer.try_keywords(idx, tokens)
+        keywords, idx = consumer.get_consume_res()
+        
+        # Previous is either class or interface
+        if consumer.try_class_declaration(idx-1, tokens):
+            cls, idx = consumer.get_consume_res()
 
-        elif cur.value in ('class', 'interface'):
-            if StructuresConsumer.try_class_declaration(idx, tokens, False):
-                res = StructuresConsumer.get_consume_res()
-                core_logger.debug('Class: ({})'.format(res[0]))
+            res_str = 'Class declaration: {}'.format(cls)
+            print(res_str)
+            stack.append(cur)
 
-                self._add_renaming(NameType.CLASS, res[0].value)
-                stack.append(cur)
-                self.idx = res[-1] - 1
+        # Previous is void
+        elif consumer.try_method_declaration(idx-1, tokens):
+            method, idx = consumer.get_consume_res()
 
-        elif (len(stack) > 2 and stack[-1].value == '{'
-                and stack[-2].value in ('class', 'interface')):
+            res_str = 'Method declaration: {}'.format(method)
+            print(res_str)
 
-            if StructuresConsumer.try_class_const_declaration(idx, tokens):
-                res = StructuresConsumer.get_consume_res()
-                core_logger.debug('Const: ({}) ({})'.format(res[0], res[1]))
+        # Next is method
+        elif consumer.try_method_declaration(idx, tokens):
+            method, idx = consumer.get_consume_res()
 
-                self._add_renaming(NameType.CONST_VARIABLE, res[1].value)
-                self.idx = res[-1] - 1
+            res_str = 'Method declaration: {}'.format(method)
+            print(res_str)
 
-    def _process_simple_type(self, tokens):
-        idx = self.idx
+        # Multiple vars
+        elif consumer.try_multiple_vars_declaration(idx, tokens):
+            vars, idx = consumer.get_consume_res()
 
-        if StructuresConsumer.try_simple_method_declaration(idx, tokens, False):
-            res = StructuresConsumer.get_consume_res()
-            core_logger.debug('Method declaration: ({}) ({})'.format(res[0], res[1]))
-
-            self._add_renaming(NameType.METHOD, res[1].value)
-            self.idx = res[-1] - 1
-
-        elif StructuresConsumer.try_var_declaration(idx, tokens):
-            res = StructuresConsumer.get_consume_res()
-            core_logger.debug('Variable declaration: ({}) ({})'.format(res[0], res[1]))
-
-            self._add_renaming(NameType.VARIABLE, res[1].value)
-            self.idx = res[-1] - 1
-
-    def _process_identifier(self, tokens : list):
-        cur = self.cur
-
-        if StructuresConsumer.try_var_declaration(self.idx, tokens, False):
-            # Name declaration found
-            res = StructuresConsumer.get_consume_res()
-            end = res[-1]
-
-            # Try method declaration first
-            if (end < len(tokens) and tokens[end].value == '('):
-                core_logger.debug('Method declaration: ({}) ({})'.format(res[0], res[1]))
-
-                self._add_renaming(NameType.METHOD, res[1].value)
-                self.idx = end
-
-            # Method declaration not found, proceed with variable
-            else: 
-                core_logger.debug('Variable declaration: ({}) ({})'.format(res[0], res[1]))
-
-                self._add_renaming(NameType.VARIABLE, res[1].value)
-                self.idx = end-1
+            if 'static' in keywords and 'final' in keywords:
+                res_str = 'Const vars declaration: {}'.format(vars)
+                print(res_str)
+            
+            else:
+                res_str = 'Vars declaration: {}'.format(vars)
+                print(res_str)
 
         else:
-            core_logger.debug('Name encountered: ({})'.format(cur))
+            # We will treat is as single declaration later
+            pass
 
-            #self._add_renaming(NameType.NAME, cur.value)
+        self.idx = idx - 1
+
+    def _process_simple_type(self):
+        idx = self.idx
+        tokens, consumer = self.tokens, self.consumer
+
+        # Without preceding keywords
+        if consumer.try_method_declaration(idx, tokens):
+            method, idx = consumer.get_consume_res()
+
+            res_str = 'Method declaration: {}'.format(method)
+            print(res_str)
+
+        elif consumer.try_multiple_vars_declaration(idx, tokens):
+            vars, idx = consumer.get_consume_res()
+
+            res_str = 'Vars declaration: {}'.format(vars)
+            print(res_str)
+
+        elif consumer.try_var_single_declaration(idx, tokens):
+            var, idx = consumer.get_consume_res()
+
+            res_str = 'Var declaration: {}'.format(var)
+            print(res_str)
+
+        else:
+            idx += 1
+
+        self.idx = idx - 1
+
+    def _process_identifier(self):
+        idx, cur = self.idx, self.cur
+        tokens, consumer = self.tokens, self.consumer
+
+        if consumer.try_method_declaration(idx, tokens):
+            method, idx = consumer.get_consume_res()
+
+            res_str = 'Method declaration: {}'.format(method)
+            print(res_str)
+
+        elif consumer.try_multiple_vars_declaration(idx, tokens):
+            vars, idx = consumer.get_consume_res()
+
+            res_str = 'Vars declaration: {}'.format(vars)
+            print(res_str)
+
+        elif consumer.try_var_single_declaration(idx, tokens):
+            var, idx = consumer.get_consume_res()
+
+            res_str = 'Var declaration: {}'.format(var)
+            print(res_str)
+
+        else:
+            # We know at least one name is there
+            consumer.try_outer_identifier(idx, tokens)
+            name, idx = consumer.get_consume_res()
+
+            res_str = 'Outer name: {}'.format(name)
+            print(res_str)
+
+        self.idx = idx - 1

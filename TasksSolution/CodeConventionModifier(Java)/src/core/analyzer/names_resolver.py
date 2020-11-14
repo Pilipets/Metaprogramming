@@ -1,6 +1,6 @@
 from collections import defaultdict
-from .utils import NamesResolverError, setup_logger, FormatterType
-from .convention_naming import get_convention_file_path
+from ...core.utils.utils import NamesResolverError, setup_logger, FormatterType
+from ...core.convention.convention_naming import get_convention_file_path
 from ...core.tokenizer.java_lexer import restore_from_tokens
 import copy, logging, os
 
@@ -8,10 +8,11 @@ logger = setup_logger(__name__, logging.DEBUG)
 out_logger = setup_logger('renamed', logging.INFO, FormatterType.SHORT)
 
 class LocalResolver(dict):
-    def __init__(self, path, tokens, names, p_resolver, r_resolver):
+    def __init__(self, path, tokens, names, produce_file, p_resolver, r_resolver):
         self._path = path
         self._tokens = tokens
         self._renamed_tokens = names
+        self._produce_file = produce_file
         self._p_resolver = p_resolver
         self._r_resolver = r_resolver
         self._pending = defaultdict(list)
@@ -72,10 +73,15 @@ class LocalResolver(dict):
 
         out_logger.info(''.center(80, '-'))
 
+        if not self._produce_file:
+            self._r_resolver._remove_local_resolver(self)
+            self._reset()
+            return
+
         output_str = restore_from_tokens(self._tokens, self._renamed_tokens)
         os.makedirs(os.path.dirname(file_path), exist_ok=True)
 
-        with open(self._path, "w") as f:
+        with open(file_path, "w") as f:
             f.write(output_str)
 
         self._r_resolver._remove_local_resolver(self)
@@ -120,8 +126,8 @@ class NamesResolver:
         self._g_resolver = None
         self._resolvers = {}
 
-    def new_local_resolver(self, path, tokens, names):
-        obj = LocalResolver(path, tokens, names, self._g_resolver, self)
+    def new_local_resolver(self, path, tokens, names, produce_file):
+        obj = LocalResolver(path, tokens, names, produce_file, self._g_resolver, self)
 
         uuid = id(obj)
         self._resolvers[uuid] = obj
@@ -144,6 +150,37 @@ class NamesResolver:
     def _remove_local_resolver(self, resolver):
         '''Closes the resolver specified by uuid, expects resolver not being pending'''
         del self._resolvers[id(resolver)]
+
+    def _add_renaming(self, type, name, stack):
+        f_resolver = self.names_resolver.get_local_resolver(self.uuid)
+        g_resolver = self.names_resolver.get_global_resolver()
+
+        if name in g_resolver:
+            return
+
+        new_name = get_convention_rename(type, name)
+        #if name == new_name:
+        #    return
+
+        if stack[-1].value == '' and type == NameType.CLASS:
+            # Process globals
+            g_resolver[name] = new_name
+            print(type, name, new_name)
+
+        elif (len(stack) == 3 and stack[-1].value == '{'
+              and stack[-2].value in ('class', 'interface')
+                and type != NameType.NAME):
+
+            # Process globals
+            g_resolver[name] = new_name
+            print(type, name, new_name)
+
+        else:
+            if name in f_resolver: return
+
+            # Process locals
+            f_resolver[name] = new_name
+            print(type, name, new_name)
 
 
 

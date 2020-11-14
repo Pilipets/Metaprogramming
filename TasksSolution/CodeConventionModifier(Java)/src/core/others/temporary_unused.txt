@@ -84,4 +84,35 @@
                     uuid, unit.pending_count()))
         del self._resolvers[uuid]
         return True
+
+
+        '''
+        # void
+        if cur.value == 'void':
+            if AdvancedStructuresConsumer.try_void_method_declaration(idx, tokens, False):
+                res = AdvancedStructuresConsumer.get_consume_res()
+                core_logger.debug('Method declaration: ({}) ({})'.format(res[0], res[1]))
+                
+                self._add_renaming(NameType.METHOD, res[1].value)
+                self.idx = res[-1] - 1
+
+        elif cur.value in ('class', 'interface'):
+            if AdvancedStructuresConsumer.try_class_declaration(idx, tokens, False):
+                res = AdvancedStructuresConsumer.get_consume_res()
+                core_logger.debug('Class: ({})'.format(res[0]))
+
+                self._add_renaming(NameType.CLASS, res[0].value)
+                stack.append(cur)
+                self.idx = res[-1] - 1
+
+        elif (len(stack) > 2 and stack[-1].value == '{'
+                and stack[-2].value in ('class', 'interface')):
+
+            if AdvancedStructuresConsumer.try_class_const_declaration(idx, tokens):
+                res = AdvancedStructuresConsumer.get_consume_res()
+                core_logger.debug('Const: ({}) ({})'.format(res[0], res[1]))
+
+                self._add_renaming(NameType.CONST_VARIABLE, res[1].value)
+                self.idx = res[-1] - 1
+        '''
 '''

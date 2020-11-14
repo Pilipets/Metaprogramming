@@ -295,3 +295,7 @@ class JavaLexer():
             token_type = Literal
 
         return token_type
+
+def restore_tokens_stream(tokens):
+    '''Restore the structure with whitespaces using tokens'''
+    pass

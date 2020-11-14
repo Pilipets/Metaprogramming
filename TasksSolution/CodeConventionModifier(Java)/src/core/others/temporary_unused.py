@@ -73,4 +73,15 @@
         elif isinstance(tokens[idx], java_lexer.Identifier):
             if cls.try_var_declaration(idx, tokens, False):
                 pass
+
+
+    def remove_local_resolver(self, uuid):
+        unit = self._resolvers.get(uuid, None)
+        if not unit: return True
+        if unit.is_pending():
+            raise NamesResolverError(
+                'Unable to remove unit({}): {} pending names found'.format(
+                    uuid, unit.pending_count()))
+        del self._resolvers[uuid]
+        return True
 '''

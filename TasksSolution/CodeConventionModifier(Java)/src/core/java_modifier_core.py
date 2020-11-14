@@ -1,4 +1,4 @@
-import logging
+import copy, logging
 
 from .tokenizer import java_lexer
 from .tokenizer.java_lexer import tokenize
@@ -30,16 +30,17 @@ class JavaModifierCore:
     def modify_one(self, file_path, text):
         # Aliases
         names_resolver = self.names_resolver
+        tokens = tuple(tokenize(text, raise_errors=True))
 
         # Preprocessing part
-        self.uuid = names_resolver.new_file_resolver(file_path)
+        names = [(idx, copy.copy(x)) for idx, x in enumerate(tokens) if isinstance(x, java_lexer.Identifier)]
+        self.uuid = names_resolver.new_local_resolver(file_path, tokens, names)
         self.stack = [java_lexer.JavaToken('')]
         self.idx = 0
         self.pre, self.cur = None, None
 
         # Analyzing part
         core_logger.debug(f'Analyzing "{file_path}"'.center(60, '-'))
-        tokens = list(tokenize(text, raise_errors=True))
         while self.idx < len(tokens):
             self.cur = tokens[self.idx]
 
@@ -61,10 +62,11 @@ class JavaModifierCore:
 
         # Renaming part
         core_logger.debug(f'Renaming for "{file_path}"'.center(60, '-'))
-        names = (x for x in tokens if isinstance(x, java_lexer.Identifier))
-        f_resolver = names_resolver.get_file_resolver(self.uuid)
+        f_resolver = names_resolver.get_local_resolver(self.uuid)
         g_resolver = names_resolver.get_global_resolver()
-        for x in names:
+
+        res_names = f_resolver.get_names()
+        for idx, x in res_names:
             name = x.value
             if name in f_resolver:
                 x.value = f_resolver[name]
@@ -86,17 +88,20 @@ class JavaModifierCore:
                     ', '.join((x for x in f_resolver.get_pending()))
             ))
             core_logger.debug(f'Postponing renaming for "{file_path}"')
+
         else:
-            names_resolver.remove_file_resolver()
+            names_resolver.close_resolver(self.uuid)
 
     def finalize_modify(self):
         core_logger.debug('Finalizing modify...'.center(60, '-'))
+
+        self.names_resolver.close_all_resolvers()
         self._reset()
 
     def _add_renaming(self, type, name):
 
         stack = self.stack
-        f_resolver = self.names_resolver.get_file_resolver(self.uuid)
+        f_resolver = self.names_resolver.get_local_resolver(self.uuid)
         g_resolver = self.names_resolver.get_global_resolver()
 
         if name in (g_resolver):

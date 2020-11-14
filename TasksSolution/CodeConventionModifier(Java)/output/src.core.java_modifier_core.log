@@ -1,25 +1,25 @@
-2020-11-14 17:52:31,570 - src.core.java_modifier_core - DEBUG - -------------------Initializing modify...-------------------
-2020-11-14 17:52:31,572 - src.core.java_modifier_core - DEBUG - -------------Analyzing "input\fixed_Code2.java"-------------
-2020-11-14 17:52:31,572 - src.core.java_modifier_core - DEBUG - Class: (Identifier "_DummyClass" line 1, column 8)
-2020-11-14 17:52:31,572 - src.core.java_modifier_core - DEBUG - Class: (Identifier "InnerClass" line 3, column 15)
-2020-11-14 17:52:31,572 - src.core.java_modifier_core - DEBUG - Variable declaration: (SimpleType "int" line 4, column 17) (Identifier "var" line 4, column 23)
-2020-11-14 17:52:31,573 - src.core.java_modifier_core - DEBUG - Variable declaration: (Identifier "DummyType" line 4, column 28) (Identifier "avr" line 4, column 65)
-2020-11-14 17:52:31,573 - src.core.java_modifier_core - DEBUG - Method declaration: (Keyword "void" line 6, column 17) (Identifier "nextMethod" line 6, column 22)
-2020-11-14 17:52:31,573 - src.core.java_modifier_core - DEBUG - Variable declaration: (SimpleType "double" line 6, column 33) (Identifier "x" line 6, column 40)
-2020-11-14 17:52:31,573 - src.core.java_modifier_core - DEBUG - Variable declaration: (SimpleType "double" line 6, column 47) (Identifier "arr" line 6, column 56)
-2020-11-14 17:52:31,574 - src.core.java_modifier_core - DEBUG - Variable declaration: (SimpleType "int" line 11, column 25) (Identifier "_temp" line 11, column 29)
-2020-11-14 17:52:31,574 - src.core.java_modifier_core - DEBUG - Name encountered: (Identifier "nextMethod" line 11, column 41)
-2020-11-14 17:52:31,574 - src.core.java_modifier_core - DEBUG - Variable declaration: (Identifier "var" line 12, column 30) (Identifier "hi" line 12, column 34)
-2020-11-14 17:52:31,574 - src.core.java_modifier_core - DEBUG - Name encountered: (Identifier "hi" line 12, column 42)
-2020-11-14 17:52:31,574 - src.core.java_modifier_core - DEBUG - Name encountered: (Identifier "hi" line 12, column 52)
-2020-11-14 17:52:31,574 - src.core.java_modifier_core - DEBUG - Variable declaration: (Identifier "VariousClass" line 13, column 33) (Identifier "obj" line 13, column 48)
-2020-11-14 17:52:31,575 - src.core.java_modifier_core - DEBUG - Name encountered: (Identifier "ANotherOne" line 13, column 58)
-2020-11-14 17:52:31,575 - src.core.java_modifier_core - DEBUG - Variable declaration: (SimpleType "int" line 14, column 60) (Identifier "temp" line 14, column 64)
-2020-11-14 17:52:31,575 - src.core.java_modifier_core - DEBUG - Class: (Identifier "WhyNot" line 21, column 8)
-2020-11-14 17:52:31,575 - src.core.java_modifier_core - DEBUG - Const: (Identifier "Varios" line 22, column 30) (Identifier "myEx" line 22, column 57)
-2020-11-14 17:52:31,575 - src.core.java_modifier_core - DEBUG - Method declaration: (Identifier "ComplexType" line 23, column 9) (Identifier "complexMethod" line 23, column 40)
-2020-11-14 17:52:31,576 - src.core.java_modifier_core - DEBUG - Class: (Identifier "TTpTTest____VWs$$___" line 28, column 8)
-2020-11-14 17:52:31,576 - src.core.java_modifier_core - DEBUG - -----------Renaming for "input\fixed_Code2.java"------------
-2020-11-14 17:52:31,587 - src.core.java_modifier_core - DEBUG - 10 name conflicts encountered: DummyType, T, Othes, Object, VariousClass, ANotherOne, Varios, O, ComplexType, Ab
-2020-11-14 17:52:31,587 - src.core.java_modifier_core - DEBUG - Postponing renaming for "input\fixed_Code2.java"
-2020-11-14 17:52:31,587 - src.core.java_modifier_core - DEBUG - --------------------Finalizing modify...--------------------
+2020-11-14 20:01:57,273 - src.core.java_modifier_core - DEBUG - -------------------Initializing modify...-------------------
+2020-11-14 20:01:57,274 - src.core.java_modifier_core - DEBUG - -------------Analyzing "input\fixed_Code2.java"-------------
+2020-11-14 20:01:57,274 - src.core.java_modifier_core - DEBUG - Class: (Identifier "_DummyClass" line 1, column 8)
+2020-11-14 20:01:57,274 - src.core.java_modifier_core - DEBUG - Class: (Identifier "InnerClass" line 3, column 15)
+2020-11-14 20:01:57,274 - src.core.java_modifier_core - DEBUG - Variable declaration: (SimpleType "int" line 4, column 17) (Identifier "var" line 4, column 23)
+2020-11-14 20:01:57,275 - src.core.java_modifier_core - DEBUG - Variable declaration: (Identifier "DummyType" line 4, column 28) (Identifier "avr" line 4, column 65)
+2020-11-14 20:01:57,275 - src.core.java_modifier_core - DEBUG - Method declaration: (Keyword "void" line 6, column 17) (Identifier "nextMethod" line 6, column 22)
+2020-11-14 20:01:57,275 - src.core.java_modifier_core - DEBUG - Variable declaration: (SimpleType "double" line 6, column 33) (Identifier "x" line 6, column 40)
+2020-11-14 20:01:57,275 - src.core.java_modifier_core - DEBUG - Variable declaration: (SimpleType "double" line 6, column 47) (Identifier "arr" line 6, column 56)
+2020-11-14 20:01:57,275 - src.core.java_modifier_core - DEBUG - Variable declaration: (SimpleType "int" line 11, column 25) (Identifier "_temp" line 11, column 29)
+2020-11-14 20:01:57,276 - src.core.java_modifier_core - DEBUG - Name encountered: (Identifier "nextMethod" line 11, column 41)
+2020-11-14 20:01:57,276 - src.core.java_modifier_core - DEBUG - Variable declaration: (Identifier "var" line 12, column 30) (Identifier "hi" line 12, column 34)
+2020-11-14 20:01:57,276 - src.core.java_modifier_core - DEBUG - Name encountered: (Identifier "hi" line 12, column 42)
+2020-11-14 20:01:57,276 - src.core.java_modifier_core - DEBUG - Name encountered: (Identifier "hi" line 12, column 52)
+2020-11-14 20:01:57,276 - src.core.java_modifier_core - DEBUG - Variable declaration: (Identifier "VariousClass" line 13, column 33) (Identifier "obj" line 13, column 48)
+2020-11-14 20:01:57,276 - src.core.java_modifier_core - DEBUG - Name encountered: (Identifier "ANotherOne" line 13, column 58)
+2020-11-14 20:01:57,276 - src.core.java_modifier_core - DEBUG - Variable declaration: (SimpleType "int" line 14, column 60) (Identifier "temp" line 14, column 64)
+2020-11-14 20:01:57,276 - src.core.java_modifier_core - DEBUG - Class: (Identifier "WhyNot" line 21, column 8)
+2020-11-14 20:01:57,276 - src.core.java_modifier_core - DEBUG - Const: (Identifier "Varios" line 22, column 30) (Identifier "myEx" line 22, column 57)
+2020-11-14 20:01:57,277 - src.core.java_modifier_core - DEBUG - Method declaration: (Identifier "ComplexType" line 23, column 9) (Identifier "complexMethod" line 23, column 40)
+2020-11-14 20:01:57,277 - src.core.java_modifier_core - DEBUG - Class: (Identifier "TTpTTest____VWs$$___" line 28, column 8)
+2020-11-14 20:01:57,277 - src.core.java_modifier_core - DEBUG - -----------Renaming for "input\fixed_Code2.java"------------
+2020-11-14 20:01:57,290 - src.core.java_modifier_core - DEBUG - 10 name conflicts encountered: DummyType, T, Othes, Object, VariousClass, ANotherOne, Varios, O, ComplexType, Ab
+2020-11-14 20:01:57,290 - src.core.java_modifier_core - DEBUG - Postponing renaming for "input\fixed_Code2.java"
+2020-11-14 20:01:57,290 - src.core.java_modifier_core - DEBUG - --------------------Finalizing modify...--------------------

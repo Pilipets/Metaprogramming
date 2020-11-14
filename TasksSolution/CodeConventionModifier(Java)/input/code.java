@@ -1,4 +1,3 @@
-
-class WhyNot {
-	final static private Varios<O extends Object>[] myEx = 5; 
-	}
+-class TTpTTest____VWs$$___ {
+-
+-}

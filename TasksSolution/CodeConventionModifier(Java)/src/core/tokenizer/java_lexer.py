@@ -296,6 +296,38 @@ class JavaLexer():
 
         return token_type
 
-def restore_tokens_stream(tokens):
-    '''Restore the structure with whitespaces using tokens'''
-    pass
+def restore_from_tokens(tokens, changed_tokens):
+    '''Restore the structure with whitespaces using tokens
+    and changed tokens value in changed mask.'''
+    if len(tokens) == 0: return ''
+
+    output = ''
+    line, col = 1, 1
+    c_idx, shift = 0, 0
+    for idx, x in enumerate(tokens):
+        t_line, t_col = x.position
+        t_col += shift
+
+        if (c_idx < len(changed_tokens)
+                and idx == changed_tokens[c_idx][0]):
+            y, c_idx = changed_tokens[c_idx][1], c_idx+1
+            shift += len(y.value) - len(x.value)
+            x = y
+
+        if t_line != line:
+            diff = t_line - line
+            col, shift = 1, 0
+
+            output += diff*'\n'
+            line += diff
+
+        if t_col != col:
+            diff = (t_col - col) 
+
+            output += diff*' '
+            col += diff
+
+        output += x.value
+        col += len(x.value)
+
+    return output

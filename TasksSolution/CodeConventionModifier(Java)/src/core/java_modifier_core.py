@@ -90,7 +90,7 @@ class JavaModifierCore:
             core_logger.debug(f'Postponing renaming for "{file_path}"')
 
         else:
-            names_resolver.close_resolver(self.uuid)
+            f_resolver.close()
 
     def finalize_modify(self):
         core_logger.debug('Finalizing modify...'.center(60, '-'))

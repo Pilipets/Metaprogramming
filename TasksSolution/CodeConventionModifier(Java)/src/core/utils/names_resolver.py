@@ -1,5 +1,6 @@
 from collections import defaultdict
 from .utils import NamesResolverError, setup_logger, FormatterType
+from ...core.tokenizer.java_lexer import restore_from_tokens
 import copy, logging, os
 
 logger = setup_logger(__name__, logging.DEBUG)
@@ -60,13 +61,16 @@ class LocalResolver(dict):
         for cur_idx, (origin_idx, x) in enumerate(self._renamed_tokens):
             new_name, name = x.value, self._tokens[origin_idx].value
             if name != new_name:
-                out_logger.info('Renamed: {} -> {}'.format(name, new_name))
-                renamed_mask[cur_idx] = True
+                pos = self._tokens[origin_idx].position
+                out_logger.info('Renaming at {}: {} -> {}'.format(pos, name, new_name))
 
         out_logger.info(''.center(80, '-'))
+
+        output_str = restore_from_tokens(self._tokens, self._renamed_tokens)
         os.makedirs(os.path.dirname(self._path), exist_ok=True)
+
         with open(self._path, "w") as f:
-            f.write("FOOBAR")
+            f.write(output_str)
 
         self._r_resolver._remove_local_resolver(self)
         self._reset()

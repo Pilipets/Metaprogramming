@@ -1,5 +1,5 @@
 import logging, os, sys
-
+from enum import Enum
 
 class ModifierError(Exception):
     pass
@@ -9,14 +9,17 @@ class NamesResolverError(ModifierError):
 
 rel_path = os.path.join(os.path.split(sys.argv[0])[0], 'output')
 
-def setup_logger(logger_name, level=logging.WARNING):
+class FormatterType:
+    EXTENSIVE = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
+    SHORT = logging.Formatter('%(levelname)s - %(message)s')
+
+def setup_logger(logger_name, level=logging.WARNING, formatter = FormatterType.EXTENSIVE):
     log_file = os.path.join(rel_path, f'{logger_name}.log')
     # Erase log if already exists
     if os.path.exists(log_file): os.remove(log_file)
 
     # Configure log file
     logger = logging.getLogger(logger_name)
-    formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
     f_handler = logging.FileHandler(log_file, mode='w')
     f_handler.setFormatter(formatter)
 

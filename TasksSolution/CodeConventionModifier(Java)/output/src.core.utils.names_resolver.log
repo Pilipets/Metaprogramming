@@ -1,5 +1,5 @@
-2020-11-14 16:31:24,446 - src.core.utils.names_resolver - DEBUG - 1 resolvers left, closing all now...
-2020-11-14 16:31:24,446 - src.core.utils.names_resolver - DEBUG - Closing local resolver(3180066865416)
-2020-11-14 16:31:24,446 - src.core.utils.names_resolver - DEBUG - 9 local names found, 10 pending names found
-2020-11-14 16:31:24,446 - src.core.utils.names_resolver - DEBUG - Closing global resolver(3180062967176)
-2020-11-14 16:31:24,446 - src.core.utils.names_resolver - DEBUG - 6 global names found, 10 pending names found
+2020-11-14 17:52:31,588 - src.core.utils.names_resolver - DEBUG - 1 resolvers left, closing all now...
+2020-11-14 17:52:31,588 - src.core.utils.names_resolver - DEBUG - Closing local resolver(1419497186024) at "input\fixed_Code2.java"
+2020-11-14 17:52:31,588 - src.core.utils.names_resolver - DEBUG - 9 local names found, 10 pending names found
+2020-11-14 17:52:31,589 - src.core.utils.names_resolver - DEBUG - Closing global resolver(1419493311880)
+2020-11-14 17:52:31,589 - src.core.utils.names_resolver - DEBUG - 6 global names found, 10 pending names found

@@ -1,4 +1,5 @@
 from enum import Enum
+import os
 
 class NameType(Enum):
     CLASS = 0
@@ -27,6 +28,9 @@ class ConventionNaming:
                 while idx < len(x) and x[idx].isupper(): idx += 1
                 while idx < len(x) and x[idx].islower(): idx += 1
 
+            elif ch.isdigit():
+                while idx < len(x) and x[idx].isupper(): idx += 1
+
             res += x[start:idx].upper()
             if idx != len(x): res += '_'
         return res
@@ -44,12 +48,18 @@ class ConventionNaming:
                 start = idx
 
             elif ch.islower():
+                idx += 1
                 while idx < len(x) and x[idx].islower(): idx += 1
                 res += x[start].upper() + x[start+1:idx]
 
             elif ch.isupper():
                 idx += 1
                 while idx < len(x) and x[idx].islower(): idx += 1
+                res += x[start:idx]
+
+            elif ch.isdigit():
+                idx += 1
+                while idx < len(x) and x[idx].isupper(): idx += 1
                 res += x[start:idx]
             
         return res
@@ -70,6 +80,7 @@ class ConventionNaming:
                 start = idx
 
             elif ch.islower():
+                idx += 1
                 while idx < len(x) and x[idx].islower(): idx += 1
                 if not res: res = x[start:idx]
                 else: res += x[start].upper() + x[start+1:idx]
@@ -80,7 +91,16 @@ class ConventionNaming:
                 if not res: res = x[start].lower() + x[start+1:idx]
                 else: res += x[start:idx]
 
+            elif ch.isdigit():
+                idx += 1
+                while idx < len(x) and x[idx].isupper(): idx += 1
+                res += x[start:idx]
+
         return res
+
+    @staticmethod
+    def get_file_name(name):
+        return ConventionNaming.get_class_name(name)
 
 def get_convention_rename(type : NameType, name : str):
     if type == NameType.CLASS:
@@ -97,3 +117,9 @@ def get_convention_rename(type : NameType, name : str):
 
     else:
         return name
+
+def get_convention_file_path(path):
+    head, tail = os.path.split(path)
+    name, format = os.path.splitext(tail)
+    name = ConventionNaming.get_file_name(name)
+    return os.path.join(head, f'fixed_{name}{format}')

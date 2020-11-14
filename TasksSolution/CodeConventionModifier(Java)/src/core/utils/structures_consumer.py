@@ -64,7 +64,7 @@ class StructuresConsumer:
         start, end = idx, None
         idx += 1
 
-        if allowed_templates and tokens[idx].value == '<':
+        if allowed_templates and idx < len(tokens) and tokens[idx].value == '<':
             if StructuresConsumer.try_template(idx, tokens, False):
                 idx = cls.consume_res[-1]
 

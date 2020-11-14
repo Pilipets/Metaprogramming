@@ -1,14 +1,15 @@
 from collections import defaultdict
-from .utils import NamesResolverError, setup_logger
+from .utils import NamesResolverError, setup_logger, FormatterType
 import copy, logging, os
 
 logger = setup_logger(__name__, logging.DEBUG)
+out_logger = setup_logger('renamed', logging.INFO, FormatterType.SHORT)
 
 class LocalResolver(dict):
     def __init__(self, path, tokens, names, p_resolver, r_resolver):
         self._path = path
         self._tokens = tokens
-        self._names = names
+        self._renamed_tokens = names
         self._p_resolver = p_resolver
         self._r_resolver = r_resolver
         self._pending = defaultdict(list)
@@ -16,7 +17,7 @@ class LocalResolver(dict):
     def _reset(self):
         self._path = None
         self._tokens = None
-        self._names = None
+        self._renamed_tokens = None
         self._p_resolver = None
         self._r_resolver = None
 
@@ -42,22 +43,30 @@ class LocalResolver(dict):
         return self._pending.keys()
 
     def get_names(self):
-        return self._names
+        return self._renamed_tokens
 
     def close(self):
         """Closes current names resolver:
         1. Creates file with the given self._path;
-        2. Produces new file structure from self._tokens and self._names;
+        2. Produces new file structure from self._tokens and self._renamed_tokens;
         3. Removes current resolver from further consideration."""
 
-        logger.debug('Closing local resolver({})'.format(id(self)))
+        logger.debug('Closing local resolver({}) at "{}"'.format(id(self), self._path))
         logger.debug('{} local names found, {} pending names found'.format(
             super().__len__(), len(self._pending)))
 
-        #output = 
-        #os.makedirs(os.path.dirname(self._path), exist_ok=True)
-        #with open(filename, "w") as f:
-        #    f.write("FOOBAR")
+        out_logger.info('Renaming for file "{}"'.format(self._path).center(80, '-'))
+        renamed_mask = [False for _ in range(len(self._renamed_tokens))]
+        for cur_idx, (origin_idx, x) in enumerate(self._renamed_tokens):
+            new_name, name = x.value, self._tokens[origin_idx].value
+            if name != new_name:
+                out_logger.info('Renamed: {} -> {}'.format(name, new_name))
+                renamed_mask[cur_idx] = True
+
+        out_logger.info(''.center(80, '-'))
+        os.makedirs(os.path.dirname(self._path), exist_ok=True)
+        with open(self._path, "w") as f:
+            f.write("FOOBAR")
 
         self._r_resolver._remove_local_resolver(self)
         self._reset()

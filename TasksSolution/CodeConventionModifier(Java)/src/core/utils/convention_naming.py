@@ -122,4 +122,4 @@ def get_convention_file_path(path):
     head, tail = os.path.split(path)
     name, format = os.path.splitext(tail)
     name = ConventionNaming.get_file_name(name)
-    return os.path.join(head, f'fixed_{name}{format}')
+    return os.path.join(head, f'modified_{name}{format}')

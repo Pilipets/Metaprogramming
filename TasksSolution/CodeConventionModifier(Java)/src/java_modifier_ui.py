@@ -23,8 +23,7 @@ class JavaModifierUI:
             else:
                 for root, dirs, files in os.walk(path):
                     for file in files:
-                        if (file.endswith('.java') and not file.startswith('modified_')
-                                and not file.startswith('verified_')):
+                        if (file.endswith('.java') and not file.startswith('modified_')):
                             res.append(os.path.join(root, file))
 
         elif option == '-d':
@@ -33,8 +32,7 @@ class JavaModifierUI:
             else:
                 for file in os.listdir(path):
                     if os.path.isfile(os.path.join(path, file)) and (
-                            file.endswith('.java') and not file.startswith('modified_')
-                            and not file.startswith('verified_')):
+                            file.endswith('.java') and not file.startswith('modified_')):
                         res.append(os.path.join(path, file))
 
         elif option == '-f':
@@ -49,7 +47,29 @@ class JavaModifierUI:
 
     @staticmethod
     def process_files(action, files):
-        pass
+        modifier = JavaModifierCore()
+        modifier.initialize()
+
+        format_flag, func = True, modifier.modify_one
+        if action in ('--verify', '-v'):
+            format_flag, func = False, modifier.verify_one
+
+        success_cnt, errors_cnt = 0, 0
+        for file in files:
+            try:
+                with open(file, "r", encoding='utf-8') as fin:
+                    javacode = fin.read()
+
+                func(file, javacode)
+            except Exception as ex:
+                print("Exception received when processing file={}, ex={}".format(file, ex))
+                errors_cnt += 1
+            else:
+                success_cnt += 1
+
+        modifier.finalize()
+
+        print('Processed %d files successfully, %d files with errors' % (success_cnt, errors_cnt))
 
     @staticmethod
     def run_debug():
@@ -60,9 +80,9 @@ class JavaModifierUI:
             javacode = fin.read()
 
         core = JavaModifierCore()
-        core.initialize_modify()
+        core.initialize()
         core.modify_one(file_path, javacode)
-        core.finalize_modify()
+        core.finalize()
 
         print('END'.center(60, '-'))
 
@@ -85,4 +105,22 @@ class JavaModifierUI:
             print(JavaModifierUI.help_text)
 
         else:
-            pass
+            # name, action{--modify, -m, --verify, -v}, option{-(p|d|f)}, in_path
+            if len(params) > 4:
+                JavaModifierUI.report_error(
+                    "incorrect amount(%d) of the script arguments"% len(params))
+
+            action = [c for c in ('-m', '--modify', '--verify', '-v') if c in params]
+            if len(action) > 1:
+                JavaModifierUI.report_error("incorrect usage of action flags %s" % action)
+            else:
+                action = action[0] if action else '-m'
+
+            option = [c for c in ('-p', '-d', '-f') if c in params]
+            if len(option) > 1 or len(option) == 0:
+                JavaModifierUI.report_error("incorrect usage of option flags %s" % option)
+            else:
+                option = option[0]
+
+            files = JavaModifierUI.prepare_formatting_files(option, sys.argv[-1])
+            JavaModifierUI.process_files(action, files)

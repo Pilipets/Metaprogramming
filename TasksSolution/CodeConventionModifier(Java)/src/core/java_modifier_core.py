@@ -22,9 +22,12 @@ class JavaModifierCore:
     def __init__(self):
         self._reset()
 
-    def initialize_modify(self):
+    def initialize(self):
         core_logger.debug('Initializing modify...'.center(60, '-'))
         self.names_resolver = NamesResolver()
+
+    def verify_one(self, file_path, text):
+        pass
 
     def modify_one(self, file_path, text):
         # Aliases
@@ -92,7 +95,7 @@ class JavaModifierCore:
         else:
             f_resolver.close()
 
-    def finalize_modify(self):
+    def finalize(self):
         core_logger.debug('Finalizing modify...'.center(60, '-'))
 
         self.names_resolver.close_all_resolvers()

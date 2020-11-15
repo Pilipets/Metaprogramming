@@ -1,6 +1,7 @@
 import re
 
 from .java_tokens import *
+from javalang.tokenizer import tokenize
 
 def tokenize(code, raise_errors=True):
     return JavaLexer(code, raise_errors).tokenize()
@@ -298,9 +299,10 @@ class JavaLexer():
 
 def restore_from_tokens(tokens, changed_tokens):
     '''Restore the structure with whitespaces using tokens
-    and changed tokens value in changed mask.'''
+    and changed tokens value in changed_tokens.'''
     if len(tokens) == 0: return ''
 
+    indent = 0
     output = ''
     line, col = 1, 1
     c_idx, shift = 0, 0
@@ -314,8 +316,12 @@ def restore_from_tokens(tokens, changed_tokens):
             shift += len(y.value) - len(x.value)
             x = y
 
+        if x.value == '{': indent += 1
+        elif x.value == '}': indent -= 1
+
         if t_line != line:
             diff = t_line - line
+            t_col = x.position.column
             col, shift = 1, 0
 
             output += diff*'\n'
@@ -323,11 +329,16 @@ def restore_from_tokens(tokens, changed_tokens):
 
         if t_col != col:
             diff = (t_col - col) 
-
-            output += diff*' '
+            if col == 1:
+                output += indent*4*' '
+            else:
+                output += diff*' '
             col += diff
 
         output += x.value
+
+        if isinstance(x, Comment):
+            line += x.value.count('\n')
         col += len(x.value)
 
     return output

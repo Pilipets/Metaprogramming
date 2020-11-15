@@ -74,6 +74,8 @@
   <ItemGroup>
     <Content Include="input\code2.java" />
     <Content Include="input\code.java" />
+    <Content Include="input\modified_Code.java" />
+    <Content Include="input\modified_Code2.java" />
     <Content Include="output\renamed.log" />
     <Content Include="output\src.core.java_modifier_core.log" />
     <Content Include="output\src.core.utils.names_resolver.log" />

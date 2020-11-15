@@ -1,6 +1,7 @@
 from collections import defaultdict
 from ...core.utils.utils import NamesResolverError, setup_logger, FormatterType
-from ...core.convention.convention_naming import get_convention_file_path
+from ...core.convention.convention_naming import *
+from .advanced_consumer import *
 from ...core.tokenizer.java_lexer import restore_from_tokens
 import copy, logging, os
 
@@ -45,7 +46,7 @@ class LocalResolver(dict):
     def get_pending(self):
         return self._pending.keys()
 
-    def get_names(self):
+    def get_renames(self):
         return self._renamed_tokens
 
     def close(self):
@@ -151,36 +152,62 @@ class NamesResolver:
         '''Closes the resolver specified by uuid, expects resolver not being pending'''
         del self._resolvers[id(resolver)]
 
-    def _add_renaming(self, type, name, stack):
-        f_resolver = self.names_resolver.get_local_resolver(self.uuid)
-        g_resolver = self.names_resolver.get_global_resolver()
 
-        if name in g_resolver:
-            return
+    def __is_global_scope(self, stack):
+        if (len(stack) == 3
+                and stack[-1].value == '{'
+                    and stack[-2].value in ('class', 'interface')):
+            return True
+        return False
 
-        new_name = get_convention_rename(type, name)
-        #if name == new_name:
-        #    return
+    def _add_var_declaration(self, f_r, g_r,
+                             is_global, type, method : MultiVarStruct):
+        resolver = g_r if is_global else f_r
 
-        if stack[-1].value == '' and type == NameType.CLASS:
-            # Process globals
-            g_resolver[name] = new_name
-            print(type, name, new_name)
+        if type == NameType.VARIABLE:
+            renamer = ConventionNaming.get_variable_name
+        elif type == NameType.CONST_VARIABLE:
+            renamer = ConventionNaming.get_constant_name
 
-        elif (len(stack) == 3 and stack[-1].value == '{'
-              and stack[-2].value in ('class', 'interface')
-                and type != NameType.NAME):
+        for x in method._names:
+            resolver[x] = renamer(x)
 
-            # Process globals
-            g_resolver[name] = new_name
-            print(type, name, new_name)
+    def _add_class_declaration(self, f_r, g_r,
+                               is_global, type, cls : ClassStruct):
+        resolver = g_r if is_global else f_r
+        resolver[cls._name] = ConventionNaming.get_class_name(cls._name)
+
+        if not cls._templ: return
+        for x in cls._templ._names:
+            f_r[x] = ConventionNaming.get_class_name(x)
+
+    def _add_method_declaration(self, f_r, g_r,
+                                is_global, type, method: MethodStruct):
+
+        resolver = g_r if is_global else f_r
+        resolver[method._name] = ConventionNaming.get_method_name(method._name)
+
+        for x in method._params:
+            x = x._names[0]
+            f_r[x] = ConventionNaming.get_variable_name(x)
+
+        if not method._templ: return
+        for x in method._templ._names:
+            f_r[x] = ConventionNaming.get_class_name(x)
+
+    def _add_declaration(self, uuid : int, type : NameType, ins, stack):
+        is_global = self.__is_global_scope(stack)
+        f_r = self.get_local_resolver(uuid)
+        g_r = self.get_global_resolver()
+
+        if type == NameType.VARIABLE or type == NameType.CONST_VARIABLE:
+            self._add_var_declaration(f_r, g_r, is_global, type, ins)
+
+        elif type == NameType.CLASS:
+            self._add_class_declaration(f_r, g_r, is_global, type, ins)
+
+        elif type == NameType.METHOD:
+            self._add_method_declaration(f_r, g_r, is_global, type, ins)
 
         else:
-            if name in f_resolver: return
-
-            # Process locals
-            f_resolver[name] = new_name
-            print(type, name, new_name)
-
-
-
+            return False

@@ -1,8 +1,13 @@
 class _DummyClass <sd, Se extends Other> {
+    
+/* Dummy
+    
+    
+    Doc */
 	class InnerClass {
 		public synchronized int[] var, var2 = 4;
 
-		protected <T, U> Try<Integer, Another>[][] method(dummy var, temp again) {
+		protected <T, U> Try<Integer, Another>[][] method(dummy<sd> var, temp again) {
 
 			try (var resource = acquire(23, 34)) {
 
@@ -14,13 +19,20 @@ class _DummyClass <sd, Se extends Other> {
 		
 	static protected final _Where.DummyType<Othes<Object[]>> avr;
 	
-	void nextMethod(double x = 3, Here.Othes<Object[]>[] arr) {
+	
+    /* some
+	
+	
+	
+	comment 
+    try this*/
+	void _nextMethod(double x = 3, Here.Othes<Object[]>[] arr) {
 	
 	}
 	
 	{
 		int _temp = 3 + nextMethod();
-		for (var hi = 5, _y = Random.rand(4,5); hi < 5; ++hi) {
+		for (var hi = 5, _y = _Random.rand(4,5); hi < 5; ++hi) {
 			VariousClass[] obj = new ANotherOne[34];
 			static final private const int temp = 5;
 		}

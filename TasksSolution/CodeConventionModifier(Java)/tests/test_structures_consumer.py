@@ -105,7 +105,7 @@ def test_try_var_single_declaration():
 
         assert end == len(tokens)
         assert var._type._name == out[0]
-        assert var._name == out[1]
+        assert var._names[0] == out[1]
 
 if __name__ == '__main__':
     test_try_template_declaration()

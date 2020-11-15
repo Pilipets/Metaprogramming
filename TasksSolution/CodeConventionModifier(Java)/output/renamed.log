@@ -1,3 +1,14 @@
 INFO - ----------------------Renaming for file "input\code2.java"----------------------
 INFO - Renaming file: input\code2.java -> input\modified_Code2.java
+INFO - Renaming at Position(line=1, column=7): _DummyClass -> DummyClass
+INFO - Renaming at Position(line=1, column=20): sd -> Sd
+INFO - Renaming at Position(line=10, column=59): sd -> Sd
+INFO - Renaming at Position(line=10, column=68): temp -> TEMP
+INFO - Renaming at Position(line=20, column=59): avr -> AVR
+INFO - Renaming at Position(line=29, column=7): _nextMethod -> nextMethod
+INFO - Renaming at Position(line=34, column=7): _temp -> temp
+INFO - Renaming at Position(line=35, column=20): _y -> y
+INFO - Renaming at Position(line=37, column=35): temp -> TEMP
+INFO - Renaming at Position(line=43, column=35): myEx -> MY_EX
+INFO - Renaming at Position(line=49, column=7): TTpTTest____VWs$$___ -> TTpTTestVWs
 INFO - --------------------------------------------------------------------------------

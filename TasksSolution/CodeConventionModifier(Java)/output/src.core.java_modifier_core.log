@@ -1,6 +1,6 @@
-2020-11-15 21:26:00,656 - src.core.java_modifier_core - DEBUG - -------------------Initializing modify...-------------------
-2020-11-15 21:26:00,658 - src.core.java_modifier_core - DEBUG - ----------------Analyzing "input\code2.java"----------------
-2020-11-15 21:26:00,661 - src.core.java_modifier_core - DEBUG - --------------Renaming for "input\code2.java"---------------
-2020-11-15 21:26:00,661 - src.core.java_modifier_core - DEBUG - 48 name conflicts encountered: _DummyClass, sd, Se, Other, InnerClass, int, var, var2, T, U, Try, Integer, Another, method, dummy, temp, again, resource, acquire, _Where, DummyType, Othes, Object, avr, nextMethod, double, x, Here, arr, _temp, hi, _y, Random, rand, VariousClass, obj, ANotherOne, WhyNot, Varios, O, myEx, ComplexType, Ab, complexMethod, TTpTTest____VWs$$___, String, t, z
-2020-11-15 21:26:00,661 - src.core.java_modifier_core - DEBUG - Postponing renaming for "input\code2.java"
-2020-11-15 21:26:00,661 - src.core.java_modifier_core - DEBUG - --------------------Finalizing modify...--------------------
+2020-11-15 23:25:44,014 - src.core.java_modifier_core - DEBUG - -------------------Initializing modify...-------------------
+2020-11-15 23:25:44,016 - src.core.java_modifier_core - DEBUG - ----------------Analyzing "input\code2.java"----------------
+2020-11-15 23:25:44,019 - src.core.java_modifier_core - DEBUG - --------------Renaming for "input\code2.java"---------------
+2020-11-15 23:25:44,019 - src.core.java_modifier_core - DEBUG - 23 name conflicts encountered: Other, int, Try, Integer, Another, dummy, acquire, _Where, DummyType, Othes, Object, double, Here, nextMethod, _Random, rand, VariousClass, ANotherOne, Varios, O, ComplexType, Ab, String
+2020-11-15 23:25:44,020 - src.core.java_modifier_core - DEBUG - Postponing renaming for "input\code2.java"
+2020-11-15 23:25:44,020 - src.core.java_modifier_core - DEBUG - --------------------Finalizing modify...--------------------

@@ -93,8 +93,8 @@ class JavaModifierCore:
         f_resolver = names_resolver.get_local_resolver(self.uuid)
         g_resolver = names_resolver.get_global_resolver()
 
-        res_names = f_resolver.get_names()
-        for idx, x in res_names:
+        renames = f_resolver.get_renames()
+        for idx, x in renames:
             name = x.value
             if name in f_resolver:
                 x.value = f_resolver[name]
@@ -102,11 +102,9 @@ class JavaModifierCore:
             elif name in g_resolver:
                 x.value = g_resolver[name]
 
-            # Store for post_processing - will be resolved on the fly
+            # Store for post processing - will be resolved on the fly
             else:
                 f_resolver.add_pending(x)
-
-            #print(name, x.value)
 
         if f_resolver.is_pending():
             cnt = f_resolver.get_pending_count()
@@ -119,10 +117,10 @@ class JavaModifierCore:
         else:
             f_resolver.close()
 
-
     def _process_operator(self):
         idx = self.idx
         tokens, consumer = self.tokens, self.consumer
+        stack, names_resolver = self.stack, self.names_resolver
 
         # Starting with generics method without preceding keywords
         if consumer.try_method_declaration(idx, tokens):
@@ -131,12 +129,15 @@ class JavaModifierCore:
             res_str = 'Method declaration: {}'.format(method)
             print(res_str)
 
+            names_resolver._add_declaration(
+                self.uuid, NameType.METHOD, method, stack)
+
             self.idx = idx - 1
 
     def _process_separator(self):
         cur = self.cur
         tokens, consumer = self.tokens, self.consumer
-        stack = self.stack
+        stack, names_resolver = self.stack, self.names_resolver
 
         if cur.value == '{':
             stack.append(cur)
@@ -160,7 +161,7 @@ class JavaModifierCore:
     def _process_keyword(self):
         idx, cur = self.idx, self.cur
         tokens, consumer = self.tokens, self.consumer
-        stack = self.stack
+        stack, names_resolver = self.stack, self.names_resolver
 
         # we know at least 1 keyword would be there
         consumer.try_keywords(idx, tokens)
@@ -174,12 +175,18 @@ class JavaModifierCore:
             print(res_str)
             stack.append(cur)
 
+            names_resolver._add_declaration(
+                self.uuid, NameType.CLASS , cls, stack)
+
         # Previous is void
         elif consumer.try_method_declaration(idx-1, tokens):
             method, idx = consumer.get_consume_res()
 
             res_str = 'Method declaration: {}'.format(method)
             print(res_str)
+
+            names_resolver._add_declaration(
+                self.uuid, NameType.METHOD, method, stack)
 
         # Next is method
         elif consumer.try_method_declaration(idx, tokens):
@@ -188,6 +195,9 @@ class JavaModifierCore:
             res_str = 'Method declaration: {}'.format(method)
             print(res_str)
 
+            names_resolver._add_declaration(
+                self.uuid, NameType.METHOD, method, stack)
+
         # Multiple vars
         elif consumer.try_multiple_vars_declaration(idx, tokens):
             vars, idx = consumer.get_consume_res()
@@ -195,10 +205,16 @@ class JavaModifierCore:
             if 'static' in keywords and 'final' in keywords:
                 res_str = 'Const vars declaration: {}'.format(vars)
                 print(res_str)
+
+                names_resolver._add_declaration(
+                    self.uuid, NameType.CONST_VARIABLE, vars, stack)
             
             else:
                 res_str = 'Vars declaration: {}'.format(vars)
                 print(res_str)
+
+                names_resolver._add_declaration(
+                    self.uuid, NameType.VARIABLE, vars, stack)
 
         else:
             # We will treat is as single declaration later
@@ -209,6 +225,7 @@ class JavaModifierCore:
     def _process_simple_type(self):
         idx = self.idx
         tokens, consumer = self.tokens, self.consumer
+        stack, names_resolver = self.stack, self.names_resolver
 
         # Without preceding keywords
         if consumer.try_method_declaration(idx, tokens):
@@ -217,17 +234,26 @@ class JavaModifierCore:
             res_str = 'Method declaration: {}'.format(method)
             print(res_str)
 
+            names_resolver._add_declaration(
+                self.uuid, NameType.METHOD, method, stack)
+
         elif consumer.try_multiple_vars_declaration(idx, tokens):
             vars, idx = consumer.get_consume_res()
 
             res_str = 'Vars declaration: {}'.format(vars)
             print(res_str)
 
+            names_resolver._add_declaration(
+                self.uuid, NameType.VARIABLE, vars, stack)
+
         elif consumer.try_var_single_declaration(idx, tokens):
             var, idx = consumer.get_consume_res()
 
             res_str = 'Var declaration: {}'.format(var)
             print(res_str)
+
+            names_resolver._add_declaration(
+                self.uuid, NameType.VARIABLE, var, stack)
 
         else:
             idx += 1
@@ -237,6 +263,7 @@ class JavaModifierCore:
     def _process_identifier(self):
         idx, cur = self.idx, self.cur
         tokens, consumer = self.tokens, self.consumer
+        stack, names_resolver = self.stack, self.names_resolver
 
         if consumer.try_method_declaration(idx, tokens):
             method, idx = consumer.get_consume_res()
@@ -244,17 +271,26 @@ class JavaModifierCore:
             res_str = 'Method declaration: {}'.format(method)
             print(res_str)
 
+            names_resolver._add_declaration(
+                self.uuid, NameType.METHOD, method, stack)
+
         elif consumer.try_multiple_vars_declaration(idx, tokens):
             vars, idx = consumer.get_consume_res()
 
             res_str = 'Vars declaration: {}'.format(vars)
             print(res_str)
 
+            names_resolver._add_declaration(
+                self.uuid, NameType.VARIABLE, vars, stack)
+
         elif consumer.try_var_single_declaration(idx, tokens):
             var, idx = consumer.get_consume_res()
 
             res_str = 'Var declaration: {}'.format(var)
             print(res_str)
+
+            names_resolver._add_declaration(
+                self.uuid, NameType.VARIABLE, var, stack)
 
         else:
             # We know at least one name is there

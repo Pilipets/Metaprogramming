@@ -62,7 +62,7 @@ def test_try_method_declaration():
         assert method._name == out[1]
         for x, y in zip(method._params, out[2:]):
             assert x._type._name == y[0]
-            assert x._name == y[1]
+            assert x._names[0] == y[1]
 
 
 if __name__ == '__main__':

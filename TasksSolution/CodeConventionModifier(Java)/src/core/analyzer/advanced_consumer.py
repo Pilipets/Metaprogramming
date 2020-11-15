@@ -1,15 +1,6 @@
 from .structures_consumer import *
 from ...core.tokenizer import java_lexer
 
-class MultiVarStruct:
-    def __init__(self, var_type, var_names):
-        self._type = var_type
-        self._names = var_names
-
-    def __str__(self):
-        res = "%s %s" % (self._type, ', '.join(self._names))
-        return res
-
 class MethodStruct:
     def __init__(self, templ, var_type, name, params):
         self._type = var_type
@@ -78,8 +69,6 @@ class AdvancedStructuresConsumer(StructuresConsumer):
         return True
 
     def try_method_declaration(self, idx, tokens):
-
-        # This should be replaced with another templates reader
         templ = None
         if self.try_template_declaration(idx, tokens):
             templ, idx = self.consume_res

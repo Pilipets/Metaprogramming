@@ -30,13 +30,14 @@ class VarTypeStruct:
         if self._is_array: res += ' [...]'
         return res
 
-class VarStruct:
-    def __init__(self, var_type, var_name):
+class MultiVarStruct:
+    def __init__(self, var_type, var_names):
         self._type = var_type
-        self._name = var_name
+        self._names = var_names
 
     def __str__(self):
-        return "%s %s" % (self._type, self._name)
+        res = "%s %s" % (self._type, ', '.join(self._names))
+        return res
 
 class StructuresConsumer:
     def __init__(self):
@@ -93,11 +94,12 @@ class StructuresConsumer:
             class_name = tokens[idx+1].value
             idx += 2
 
+        else:
+            return False
+
         tmpl = None
         if (self.try_template_declaration(idx, tokens)):
             tmpl, idx = self.consume_res
-
-        if not class_name: return False
 
         class_struct = ClassStruct(class_name, tmpl)
         self.consume_res = class_struct, idx
@@ -153,8 +155,6 @@ class StructuresConsumer:
         return True
 
     def try_template_invocation(self, idx, tokens):
-        '''Method to read templates from idx through tokens'''
-
         self.consume_res = None
         if idx >= len(tokens): return False
 
@@ -209,12 +209,10 @@ class StructuresConsumer:
         return True
 
     def try_var_type(self, idx, tokens):
-
         allowed_templates = False
 
         if self.try_outer_identifier(idx, tokens):
-            idx = self.consume_res[-1]
-            idx -= 1
+            idx = self.consume_res[-1] - 1
             allowed_templates = True
 
         elif isinstance(tokens[idx], java_lexer.SimpleType):
@@ -240,7 +238,6 @@ class StructuresConsumer:
         return True
 
     def try_var_single_declaration(self, idx, tokens):
-
         if not self.try_var_type(idx, tokens): return False
         var_type, idx = self.consume_res
 
@@ -251,6 +248,6 @@ class StructuresConsumer:
 
         if not var_name: return False
 
-        var_struct = VarStruct(var_type, var_name)
+        var_struct = MultiVarStruct(var_type, [var_name])
         self.consume_res = (var_struct, idx)
         return True

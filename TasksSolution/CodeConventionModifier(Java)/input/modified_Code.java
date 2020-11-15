@@ -1,1 +1,5 @@
-static protected final DummyType<Othes<Object[]>> avr;
+class _DummyClass {
+    class InnerClass {
+        
+    }
+}

@@ -1,5 +1,0 @@
-2020-11-15 23:25:44,020 - src.core.analyzer.names_resolver - DEBUG - 1 resolvers left, closing all now...
-2020-11-15 23:25:44,020 - src.core.analyzer.names_resolver - DEBUG - Closing local resolver(2223274602568) at "input\code2.java"
-2020-11-15 23:25:44,020 - src.core.analyzer.names_resolver - DEBUG - 20 local names found, 23 pending names found
-2020-11-15 23:25:44,023 - src.core.analyzer.names_resolver - DEBUG - Closing global resolver(2223272464296)
-2020-11-15 23:25:44,023 - src.core.analyzer.names_resolver - DEBUG - 7 global names found, 23 pending names found

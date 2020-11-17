@@ -40,6 +40,7 @@ class MultiVarStruct:
         return res
 
 class StructuresConsumer:
+
     def __init__(self):
         self.consume_res = None
 
@@ -49,6 +50,24 @@ class StructuresConsumer:
 
     def get_consume_res(self):
         return self.consume_res
+
+    def try_stacked_chars(self, chars : str, idx, tokens):
+        start_ch, end_ch = chars
+        self.consume_res = None
+        if idx >= len(tokens) or tokens[idx].value != start_ch:
+            return False
+        
+        cnt, idx = 1, idx + 1
+        while idx < len(tokens) and cnt > 0:
+            if tokens[idx].value == start_ch: cnt += 1
+            elif tokens[idx].value == end_ch: cnt -= 1
+            idx += 1
+            
+        if cnt == 0:
+            self.consume_res = (None, idx)
+            return True
+
+        return False
 
     def try_keywords(self, idx, tokens):
         self.consume_res = None

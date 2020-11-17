@@ -46,16 +46,10 @@ class AdvancedStructuresConsumer(StructuresConsumer):
                     idx = self.consume_res[-1] - 1
                     next_state = 3
 
-                elif tokens[idx].value == '(':
-                    cnt, idx = 1, idx + 1
-                    while idx < len(tokens) and cnt > 0:
-                        if tokens[idx].value == '(': cnt += 1
-                        elif tokens[idx].value == ')': cnt -= 1
-                        idx += 1
-
-                    if cnt == 0:
-                        next_state = 3
-                        idx -= 1
+                elif (self.try_stacked_chars('()', idx, tokens)
+                      or self.try_stacked_chars('{}', idx, tokens)):
+                    idx = self.consume_res[-1] - 1
+                    next_state = 3
 
                 else: next_state = 3
 
@@ -120,20 +114,13 @@ class AdvancedStructuresConsumer(StructuresConsumer):
                 if tokens[idx].value == ',': next_state = 1
                 elif tokens[idx].value == ')': next_state = 0
                 elif self.try_template_invocation(idx, tokens):
-                    temp, end = self.consume_res
                     idx = self.consume_res[-1] - 1
                     next_state = 3
 
-                elif tokens[idx].value == '(':
-                    inner_cnt, idx = 1, idx + 1
-                    while idx < len(tokens) and inner_cnt > 0:
-                        if tokens[idx].value == '(': inner_cnt += 1
-                        elif tokens[idx].value == ')': inner_cnt -= 1
-                        idx += 1
-
-                    if inner_cnt == 0:
-                        next_state = 2
-                        idx -= 1
+                elif (self.try_stacked_chars('()', idx, tokens)
+                      or self.try_stacked_chars('{}', idx, tokens)):
+                    idx = self.consume_res[-1] - 1
+                    next_state = 3
 
                 else: next_state = 3
 

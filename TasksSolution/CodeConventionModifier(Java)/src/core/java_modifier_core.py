@@ -173,7 +173,7 @@ class JavaModifierCore:
 
             res_str = 'Class declaration: {}'.format(cls)
             print(res_str)
-            stack.append(cur)
+            stack.append(tokens[idx-2])
 
             names_resolver._add_declaration(
                 self.uuid, NameType.CLASS , cls, stack)

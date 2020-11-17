@@ -10,59 +10,45 @@ class NameType(Enum):
  
 class ConventionNaming:
     @staticmethod
-    def get_constant_name(name : str):
-        # convention_name: ([A-Z]+(_[A-Z]+)*
-        res = ''
-        x, idx = name, 0
+    def _strip_invalid_prefix(name : str):
+        idx = 0
+        while idx < len(name) and (name[idx] in '_$' or name[idx].isdigit()): idx += 1
+        return name[idx:len(name)]
 
+    @staticmethod
+    def _get_name_partitions(name : str):
+        x = ConventionNaming._strip_invalid_prefix(name)
+        res = []
+        idx = 0
         while idx < len(x):
             ch, start = x[idx], idx
             if ch in '_$':
                 while idx < len(x) and x[idx] in '_$': idx += 1
                 start = idx
+                continue
 
-            elif ch.islower():
-                while idx < len(x) and x[idx].islower(): idx += 1
+            if ch.isupper() or ch.isdigit():
+                while idx < len(x) and (x[idx].isupper() or x[idx].isdigit()): idx += 1
+                while idx < len(x) and (x[idx].islower() or x[idx].isdigit()): idx += 1
 
-            elif ch.isupper():
-                while idx < len(x) and x[idx].isupper(): idx += 1
-                while idx < len(x) and x[idx].islower(): idx += 1
+            elif ch.islower() or ch.isdigit():
+                while idx < len(x) and (x[idx].islower() or x[idx].isdigit()): idx += 1
 
-            elif ch.isdigit():
-                while idx < len(x) and x[idx].isupper(): idx += 1
+            if start != idx: res.append(x[start:idx])
 
-            res += x[start:idx].upper()
-            if idx != len(x): res += '_'
         return res
 
     @staticmethod
+    def get_constant_name(name : str):
+
+        res = ConventionNaming._get_name_partitions(name)
+        return '_'.join(x.upper() for x in res)
+
+    @staticmethod
     def get_class_name(name : str):
-        # convention_name: ([A-Z][a-z]*)+
-        res = ''
-        x, idx = name, 0
 
-        while idx < len(x):
-            ch, start = x[idx], idx
-            if ch in '_$':
-                while idx < len(x) and x[idx] in '_$': idx += 1
-                start = idx
-
-            elif ch.islower():
-                idx += 1
-                while idx < len(x) and x[idx].islower(): idx += 1
-                res += x[start].upper() + x[start+1:idx]
-
-            elif ch.isupper():
-                idx += 1
-                while idx < len(x) and x[idx].islower(): idx += 1
-                res += x[start:idx]
-
-            elif ch.isdigit():
-                idx += 1
-                while idx < len(x) and x[idx].isupper(): idx += 1
-                res += x[start:idx]
-            
-        return res
+        res = ConventionNaming._get_name_partitions(name)
+        return ''.join(x.capitalize() for x in res)
 
     @staticmethod
     def get_method_name(name : str):
@@ -70,33 +56,9 @@ class ConventionNaming:
 
     @staticmethod
     def get_variable_name(name : str):
-        res = ''
-        x, idx = name, 0
-
-        while idx < len(x):
-            ch, start = x[idx], idx
-            if ch in '_$':
-                while idx < len(x) and x[idx] in '_$': idx += 1
-                start = idx
-
-            elif ch.islower():
-                idx += 1
-                while idx < len(x) and x[idx].islower(): idx += 1
-                if not res: res = x[start:idx]
-                else: res += x[start].upper() + x[start+1:idx]
-
-            elif ch.isupper():
-                idx += 1
-                while idx < len(x) and x[idx].islower(): idx += 1
-                if not res: res = x[start].lower() + x[start+1:idx]
-                else: res += x[start:idx]
-
-            elif ch.isdigit():
-                idx += 1
-                while idx < len(x) and x[idx].isupper(): idx += 1
-                res += x[start:idx]
-
-        return res
+        res = ConventionNaming._get_name_partitions(name)
+        if not res: return ''
+        return res[0].lower() + ''.join(x.capitalize() for x in res[1:])
 
     @staticmethod
     def get_file_name(name):

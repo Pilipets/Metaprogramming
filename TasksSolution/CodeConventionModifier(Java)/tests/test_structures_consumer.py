@@ -107,6 +107,19 @@ def test_try_var_single_declaration():
         assert var._type._name == out[0]
         assert var._names[0] == out[1]
 
+stacked_chars_data = [
+    ('{sdsd method(,(e = ;){dd{}dsfd}2323d = ;}', '{}'),
+    ('( <other<sdfs>>; {sdsd method(,(e = ;){dd{}dsfd}232)3d = ;} })', '()')
+]
+def test_try_stacked_chars_data():
+    for in_txt, chars in stacked_chars_data:
+        tokens = list(tokenize(in_txt))
+        
+        assert consumer.try_stacked_chars(chars, 0, tokens)
+        _, end = consumer.get_consume_res()
+
+        assert end == len(tokens)
+
 if __name__ == '__main__':
     test_try_template_declaration()
     test_try_template_invocation()
@@ -114,3 +127,5 @@ if __name__ == '__main__':
     test_try_class_declaration()
     test_try_var_type()
     test_try_var_single_declaration()
+
+    test_try_stacked_chars_data()

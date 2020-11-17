@@ -12,7 +12,7 @@
     <Name>CodeConventionModifier(Java)</Name>
     <RootNamespace>CodeConventionModifier(Java)</RootNamespace>
     <LaunchProvider>Standard Python launcher</LaunchProvider>
-    <CommandLineArguments>--admin</CommandLineArguments>
+    <CommandLineArguments>-m -p E:\Downloads\temp4\automata</CommandLineArguments>
     <EnableNativeCodeDebugging>False</EnableNativeCodeDebugging>
     <TestFramework>Pytest</TestFramework>
   </PropertyGroup>
@@ -53,6 +53,9 @@
     <Compile Include="src\core\tokenizer\java_lexer.py" />
     <Compile Include="src\core\tokenizer\java_tokens.py" />
     <Compile Include="tests\test_advanced_consumer.py">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="tests\test_convention_naming.py">
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="tests\test_structures_consumer.py">

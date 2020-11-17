@@ -3,7 +3,7 @@ from src.core.tokenizer.java_lexer import tokenize
 
 consumer = Consumer.get_consumer()
 
-vars_multi_declaration_data = (
+vars_multi_declaration_data = [
     ('var scope =)', ('var', ('scope',))),
     ('int var)', ('int', ('var',))),
     ('float MyName = <T, P>Class.method(var, this.var);', ('float', ('MyName',))),
@@ -13,7 +13,7 @@ vars_multi_declaration_data = (
     ('yet again = method(23, method2(t, DF.class, method4(...)));', ('yet', ('again',))),
     ('int simple = 34;', ('int', ('simple',))),
     ('Temp<?,?>[] x,y,u;', ('Temp', ('x','y','u')))
-)
+]
 def test_try_multiple_vars_declaration():
     for in_txt, out in vars_multi_declaration_data:
         tokens = list(tokenize(in_txt))
@@ -28,7 +28,7 @@ def test_try_multiple_vars_declaration():
         for idx, name in enumerate(vars._names):
             assert name == out[1][idx]
 
-methods_data = (
+methods_data = [
     (
         '<T,U> int simple()',
         ('int', 'simple')
@@ -49,7 +49,7 @@ methods_data = (
         'Try<Cmp, S[]>[] Another(Then<ere, sds> x, ret y = method(23, MyArr[323]))',
         ('Try', 'Another', ('Then', 'x'), ('ret', 'y'))
     )
-)
+]
 def test_try_method_declaration():
     for in_txt, out in methods_data:
         tokens = list(tokenize(in_txt))

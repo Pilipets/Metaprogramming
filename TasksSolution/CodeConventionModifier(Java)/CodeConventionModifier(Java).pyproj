@@ -12,7 +12,7 @@
     <Name>CodeConventionModifier(Java)</Name>
     <RootNamespace>CodeConventionModifier(Java)</RootNamespace>
     <LaunchProvider>Standard Python launcher</LaunchProvider>
-    <CommandLineArguments>-m -p E:\Downloads\temp4\automata</CommandLineArguments>
+    <CommandLineArguments>--admin</CommandLineArguments>
     <EnableNativeCodeDebugging>False</EnableNativeCodeDebugging>
     <TestFramework>Pytest</TestFramework>
   </PropertyGroup>

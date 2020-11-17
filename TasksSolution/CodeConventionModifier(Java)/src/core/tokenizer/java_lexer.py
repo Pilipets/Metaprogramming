@@ -1,7 +1,6 @@
 import re
 
 from .java_tokens import *
-from javalang.tokenizer import tokenize
 
 def tokenize(code, raise_errors=True):
     return JavaLexer(code, raise_errors).tokenize()

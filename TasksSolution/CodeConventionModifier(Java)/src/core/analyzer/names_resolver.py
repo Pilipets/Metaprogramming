@@ -1,9 +1,10 @@
 from collections import defaultdict
+import copy, logging, os
+
 from ...core.utils.utils import NamesResolverError, setup_logger, FormatterType
 from ...core.convention.convention_naming import *
 from .advanced_consumer import *
 from ...core.tokenizer.java_lexer import restore_from_tokens
-import copy, logging, os
 
 logger = setup_logger(__name__, logging.DEBUG)
 out_logger = setup_logger('renamed', logging.INFO, FormatterType.SHORT)
@@ -154,9 +155,8 @@ class NamesResolver:
 
 
     def __is_global_scope(self, stack):
-        if (len(stack) == 3
-                and stack[-1].value == '{'
-                    and stack[-2].value in ('class', 'interface')):
+        if (len(stack) == 1 or (len(stack) == 3 and stack[-1].value == '{'
+                                    and stack[-2].value in ('class', 'interface'))):
             return True
         return False
 

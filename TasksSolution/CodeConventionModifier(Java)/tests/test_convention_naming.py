@@ -18,7 +18,6 @@ def test_const_vars_rename():
         assert _out == ConventionNaming.get_constant_name(_in)
         assert _out == get_convention_rename(NameType.CONST_VARIABLE, _in)
 
-
 class_vars_data = [
     ("Var_2DIY2", "Var2diy2"),
     ("VAR_2diy2", "Var2diy2"),

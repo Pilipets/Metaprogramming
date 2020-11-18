@@ -27,12 +27,18 @@ class LocalResolver(dict):
         self._r_resolver = None
 
     def add_pending(self, token):
+        present = self._pending.get(token.value, None) is not None
         self._pending[token.value].append(token)
+
+        if present: return
         self._p_resolver.add_pending(token.value, self)
 
     def process_pending(self, name, new_name):
         for x in self._pending.get(name, []):
             x.value = new_name
+
+        if not self._pending.get(name, []):
+            print('WTF')
         del self._pending[name]
 
         if len(self._pending) == 0:
@@ -154,7 +160,7 @@ class NamesResolver:
         del self._resolvers[id(resolver)]
 
 
-    def __is_global_scope(self, stack):
+    def _is_global_scope(self, stack):
         if (len(stack) == 1 or (len(stack) == 3 and stack[-1].value == '{'
                                     and stack[-2].value in ('class', 'interface'))):
             return True
@@ -196,7 +202,7 @@ class NamesResolver:
             f_r[x] = ConventionNaming.get_class_name(x)
 
     def _add_declaration(self, uuid : int, type : NameType, ins, stack):
-        is_global = self.__is_global_scope(stack)
+        is_global = self._is_global_scope(stack)
         f_r = self.get_local_resolver(uuid)
         g_r = self.get_global_resolver()
 

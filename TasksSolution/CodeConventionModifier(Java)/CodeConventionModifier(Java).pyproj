@@ -12,7 +12,7 @@
     <Name>CodeConventionModifier(Java)</Name>
     <RootNamespace>CodeConventionModifier(Java)</RootNamespace>
     <LaunchProvider>Standard Python launcher</LaunchProvider>
-    <CommandLineArguments>--admin</CommandLineArguments>
+    <CommandLineArguments>-m -d C:\Users\Druid\source\repos\Metaprogramming\TasksSolution\CodeConventionModifier(Java)\input\test</CommandLineArguments>
     <EnableNativeCodeDebugging>False</EnableNativeCodeDebugging>
     <TestFramework>Pytest</TestFramework>
   </PropertyGroup>
@@ -29,6 +29,9 @@
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="src\core\analyzer\advanced_consumer.py">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="src\core\convention\java_doc_handler.py">
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="src\core\java_modifier_core.py" />
@@ -64,6 +67,7 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="input\" />
+    <Folder Include="input\test\" />
     <Folder Include="src\core\analyzer\" />
     <Folder Include="src\core\convention\" />
     <Folder Include="tests\" />
@@ -75,10 +79,9 @@
     <Folder Include="src\core\tokenizer\" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="input\code2.java" />
     <Content Include="input\code.java" />
-    <Content Include="input\modified_Code.java" />
-    <Content Include="input\modified_Code2.java" />
+    <Content Include="input\test\code1.java" />
+    <Content Include="input\test\code2.java" />
     <Content Include="output\renamed.log" />
     <Content Include="output\src.core.java_modifier_core.log" />
     <Content Include="output\src.core.utils.names_resolver.log" />

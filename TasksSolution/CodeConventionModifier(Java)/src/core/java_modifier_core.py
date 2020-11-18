@@ -40,7 +40,7 @@ class JavaModifierCore:
             if isinstance(self.cur, java_lexer.Identifier):
                 self._process_identifier()
 
-            elif isinstance(self.cur, java_lexer.SimpleType):
+            elif isinstance(self.cur, java_lexer.BasicType):
                 self._process_simple_type()
 
             elif isinstance(self.cur, java_lexer.Keyword):
@@ -122,7 +122,7 @@ class JavaModifierCore:
         tokens, consumer = self.tokens, self.consumer
         stack, names_resolver = self.stack, self.names_resolver
 
-        # Starting with generics method without preceding keywords
+        # Starting with generics method without preceding modifiers
         if consumer.try_method_declaration(idx, tokens):
             method, idx = consumer.get_consume_res()
 
@@ -161,23 +161,24 @@ class JavaModifierCore:
         tokens, consumer = self.tokens, self.consumer
         stack, names_resolver = self.stack, self.names_resolver
 
-        # we know at least 1 keyword would be there
-        consumer.try_keywords(idx, tokens)
-        keywords, idx = consumer.get_consume_res()
+        modifiers = []
+        if consumer.try_instances(java_lexer.Modifier, idx, tokens):
+            modifiers, idx = consumer.get_consume_res()
         
         # Previous is either class or interface
-        if consumer.try_class_declaration(idx-1, tokens):
-            start_token = tokens[idx-1]
+        if consumer.try_class_declaration(idx, tokens):
+            start_token = tokens[idx]
             cls, idx = consumer.get_consume_res()
             core_logger.debug('Class declaration: {}'.format(cls))
+
+
             names_resolver._add_declaration(
                 self.uuid, NameType.CLASS , cls, stack)
 
             stack.append(start_token)
 
         # Previous is void or next is method
-        elif (consumer.try_method_declaration(idx-1, tokens)
-                or consumer.try_method_declaration(idx, tokens)):
+        elif consumer.try_method_declaration(idx, tokens):
             method, idx = consumer.get_consume_res()
             core_logger.debug('Method declaration: {}'.format(method))
             names_resolver._add_declaration(
@@ -187,7 +188,7 @@ class JavaModifierCore:
         elif consumer.try_multiple_vars_declaration(idx, tokens):
             vars, idx = consumer.get_consume_res()
 
-            if 'static' in keywords and 'final' in keywords:
+            if 'static' in modifiers and 'final' in modifiers:
                 core_logger.debug('Const vars declaration: {}'.format(vars))
                 names_resolver._add_declaration(
                     self.uuid, NameType.CONST_VARIABLE, vars, stack)
@@ -197,6 +198,9 @@ class JavaModifierCore:
                 names_resolver._add_declaration(
                     self.uuid, NameType.VARIABLE, vars, stack)
 
+        elif not modifiers:
+            idx += 1
+
         self.idx = idx - 1
 
     def _process_simple_type(self):
@@ -204,7 +208,7 @@ class JavaModifierCore:
         tokens, consumer = self.tokens, self.consumer
         stack, names_resolver = self.stack, self.names_resolver
 
-        # Without preceding keywords
+        # Without preceding modifiers
         if consumer.try_method_declaration(idx, tokens):
             method, idx = consumer.get_consume_res()
             core_logger.debug('Method declaration: {}'.format(method))

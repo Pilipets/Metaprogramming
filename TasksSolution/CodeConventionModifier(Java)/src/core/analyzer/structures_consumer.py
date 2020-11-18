@@ -69,11 +69,11 @@ class StructuresConsumer:
 
         return False
 
-    def try_keywords(self, idx, tokens):
+    def try_instances(self, type, idx, tokens):
         self.consume_res = None
         res = []
 
-        while idx < len(tokens) and isinstance(tokens[idx], java_lexer.Keyword):
+        while idx < len(tokens) and isinstance(tokens[idx], type):
             res.append(tokens[idx].value)
             idx += 1
 
@@ -234,7 +234,7 @@ class StructuresConsumer:
             idx = self.consume_res[-1] - 1
             allowed_templates = True
 
-        elif isinstance(tokens[idx], java_lexer.SimpleType):
+        elif isinstance(tokens[idx], java_lexer.BasicType):
             allowed_templates = False
 
         else:

@@ -287,8 +287,10 @@ class JavaLexer():
         if res in Keyword.VALUES_SET:
 
             token_type = Keyword
-            if res in SimpleType.VALUES_SET:
-                token_type = SimpleType
+            if res in BasicType.VALUES_SET:
+                token_type = BasicType
+            elif res in Modifier.VALUES_SET:
+                token_type = Modifier
 
         elif res in {'true', 'false', 'null'}:
             # For the moment it doesn't matter

@@ -75,7 +75,7 @@ class JavaModifierUI:
     def run_debug():
         print('START'.center(60, '-'))
         javacode = ''
-        file_path = os.path.join("input", "code2.java")
+        file_path = os.path.join("input", "code.java")
         with open(file_path, "r", encoding='utf-8') as fin:
             javacode = fin.read()
 

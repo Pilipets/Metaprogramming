@@ -17,17 +17,22 @@ class JavaToken():
         raise NotImplementedError
 
 class Keyword(JavaToken):
-    VALUES_SET = {'abstract', 'assert', 'break', 'case',
-                  'catch', 'class', 'const', 'continue', 'default',
-                  'do', 'else', 'enum', 'extends', 'final',
-                  'finally', 'for', 'goto', 'if', 'implements',
-                  'import', 'instanceof', 'interface', 'native',
+    VALUES_SET = {'abstract', 'assert', 'boolean', 'break', 'byte', 'case',
+                  'catch', 'char', 'class', 'const', 'continue', 'default',
+                  'do', 'double', 'else', 'enum', 'extends', 'final',
+                  'finally', 'float', 'for', 'goto', 'if', 'implements',
+                  'import', 'instanceof', 'int', 'interface', 'long', 'native',
                   'new', 'package', 'private', 'protected', 'public', 'return',
-                  'static', 'strictfp', 'super', 'switch',
+                  'short', 'static', 'strictfp', 'super', 'switch',
                   'synchronized', 'this', 'throw', 'throws', 'transient', 'try',
                   'void', 'volatile', 'while'}
 
-class SimpleType(JavaToken):
+class Modifier(Keyword):
+    VALUES_SET = {'abstract', 'default', 'final', 'native', 'private',
+                  'protected', 'public', 'static', 'strictfp', 'synchronized',
+                  'transient', 'volatile'}
+
+class BasicType(Keyword):
     VALUES_SET = {'boolean', 'byte', 'char', 'double', 'float', 'int', 'long', 'short'}
 
 class Literal(JavaToken):

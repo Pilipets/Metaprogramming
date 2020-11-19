@@ -17,6 +17,8 @@ class JavaLexer():
         self.current_line, self.start_of_line = 1, -1
         self.idx, self.next_idx = 0, 0
         self.length = len(self.data)
+        self.javadoc = None
+        self.current_column = 1
 
         # categorize operators by their length
         self.operators_by_len = [set() for _ in range(Operator.MAX_LEN)]
@@ -60,9 +62,14 @@ class JavaLexer():
                 self.next_idx = self.idx + 1
 
             elif prefix in ("//", "/*"):
-                res = self.read_comment()
-                token = Comment(res[0], res[1])
-                yield token
+                text, pos = self.read_comment()
+
+                if text.startswith("/**"):
+                    if self.javadoc: yield self.javadoc
+                    self.javadoc = Comment(text, pos, None)
+                else:
+                    yield Comment(text, pos, self.javadoc)
+                    self.javadoc = None
                 continue
 
             elif prefix == '..' and self.read_operator():
@@ -93,18 +100,22 @@ class JavaLexer():
                 self.idx += 1
                 continue
 
-            position = Position(self.current_line, self.idx - self.start_of_line)
-            token = token_type(self.data[self.idx:self.next_idx], position)
+            position = Position(self.current_line, self.current_column)
+            token = token_type(self.data[self.idx:self.next_idx], position, self.javadoc)
             yield token
 
+            self.javadoc = None
+            self.current_column += self.next_idx - self.idx
             self.idx = self.next_idx
+
+        if self.javadoc: yield self.javadoc
 
     def read_whitespace(self):
         match_obj = self.whitespace_matcher.search(self.data, self.idx + 1)
 
         if not match_obj:
             self.idx = self.length
-            return
+            return 0
 
         idx = match_obj.start()
         start_of_line = self.data.rfind('\n', self.idx, idx)
@@ -112,6 +123,11 @@ class JavaLexer():
         if start_of_line != -1:
             self.start_of_line = start_of_line
             self.current_line += self.data.count('\n', self.idx, idx)
+            self.current_column = 1
+
+        for t_idx in range(max(start_of_line+1,self.idx), idx):
+            if self.data[t_idx] == '\t': self.current_column += 4
+            else: self.current_column += 1
 
         self.idx = idx
 
@@ -170,15 +186,16 @@ class JavaLexer():
             self.report_error('Unfinished comment block')
             comment = self.data[self.idx:]
             self.idx = self.length
-            return comment, Position(self.current_line, self.idx - self.start_of_line)
+            return comment, Position(self.current_line, self.current_column)
 
         comment = self.data[self.idx:idx]
-        position = Position(self.current_line, self.idx - self.start_of_line)
+        position = Position(self.current_line, self.current_column)
 
         start_of_line = self.data.rfind('\n', self.idx, idx)
         if start_of_line != -1:
             self.start_of_line = start_of_line
             self.current_line += self.data.count('\n', self.idx, idx)
+            self.current_column = 1
 
         self.idx = idx
         return comment, position
@@ -303,11 +320,13 @@ def restore_from_tokens(tokens, changed_tokens):
     and changed tokens value in changed_tokens.'''
     if len(tokens) == 0: return ''
 
-    indent = 0
+    idx = 0
     output = ''
     line, col = 1, 1
     c_idx, shift = 0, 0
-    for idx, x in enumerate(tokens):
+    while idx < len(tokens):
+        x = tokens[idx]
+
         t_line, t_col = x.position
         t_col += shift
 
@@ -316,9 +335,6 @@ def restore_from_tokens(tokens, changed_tokens):
             y, c_idx = changed_tokens[c_idx][1], c_idx+1
             shift += len(y.value) - len(x.value)
             x = y
-
-        if x.value == '{': indent += 1
-        elif x.value == '}': indent -= 1
 
         if t_line != line:
             diff = t_line - line
@@ -329,17 +345,17 @@ def restore_from_tokens(tokens, changed_tokens):
             line += diff
 
         if t_col != col:
-            diff = (t_col - col) 
-            if col == 1:
-                output += indent*4*' '
-            else:
-                output += diff*' '
+            diff = (t_col - col)
+            output += diff*' '
             col += diff
 
         output += x.value
 
+        col += len(x.value)
         if isinstance(x, Comment):
             line += x.value.count('\n')
-        col += len(x.value)
+            if x.value[-1] == '\n': col, shift = 1, 0
+
+        idx += 1
 
     return output

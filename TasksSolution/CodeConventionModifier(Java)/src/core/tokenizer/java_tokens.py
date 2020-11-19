@@ -3,8 +3,10 @@ from collections import namedtuple
 Position = namedtuple('Position', ['line', 'column'])
 
 class JavaToken():
-    def __init__(self, value, position=None):
+    def __init__(self, value, position=None, javadoc=None):
         self.value, self.position = value, position
+
+        self.javadoc = javadoc
 
     def __str__(self):
         if not self.position:

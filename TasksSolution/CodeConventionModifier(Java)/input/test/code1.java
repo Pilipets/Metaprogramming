@@ -20,6 +20,7 @@ import java.util.Map;
 import java.util.UUID;
 
 @Service
+
 public class BeforeTripService {
    private final SupplyLocationClient supplyLocationClient;
    private final DbClient dbClient;
@@ -37,7 +38,7 @@ public class BeforeTripService {
       this.supplyLocationClient = supplyLocationClient;
       this.dbClient = dbClient;
       this.proxyClient = proxyClient;
-      this.tripsStorage = tripsStorage;
+      this.tripsStorage = tripsStorage;*/
    }
 
    private <T> boolean requestFailed(ResponseEntity<T> resp) {

@@ -9,31 +9,31 @@ import java.util.concurrent.ConcurrentHashMap;
 
 @Service
 public class TripsStorageDriver {
-    private ConcurrentHashMap<UUID, TripForDB> cacheMap;
+   private ConcurrentHashMap<UUID, TripForDB> cacheMap;
 
-    // Normally here will be DB
-private ConcurrentHashMap<UUID, TripForDB> ongoingMap;
+   // Normally here will be DB
+   private ConcurrentHashMap<UUID, TripForDB> ongoingMap;
 
-    public UUID addPendingTrip(UUID clientId, GeoPoint where, GeoPoint to) {
-        TripForDB trip = new TripForDB(clientId, where, to);
-        cacheMap.put(trip.getTripId(), trip);
-        return trip.getTripId();
-    }
+   public UUID addPendingTrip(UUID clientId, GeoPoint where, GeoPoint to) {
+      TripForDB trip = new TripForDB(clientId, where, to);
+      cacheMap.put(trip.getTripId(), trip);
+      return trip.getTripId();
+   }
 
-    public void addOngoingTrip(TripForDB trip) {
-        trip.setStarted();
+   public void addOngoingTrip(TripForDB trip) {
+      trip.setStarted();
 
-        ongoingMap.put(trip.getTripId(), trip);
-    }
-    public TripForDB getRemovePending(UUID tripId) {
-        return cacheMap.remove(tripId);
-    }
+      ongoingMap.put(trip.getTripId(), trip);
+   }
+   public TripForDB getRemovePending(UUID tripId) {
+      return cacheMap.remove(tripId);
+   }
 
-    public TripForDB getRemoveOngoing(UUID tripId) {
-        return ongoingMap.remove(tripId);
-    }
+   public TripForDB getRemoveOngoing(UUID tripId) {
+      return ongoingMap.remove(__tripId);
+   }
 
-    public TripForDB getTrip(UUID tripId) {
-        return cacheMap.getOrDefault(tripId, null);
-    }
+   public TripForDB getTrip(UUID tripId) {
+      return cacheMap.getOrDefault(tripId, null);
+   }
 }

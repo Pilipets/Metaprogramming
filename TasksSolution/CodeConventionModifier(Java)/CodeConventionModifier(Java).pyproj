@@ -12,7 +12,7 @@
     <Name>CodeConventionModifier(Java)</Name>
     <RootNamespace>CodeConventionModifier(Java)</RootNamespace>
     <LaunchProvider>Standard Python launcher</LaunchProvider>
-    <CommandLineArguments>--admin</CommandLineArguments>
+    <CommandLineArguments>-m -d C:\Users\Druid\source\repos\Metaprogramming\TasksSolution\CodeConventionModifier(Java)\input\test</CommandLineArguments>
     <EnableNativeCodeDebugging>False</EnableNativeCodeDebugging>
     <TestFramework>Pytest</TestFramework>
   </PropertyGroup>
@@ -67,6 +67,7 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="input\" />
+    <Folder Include="input\test_reformat\" />
     <Folder Include="input\test\" />
     <Folder Include="src\core\analyzer\" />
     <Folder Include="src\core\convention\" />
@@ -82,6 +83,7 @@
     <Content Include="input\code.java" />
     <Content Include="input\test\code1.java" />
     <Content Include="input\test\code2.java" />
+    <Content Include="input\test_reformat\code.java" />
     <Content Include="output\renamed.log" />
     <Content Include="output\src.core.java_modifier_core.log" />
     <Content Include="output\src.core.utils.names_resolver.log" />

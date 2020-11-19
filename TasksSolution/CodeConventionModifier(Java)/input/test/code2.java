@@ -30,10 +30,10 @@ public class Trips__StorageDriver {
    }
 
    public TripForDB getRemoveOngoing(UUID tripId) {
-      return ongoingMap.remove(tripId);
+      return ongoingMap.remove(__tripId);
    }
 
-   public TripForDB getTrip(UUID tripId) {
-      return cacheMap.getOrDefault(tripId, null);
+   public TripForDB getTrip(UUID $tripId) {
+      return cacheMap.getOrDefault($tripId, null);
    }
 }

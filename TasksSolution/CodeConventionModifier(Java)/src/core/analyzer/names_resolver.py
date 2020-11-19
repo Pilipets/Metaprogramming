@@ -20,11 +20,13 @@ class LocalResolver(dict):
         self._pending = defaultdict(list)
 
     def _reset(self):
-        self._path = None
-        self._tokens = None
-        self._renamed_tokens = None
+        self._path = ''
+        self._tokens = []
+        self._renamed_tokens = []
+        self._produce_file = False
         self._p_resolver = None
         self._r_resolver = None
+        self._pending = defaultdict(list)
 
     def add_pending(self, token):
         present = self._pending.get(token.value, None) is not None
@@ -36,9 +38,6 @@ class LocalResolver(dict):
     def process_pending(self, name, new_name):
         for x in self._pending.get(name, []):
             x.value = new_name
-
-        if not self._pending.get(name, []):
-            print('WTF')
         del self._pending[name]
 
         if len(self._pending) == 0:
@@ -46,6 +45,9 @@ class LocalResolver(dict):
 
     def is_pending(self):
         return len(self._pending) > 0
+
+    def get_file_path(self):
+        return self._path
 
     def get_pending_count(self):
         return len(self._pending)
@@ -72,7 +74,6 @@ class LocalResolver(dict):
         if self._path != file_path:
             out_logger.info('Renaming file: {} -> {}'.format(self._path, file_path))
 
-        renamed_mask = [False for _ in range(len(self._renamed_tokens))]
         for cur_idx, (origin_idx, x) in enumerate(self._renamed_tokens):
             new_name, name = x.value, self._tokens[origin_idx].value
             if name != new_name:

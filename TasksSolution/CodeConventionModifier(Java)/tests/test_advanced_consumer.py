@@ -30,6 +30,16 @@ def test_try_multiple_vars_declaration():
 
 methods_data = [
     (
+        'wtf.TestSimple()',
+        None
+    ),
+    (
+        # This is considered as method as we can't distinguish
+        # between ctor and method invocation here
+        'TestSimple(Dummy.Double<Complex> x)',
+        (None, 'TestSimple', ('Double', 'x'))
+    ),
+    (
         '<T,U> int simple()',
         ('int', 'simple')
     ),
@@ -38,7 +48,7 @@ methods_data = [
         ('More', 'HowAbout', ('var', 'x'))
     ),
     (
-        'Yet.More[][] HowAbout(var x = another<wew, Simple, df[]>, dummy y = z, err x = 4)',
+        'Yet.More[][] HowAbout(var x = another<wew, Simple, df[]>, From.dummy y = z, err x = 4)',
         ('More', 'HowAbout', ('var', 'x'), ('dummy', 'y'), ('err', 'x'))
     ),
     (
@@ -46,24 +56,36 @@ methods_data = [
         ('void', 'Method', ('int', 'x'),('double', 'y'), ('WTF', 'z'))
     ),
     (
-        'Try<Cmp, S[]>[] Another(Then<ere, sds> x, ret y = method(23, MyArr[323]))',
+        'Try<Cmp, S[]>[] Another(Wen.Then<ere, sds> x, ret y = method(23, MyArr[323]))',
         ('Try', 'Another', ('Then', 'x'), ('ret', 'y'))
+    ),
+    (
+        '<Cmp, S extends K> Method(Where.Is.This.Double x, Simple y)',
+        (None, 'Method', ('Double', 'x'), ('Simple', 'y'))
     )
+    # TODO: Add declarations with final keyword
 ]
 def test_try_method_declaration():
     for in_txt, out in methods_data:
         tokens = list(tokenize(in_txt))
         
-        assert consumer.try_method_declaration(0, tokens)
+        assert_res = out is not None
+        assert consumer.try_method_declaration(0, tokens) == assert_res
+        if not assert_res: continue
+
         method, end = consumer.get_consume_res()
 
         assert end == len(tokens)
-        assert method._type._name == out[0]
+
+        if method._type: assert method._type._name == out[0]
+        else: assert method._type is None
+
         assert method._name == out[1]
         for x, y in zip(method._params, out[2:]):
             assert x._type._name == y[0]
             assert x._names[0] == y[1]
 
+# TODO: add tests for annotation declaration, invocations, anonymous classes
 
 if __name__ == '__main__':
     test_try_multiple_vars_declaration()

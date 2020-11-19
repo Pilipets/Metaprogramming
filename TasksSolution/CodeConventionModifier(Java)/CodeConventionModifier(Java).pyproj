@@ -12,7 +12,7 @@
     <Name>CodeConventionModifier(Java)</Name>
     <RootNamespace>CodeConventionModifier(Java)</RootNamespace>
     <LaunchProvider>Standard Python launcher</LaunchProvider>
-    <CommandLineArguments>-m -d C:\Users\Druid\source\repos\Metaprogramming\TasksSolution\CodeConventionModifier(Java)\input\test</CommandLineArguments>
+    <CommandLineArguments>--admin</CommandLineArguments>
     <EnableNativeCodeDebugging>False</EnableNativeCodeDebugging>
     <TestFramework>Pytest</TestFramework>
   </PropertyGroup>
@@ -31,7 +31,7 @@
     <Compile Include="src\core\analyzer\advanced_consumer.py">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="src\core\convention\java_doc_handler.py">
+    <Compile Include="src\core\convention\javadoc_handler.py">
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="src\core\java_modifier_core.py" />

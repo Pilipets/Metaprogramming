@@ -46,7 +46,7 @@ class JavaModifierUI:
         return res
 
     @staticmethod
-    def process_files(action, files):
+    def process_files(action, files, touch_doc):
         modifier = JavaModifierCore()
         modifier.initialize()
 
@@ -105,8 +105,8 @@ class JavaModifierUI:
             print(JavaModifierUI.help_text)
 
         else:
-            # name, action{--modify, -m, --verify, -v}, option{-(p|d|f)}, in_path
-            if len(params) > 4:
+            # name, action{--modify, -m, --verify, -v}, option{-(p|d|f)}, optional(--doc) in_path
+            if len(params) > 5:
                 JavaModifierUI.report_error(
                     "incorrect amount(%d) of the script arguments"% len(params))
 
@@ -122,5 +122,7 @@ class JavaModifierUI:
             else:
                 option = option[0]
 
+            touch_doc = True if '--doc' in params else False
+
             files = JavaModifierUI.get_processing_file_paths(option, sys.argv[-1])
-            JavaModifierUI.process_files(action, files)
+            JavaModifierUI.process_files(action, files, touch_doc)

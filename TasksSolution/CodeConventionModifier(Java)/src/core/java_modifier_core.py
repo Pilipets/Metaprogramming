@@ -29,9 +29,10 @@ class JavaModifierCore:
 
         # Initialization part
         tokens = tuple(tokenize(text, raise_errors=True))
-        names = [(idx, copy.copy(x)) for idx, x in enumerate(tokens) if isinstance(x, java_lexer.Identifier)]
+        changed_tokens = [(idx, copy.copy(x)) for idx, x in enumerate(tokens)
+                          if isinstance(x, java_lexer.Identifier)]
 
-        scope_id = names_resolver.new_local_resolver(file_path, tokens, names, produce_file)
+        scope_id = names_resolver.new_local_resolver(file_path, tokens, changed_tokens, produce_file)
         stack = [java_lexer.JavaToken('')]
         consumer = Consumer()
 
@@ -53,16 +54,32 @@ class JavaModifierCore:
                      stack, consumer, names_resolver):
         idx = 0
         while idx < len(tokens):
+            # ----------------------Specials and not important--------------------
             if isinstance(tokens[idx], java_lexer.Separator):
                 idx = self._process_separator(idx, tokens, stack)
                 continue
+
+            elif isinstance(tokens[idx], java_lexer.Comment):
+                idx += 1
+                continue
+
+            # --------------------------------------------------------------------
+
+            start = idx
+            # ----------------Modifiers and annotations--------------------------
+            if consumer.try_anotation_invocations(idx, tokens):
+                # make sure we don't misinterpret declaration with annotation
+                _, idx = consumer.get_consume_res()
 
             modifiers = []
             if consumer.try_instances(java_lexer.Modifier, idx, tokens):
                 modifiers, idx = consumer.get_consume_res()
 
+            # --------------------------------------------------------------------
+
+            # ------------------------------Declarations--------------------------
             if consumer.try_class_declaration(idx, tokens):
-                start_token = tokens[idx]
+                start_token = tokens[idx] # class
                 cls, idx = consumer.get_consume_res()
 
                 core_logger.debug('Class declaration: {}'.format(cls))
@@ -71,7 +88,26 @@ class JavaModifierCore:
 
                 stack.append(start_token)
 
-            elif consumer.try_method_declaration(idx, tokens):
+            elif consumer.try_annotation_declaration(idx, tokens):
+                start_token = tokens[idx+1] # skip @
+                cls, idx = consumer.get_consume_res()
+
+                core_logger.debug('Annotation declaration: {}'.format(cls))
+                names_resolver._add_declaration(
+                    scope_id, NameType.CLASS , cls, stack)
+
+                stack.append(start_token)
+
+            elif consumer.try_anonymous_class(idx, tokens):
+                start_token = tokens[idx]
+                _, idx = consumer.get_consume_res()
+
+                stack.append(start_token)
+                stack.append(tokens[idx-1])
+
+            elif (len(stack) > 1 and stack[-1].value == '{'
+                    and stack[-2].value in ('class', 'interface', 'new')
+                        and consumer.try_method_declaration(idx, tokens)):
                 method, idx = consumer.get_consume_res()
 
                 core_logger.debug('Method declaration: {}'.format(method))
@@ -92,8 +128,10 @@ class JavaModifierCore:
                     names_resolver._add_declaration(
                         scope_id, NameType.VARIABLE, vars, stack)
 
-            elif not modifiers:
+            elif start == idx:
                 idx += 1
+
+            # -------------------------------------------------------------------
 
     def _finalize_one(self, scope_id, stack, names_resolver):
         if len(stack) != 1:
@@ -124,7 +162,7 @@ class JavaModifierCore:
             core_logger.debug('Postponing renaming for "{}"'.format(f_r.get_file_path()))
 
         else:
-            f_resolver.close()
+            f_r.close()
 
     def _process_separator(self, idx, tokens, stack):
         cur = tokens[idx]
@@ -136,7 +174,7 @@ class JavaModifierCore:
             if stack[-1].value == '{':
                 stack.pop()
 
-            if stack[-1].value in ('class', 'interface'):
+            if stack[-1].value in ('class', 'interface', 'new'):
                 stack.pop()
 
         elif cur.value == ')':

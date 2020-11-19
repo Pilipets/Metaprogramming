@@ -10,10 +10,10 @@ logger = setup_logger(__name__, logging.DEBUG)
 out_logger = setup_logger('renamed', logging.INFO, FormatterType.SHORT)
 
 class LocalResolver(dict):
-    def __init__(self, path, tokens, names, produce_file, p_resolver, r_resolver):
+    def __init__(self, path, tokens, changed_named_tokens, produce_file, p_resolver, r_resolver):
         self._path = path
         self._tokens = tokens
-        self._renamed_tokens = names
+        self._changed_named_tokens = changed_named_tokens
         self._produce_file = produce_file
         self._p_resolver = p_resolver
         self._r_resolver = r_resolver
@@ -22,7 +22,7 @@ class LocalResolver(dict):
     def _reset(self):
         self._path = ''
         self._tokens = []
-        self._renamed_tokens = []
+        self._changed_named_tokens = []
         self._produce_file = False
         self._p_resolver = None
         self._r_resolver = None
@@ -56,12 +56,12 @@ class LocalResolver(dict):
         return self._pending.keys()
 
     def get_renames(self):
-        return self._renamed_tokens
+        return self._changed_named_tokens
 
     def close(self):
         """Closes current names resolver:
         1. Creates file with the given self._path;
-        2. Produces new file structure from self._tokens and self._renamed_tokens;
+        2. Produces new file structure from self._tokens and self._changed_named_tokens;
         3. Removes current resolver from further consideration."""
 
         logger.debug('Closing local resolver({}) at "{}"'.format(id(self), self._path))
@@ -74,11 +74,13 @@ class LocalResolver(dict):
         if self._path != file_path:
             out_logger.info('Renaming file: {} -> {}'.format(self._path, file_path))
 
-        for cur_idx, (origin_idx, x) in enumerate(self._renamed_tokens):
+        changed_named_tokens = []
+        for cur_idx, (origin_idx, x) in enumerate(self._changed_named_tokens):
             new_name, name = x.value, self._tokens[origin_idx].value
             if name != new_name:
-                pos = self._tokens[origin_idx].position
-                out_logger.info('Renaming at {}: {} -> {}'.format(pos, name, new_name))
+                changed_named_tokens.append((origin_idx, x))
+                out_logger.info('Renaming at {}: {} -> {}'.format(
+                    self._tokens[origin_idx].position, name, new_name))
 
         out_logger.info(''.center(80, '-'))
 
@@ -87,7 +89,7 @@ class LocalResolver(dict):
             self._reset()
             return
 
-        output_str = restore_from_tokens(self._tokens, self._renamed_tokens)
+        output_str = restore_from_tokens(self._tokens, changed_named_tokens)
         os.makedirs(os.path.dirname(file_path), exist_ok=True)
 
         with open(file_path, "w") as f:
@@ -167,8 +169,8 @@ class NamesResolver:
             return True
         return False
 
-    def _add_var_declaration(self, f_r, g_r,
-                             is_global, type, method : MultiVarStruct):
+    def _add_var_declaration(self, f_r, g_r, is_global,
+                             type, method : MultiVarStruct):
         resolver = g_r if is_global else f_r
 
         if type == NameType.VARIABLE:
@@ -179,8 +181,8 @@ class NamesResolver:
         for x in method._names:
             resolver[x] = renamer(x)
 
-    def _add_class_declaration(self, f_r, g_r,
-                               is_global, type, cls : ClassStruct):
+    def _add_class_declaration(self, f_r, g_r, is_global,
+                               type, cls : ClassStruct):
         resolver = g_r if is_global else f_r
         resolver[cls._name] = ConventionNaming.get_class_name(cls._name)
 
@@ -188,11 +190,14 @@ class NamesResolver:
         for x in cls._templ._names:
             f_r[x] = ConventionNaming.get_class_name(x)
 
-    def _add_method_declaration(self, f_r, g_r,
-                                is_global, type, method: MethodStruct):
+    def _add_method_declaration(self, f_r, g_r, is_global,
+                                type, method: MethodStruct):
 
         resolver = g_r if is_global else f_r
-        resolver[method._name] = ConventionNaming.get_method_name(method._name)
+        if not method._type:
+            resolver[method._name] = ConventionNaming.get_class_name(method._name)
+        else:
+            resolver[method._name] = ConventionNaming.get_method_name(method._name)
 
         for x in method._params:
             x = x._names[0]

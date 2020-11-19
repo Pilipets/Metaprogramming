@@ -52,8 +52,10 @@ class StructuresConsumer:
         return self.consume_res
 
     def try_stacked_chars(self, chars : str, idx, tokens):
-        start_ch, end_ch = chars
         self.consume_res = None
+        if len(chars) != 2: return False
+
+        start_ch, end_ch = chars[0], chars[1]
         if idx >= len(tokens) or tokens[idx].value != start_ch:
             return False
         

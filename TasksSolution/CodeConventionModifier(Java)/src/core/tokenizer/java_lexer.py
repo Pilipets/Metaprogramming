@@ -315,9 +315,9 @@ class JavaLexer():
 
         return token_type
 
-def restore_from_tokens(tokens, changed_tokens):
+def restore_from_tokens(tokens, changed_named_tokens):
     '''Restore the structure with whitespaces using tokens
-    and changed tokens value in changed_tokens.'''
+    and changed tokens value in changed_named_tokens.'''
     if len(tokens) == 0: return ''
 
     idx = 0
@@ -330,9 +330,9 @@ def restore_from_tokens(tokens, changed_tokens):
         t_line, t_col = x.position
         t_col += shift
 
-        if (c_idx < len(changed_tokens)
-                and idx == changed_tokens[c_idx][0]):
-            y, c_idx = changed_tokens[c_idx][1], c_idx+1
+        if (c_idx < len(changed_named_tokens)
+                and idx == changed_named_tokens[c_idx][0]):
+            y, c_idx = changed_named_tokens[c_idx][1], c_idx+1
             shift += len(y.value) - len(x.value)
             x = y
 

@@ -62,8 +62,18 @@ methods_data = [
     (
         '<Cmp, S extends K> Method(Where.Is.This.Double x, Simple y)',
         (None, 'Method', ('Double', 'x'), ('Simple', 'y'))
+    ),
+    (
+        '<Cmp, S extends K> Method(Where.Is.This.Double x, Simple y)',
+        (None, 'Method', ('Double', 'x'), ('Simple', 'y'))
+    ),
+    (
+        '''<T, U extends T> ResponseEntity<Object> tripCancelled(
+                @RequestParam(value = "forward")String forward,
+                @RequestParam(value = "id") UUID id,
+                final @RequestParam(value = "trip_id") @Nullable UUID tripId)''',
+        ('ResponseEntity', 'tripCancelled', ('String', 'forward'), ('UUID', 'id'), ('UUID', 'tripId'))
     )
-    # TODO: Add declarations with final keyword
 ]
 def test_try_method_declaration():
     for in_txt, out in methods_data:

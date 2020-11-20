@@ -1,4 +1,4 @@
-from ...core.tokenizer import java_lexer
+from ...tokenizer import java_tokens
 
 class TemplateStruct:
     def __init__(self, names, str):
@@ -92,7 +92,7 @@ class StructuresConsumer:
             cur, next_state = tokens[idx], None
 
             if state == 1:
-                if isinstance(cur, java_lexer.Identifier): next_state = 2
+                if isinstance(cur, java_tokens.Identifier): next_state = 2
 
             elif state == 2:
                 if cur.value == '.': next_state = 1
@@ -111,7 +111,7 @@ class StructuresConsumer:
 
         class_name = None
         if (tokens[idx].value in ('class', 'interface')
-                and isinstance(tokens[idx+1], java_lexer.Identifier)):
+                and isinstance(tokens[idx+1], java_tokens.Identifier)):
             class_name = tokens[idx+1].value
             idx += 2
 
@@ -141,7 +141,7 @@ class StructuresConsumer:
             next_state, cur = None, tokens[idx]
 
             if state == 1:
-                if isinstance(cur, java_lexer.Identifier):
+                if isinstance(cur, java_tokens.Identifier):
                     names.append(cur.value)
                     next_state = 2
 
@@ -236,7 +236,7 @@ class StructuresConsumer:
             idx = self.consume_res[-1] - 1
             allowed_templates = True
 
-        elif isinstance(tokens[idx], java_lexer.BasicType):
+        elif isinstance(tokens[idx], java_tokens.BasicType):
             allowed_templates = False
 
         else:
@@ -263,7 +263,7 @@ class StructuresConsumer:
         var_type, idx = self.consume_res
 
         var_name = None
-        if idx < len(tokens) and isinstance(tokens[idx], java_lexer.Identifier):
+        if idx < len(tokens) and isinstance(tokens[idx], java_tokens.Identifier):
             var_name = tokens[idx].value
             idx += 1
 

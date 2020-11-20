@@ -46,6 +46,12 @@ class Literal(JavaToken):
 class Comment(JavaToken):
     pass
 
+class SingleLineComment(Comment):
+    pass
+
+class MultiLineComment(Comment):
+    pass
+
 class Separator(JavaToken):
     VALUES_SET = {'(', ')', '{', '}', '[', ']', ';', ',', '.'}
 

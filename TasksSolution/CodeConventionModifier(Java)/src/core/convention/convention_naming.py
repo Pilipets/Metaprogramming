@@ -1,12 +1,12 @@
 from enum import Enum
-import os
 
 class NameType(Enum):
     CLASS = 0
-    METHOD = 1
-    VARIABLE = 2
-    CONST_VARIABLE = 3
-    NAME = 4
+    ANNOTATION = 1
+    METHOD = 2
+    VARIABLE = 3
+    CONST_VARIABLE = 4
+    NAME = 5
  
 class ConventionNaming:
     @staticmethod
@@ -51,6 +51,10 @@ class ConventionNaming:
         return ''.join(x.capitalize() for x in res)
 
     @staticmethod
+    def get_annotation_name(name : str):
+        return ConventionNaming.get_class_name(name)
+
+    @staticmethod
     def get_method_name(name : str):
         return ConventionNaming.get_variable_name(name)
 
@@ -60,12 +64,8 @@ class ConventionNaming:
         if not res: return ''
         return res[0].lower() + ''.join(x.capitalize() for x in res[1:])
 
-    @staticmethod
-    def get_file_name(name):
-        return ConventionNaming.get_class_name(name)
-
 def get_convention_rename(type : NameType, name : str):
-    if type == NameType.CLASS:
+    if type == NameType.CLASS or type == NameType.ANNOTATION:
         return ConventionNaming.get_class_name(name)
 
     elif type == NameType.METHOD:
@@ -79,9 +79,3 @@ def get_convention_rename(type : NameType, name : str):
 
     else:
         return name
-
-def get_convention_file_path(path):
-    head, tail = os.path.split(path)
-    name, format = os.path.splitext(tail)
-    name = ConventionNaming.get_file_name(name)
-    return os.path.join(head, f'modified_{name}{format}')

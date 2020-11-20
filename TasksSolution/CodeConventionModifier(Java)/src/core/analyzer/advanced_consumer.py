@@ -1,5 +1,5 @@
-from .structures_consumer import *
-from ...core.tokenizer import java_lexer
+from .consumers.structures_consumer import StructuresConsumer, ClassStruct, MultiVarStruct, VarTypeStruct
+from ...core.tokenizer import java_tokens
 
 class MethodStruct:
     def __init__(self, templ, var_type, name, params):
@@ -10,7 +10,7 @@ class MethodStruct:
 
     def __str__(self):
         res = f'{self._name} ('
-        if self._type: res += f'{self._type} '
+        if self._type: res = f'{self._type} ' + res
         if self._templ: res = f'{self._templ} ' + res
         if self._params: res += ', '.join(str(x) for x in self._params)
         res += ')'
@@ -33,7 +33,7 @@ class AdvancedStructuresConsumer(StructuresConsumer):
         self.consume_res = None
 
         if (idx + 2 < len(tokens) and tokens[idx].value == 'new'
-                and isinstance(tokens[idx+1], java_lexer.Identifier)):
+                and isinstance(tokens[idx+1], java_tokens.Identifier)):
             idx += 2
         else:
             return False
@@ -61,9 +61,9 @@ class AdvancedStructuresConsumer(StructuresConsumer):
         if idx + 2 >= len(tokens): return False
 
         annotation = None
-        if (isinstance(tokens[idx], java_lexer.Annotation)
-                and tokens[idx+1].value in ('class', 'interface')
-                    and isinstance(tokens[idx+2], java_lexer.Identifier)):
+        if (isinstance(tokens[idx], java_tokens.Annotation)
+                and tokens[idx+1].value in ('interface')
+                    and isinstance(tokens[idx+2], java_tokens.Identifier)):
             annotation = AnnotationStruct(tokens[idx+2])
 
         if not annotation: return False
@@ -75,7 +75,7 @@ class AdvancedStructuresConsumer(StructuresConsumer):
 
         annotations = []
         while idx+1 < len(tokens):
-            if (isinstance(tokens[idx], java_lexer.Annotation)
+            if (isinstance(tokens[idx], java_tokens.Annotation)
                     and self.try_outer_identifier(idx+1, tokens)):
                 name, idx = self.consume_res
                 annotations.append(AnnotationStruct(name))
@@ -102,7 +102,7 @@ class AdvancedStructuresConsumer(StructuresConsumer):
             next_state = None
 
             if state == 1:
-                if isinstance(tokens[idx], java_lexer.Identifier):
+                if isinstance(tokens[idx], java_tokens.Identifier):
                     var_names.append(tokens[idx].value)
                     next_state = 2
 
@@ -156,13 +156,13 @@ class AdvancedStructuresConsumer(StructuresConsumer):
             return False
 
         method_name = None
-        if idx < len(tokens) and isinstance(tokens[idx], java_lexer.Identifier):
+        if idx < len(tokens) and isinstance(tokens[idx], java_tokens.Identifier):
             method_name = tokens[idx].value
             idx += 1
 
         # Constructor
         elif (idx < len(tokens) and idx-1 == start
-                and isinstance(tokens[idx-1], java_lexer.Identifier)):
+                and isinstance(tokens[idx-1], java_tokens.Identifier)):
             method_name = method_type._name
             method_type = None
 
@@ -182,11 +182,12 @@ class AdvancedStructuresConsumer(StructuresConsumer):
 
             if state == 1:
                 if tokens[idx].value == ')': next_state = 0
-                elif (tokens[idx].value == 'final' and self.try_var_single_declaration(idx+1, tokens)):
-                    var, idx = self.consume_res
-                    params.append(var)
-                    idx -= 1
-                    next_state = 2
+                elif self.try_anotation_invocations(idx, tokens):
+                    idx = self.consume_res[-1] - 1
+                    next_state = 1
+
+                elif tokens[idx].value == 'final':
+                    next_state = 1
 
                 elif self.try_var_single_declaration(idx, tokens):
                     var, idx = self.consume_res

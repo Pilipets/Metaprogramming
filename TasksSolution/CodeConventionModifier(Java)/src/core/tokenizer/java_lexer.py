@@ -42,6 +42,14 @@ class JavaLexer():
         if self.raise_errors:
             raise self.errors[-1]
 
+    def _read_column_indent(self, idx, end_idx):
+        for t_idx in range(idx, end_idx):
+            if self.data[t_idx] == '\t':
+                self.current_column += 4
+                self.current_column -= (self.current_column - 1) % 4
+            else:
+                self.current_column += 1
+
     def tokenize(self):
         while self.idx < self.length:
             token_type = None
@@ -63,12 +71,13 @@ class JavaLexer():
 
             elif prefix in ("//", "/*"):
                 text, pos = self.read_comment()
+                token_type = SingleLineComment if text[1] == '/' else MultiLineComment
 
                 if text.startswith("/**"):
                     if self.javadoc: yield self.javadoc
-                    self.javadoc = Comment(text, pos, None)
+                    self.javadoc = token_type(text, pos, None)
                 else:
-                    yield Comment(text, pos, self.javadoc)
+                    yield token_type(text, pos, self.javadoc)
                     self.javadoc = None
                 continue
 
@@ -121,13 +130,10 @@ class JavaLexer():
         start_of_line = self.data.rfind('\n', self.idx, idx)
 
         if start_of_line != -1:
-            self.start_of_line = start_of_line
             self.current_line += self.data.count('\n', self.idx, idx)
             self.current_column = 1
 
-        for t_idx in range(max(start_of_line+1,self.idx), idx):
-            if self.data[t_idx] == '\t': self.current_column += 4
-            else: self.current_column += 1
+        self._read_column_indent(max(start_of_line+1, self.idx), idx)
 
         self.idx = idx
 
@@ -197,6 +203,7 @@ class JavaLexer():
             self.current_line += self.data.count('\n', self.idx, idx)
             self.current_column = 1
 
+        self._read_column_indent(max(start_of_line+1, self.idx), idx)
         self.idx = idx
         return comment, position
 
@@ -314,48 +321,3 @@ class JavaLexer():
             token_type = Literal
 
         return token_type
-
-def restore_from_tokens(tokens, changed_named_tokens):
-    '''Restore the structure with whitespaces using tokens
-    and changed tokens value in changed_named_tokens.'''
-    if len(tokens) == 0: return ''
-
-    idx = 0
-    output = ''
-    line, col = 1, 1
-    c_idx, shift = 0, 0
-    while idx < len(tokens):
-        x = tokens[idx]
-
-        t_line, t_col = x.position
-        t_col += shift
-
-        if (c_idx < len(changed_named_tokens)
-                and idx == changed_named_tokens[c_idx][0]):
-            y, c_idx = changed_named_tokens[c_idx][1], c_idx+1
-            shift += len(y.value) - len(x.value)
-            x = y
-
-        if t_line != line:
-            diff = t_line - line
-            t_col = x.position.column
-            col, shift = 1, 0
-
-            output += diff*'\n'
-            line += diff
-
-        if t_col != col:
-            diff = (t_col - col)
-            output += diff*' '
-            col += diff
-
-        output += x.value
-
-        col += len(x.value)
-        if isinstance(x, Comment):
-            line += x.value.count('\n')
-            if x.value[-1] == '\n': col, shift = 1, 0
-
-        idx += 1
-
-    return output

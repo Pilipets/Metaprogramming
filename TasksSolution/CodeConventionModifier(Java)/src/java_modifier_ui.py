@@ -1,4 +1,4 @@
-import os, sys, string
+import os, sys
 
 from src.core.java_modifier_core import JavaModifierCore
 
@@ -46,7 +46,7 @@ class JavaModifierUI:
         return res
 
     @staticmethod
-    def process_files(action, files, touch_doc):
+    def process_files(action, files, touch_docs):
         modifier = JavaModifierCore()
         modifier.initialize()
 
@@ -60,7 +60,7 @@ class JavaModifierUI:
                 with open(file, "r", encoding='utf-8') as fin:
                     javacode = fin.read()
 
-                func(file, javacode)
+                func(file, javacode, touch_docs)
             except Exception as ex:
                 print("Exception received when processing file={}, ex={}".format(file, ex))
                 errors_cnt += 1

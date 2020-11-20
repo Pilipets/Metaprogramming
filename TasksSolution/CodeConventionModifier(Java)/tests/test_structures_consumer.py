@@ -1,4 +1,4 @@
-from src.core.analyzer.structures_consumer import StructuresConsumer as Consumer
+from src.core.analyzer.consumers.structures_consumer import StructuresConsumer as Consumer
 from src.core.tokenizer.java_lexer import tokenize
 
 consumer = Consumer.get_consumer()

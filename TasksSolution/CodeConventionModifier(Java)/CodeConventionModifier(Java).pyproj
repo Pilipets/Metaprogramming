@@ -12,7 +12,7 @@
     <Name>CodeConventionModifier(Java)</Name>
     <RootNamespace>CodeConventionModifier(Java)</RootNamespace>
     <LaunchProvider>Standard Python launcher</LaunchProvider>
-    <CommandLineArguments>-m -d C:\Users\Druid\source\repos\Metaprogramming\TasksSolution\CodeConventionModifier(Java)\input\test</CommandLineArguments>
+    <CommandLineArguments>-m -f --doc C:\Users\Druid\source\repos\Metaprogramming\TasksSolution\CodeConventionModifier(Java)\input\code.java</CommandLineArguments>
     <EnableNativeCodeDebugging>False</EnableNativeCodeDebugging>
     <TestFramework>Pytest</TestFramework>
   </PropertyGroup>
@@ -31,7 +31,19 @@
     <Compile Include="src\core\analyzer\advanced_consumer.py">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="src\core\convention\javadoc_handler.py">
+    <Compile Include="src\core\analyzer\consumers\doc_generator.py">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="src\core\analyzer\resolvers\doc_resolver.py">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="src\core\analyzer\resolvers\file_resolver.py">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="src\core\analyzer\resolvers\global_resolver.py">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="src\core\analyzer\resolvers\scope_resolver.py">
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="src\core\java_modifier_core.py" />
@@ -41,7 +53,7 @@
     <Compile Include="src\core\analyzer\names_resolver.py">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="src\core\analyzer\structures_consumer.py">
+    <Compile Include="src\core\analyzer\consumers\structures_consumer.py">
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="src\core\others\temporary_unused.txt">
@@ -67,9 +79,12 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="input\" />
+    <Folder Include="input\test_javadoc\" />
     <Folder Include="input\test_reformat\" />
-    <Folder Include="input\test\" />
+    <Folder Include="input\test_general\" />
     <Folder Include="src\core\analyzer\" />
+    <Folder Include="src\core\analyzer\consumers\" />
+    <Folder Include="src\core\analyzer\resolvers\" />
     <Folder Include="src\core\convention\" />
     <Folder Include="tests\" />
     <Folder Include="output\" />
@@ -81,8 +96,9 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="input\code.java" />
-    <Content Include="input\test\code1.java" />
-    <Content Include="input\test\code2.java" />
+    <Content Include="input\test_general\code1.java" />
+    <Content Include="input\test_general\code2.java" />
+    <Content Include="input\test_javadoc\code.java" />
     <Content Include="input\test_reformat\code.java" />
     <Content Include="output\renamed.log" />
     <Content Include="output\src.core.java_modifier_core.log" />

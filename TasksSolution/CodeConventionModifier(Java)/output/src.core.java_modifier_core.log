@@ -1,0 +1,12 @@
+2020-11-21 04:09:30,047 - src.core.java_modifier_core - DEBUG - -------------------Initializing modify...-------------------
+2020-11-21 04:09:30,051 - src.core.java_modifier_core - DEBUG - Analyzing "C:\Users\Druid\source\repos\Metaprogramming\TasksSolution\CodeConventionModifier(Java)\input\code.java"
+2020-11-21 04:09:30,051 - src.core.java_modifier_core - DEBUG - Class declaration: DummyClass
+2020-11-21 04:09:30,051 - src.core.java_modifier_core - DEBUG - Class declaration: Before____TripService < Hard , Class extends __other >
+2020-11-21 04:09:30,052 - src.core.java_modifier_core - DEBUG - Vars declaration: __other var
+2020-11-21 04:09:30,052 - src.core.java_modifier_core - DEBUG - Method declaration: < T , Another super Where . Test < S , Fd [ ] > > void setToolTipText (String text, Yet WrongName)
+2020-11-21 04:09:30,052 - src.core.java_modifier_core - DEBUG - Vars declaration: int how_awesome_is_it
+2020-11-21 04:09:30,052 - src.core.java_modifier_core - DEBUG - Method declaration: < T , Another super Where . Test < S , Fd [ ] > > TryComplex [...] setToolTipText (String __text, Yet WrongName, Another sddddddddddddd)
+2020-11-21 04:09:30,052 - src.core.java_modifier_core - DEBUG - Vars declaration: int how_awesome_is_it
+2020-11-21 04:09:30,052 - src.core.java_modifier_core - DEBUG - Renaming for "C:\Users\Druid\source\repos\Metaprogramming\TasksSolution\CodeConventionModifier(Java)\input\code.java"
+2020-11-21 04:09:30,052 - src.core.java_modifier_core - DEBUG - Postponing renaming for "C:\Users\Druid\source\repos\Metaprogramming\TasksSolution\CodeConventionModifier(Java)\input\code.java"
+2020-11-21 04:09:30,053 - src.core.java_modifier_core - DEBUG - --------------------Finalizing modify...--------------------

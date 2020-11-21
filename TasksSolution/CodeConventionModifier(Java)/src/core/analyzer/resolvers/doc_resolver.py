@@ -3,7 +3,7 @@ from collections import namedtuple
 from ...analyzer.advanced_consumer import AdvancedStructuresConsumer as Consumer
 from ...convention.convention_naming import NameType
 from ...tokenizer.java_tokens import MultiLineComment
-
+from ...utils.utils import out_logger
 from ...analyzer.consumers.doc_generator import generate_method_doc, generate_class_doc
 
 StructPos = namedtuple('StructPos', ['doc', 'start', 'end'])
@@ -28,7 +28,10 @@ class ScopeDocResolver:
             consumer.try_class_declaration(pos.start, self._changed_tokens)
             cls, _ = consumer.get_consume_res()
 
-            if is_new: doc_token.javadoc = MultiLineComment(generate_class_doc(cls, col_indent))
+            if is_new:
+                out_logger.info('Adding class javadoc for {} at Pos({})'.format(
+                    cls, self._changed_tokens[pos.start].position))
+                doc_token.javadoc = MultiLineComment(generate_class_doc(cls, col_indent))
             else:
                 #doc_token.javadoc.value = generate_class_doc(cls, javadoc.position.column)
                 pass
@@ -38,6 +41,8 @@ class ScopeDocResolver:
             method, _ = consumer.get_consume_res()
 
             if is_new:
+                out_logger.info('Adding method javadoc for {} at {}'.format(
+                    method, self._changed_tokens[pos.start].position))
                 doc_token.javadoc = MultiLineComment(generate_method_doc(method, col_indent))
             else:
                 # doc_token.javadoc: doc_token.javadoc.value = generate_method_doc(method)

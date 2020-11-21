@@ -1,0 +1,13 @@
+INFO - Renaming for file "C:\Users\Druid\source\repos\Metaprogramming\TasksSolution\CodeConventionModifier(Java)\input\code.java"
+INFO - Renaming file: code -> Code
+INFO - Output path: C:\Users\Druid\source\repos\Metaprogramming\TasksSolution\CodeConventionModifier(Java)\input\modified_code.java
+INFO - Renaming at Position(line=5, column=18): Before____TripService -> BeforeTripService
+INFO - Renaming at Position(line=18, column=88): WrongName -> wrongName
+INFO - Renaming at Position(line=19, column=13): how_awesome_is_it -> howAwesomeIsIt
+INFO - Renaming at Position(line=23, column=16): __text -> text
+INFO - Renaming at Position(line=23, column=28): WrongName -> wrongName
+INFO - Renaming at Position(line=24, column=13): how_awesome_is_it -> howAwesomeIsIt
+INFO - Adding class javadoc for DummyClass at Pos(Position(line=2, column=1))
+INFO - Adding class javadoc for BeforeTripService < Hard , Class extends __other > at Pos(Position(line=5, column=12))
+INFO - Adding method javadoc for < T , Another super Where . Test < S , Fd [ ] > > TryComplex [...] setToolTipText (String text, Yet wrongName, Another sddddddddddddd) at Position(line=22, column=12)
+INFO - --------------------------------------------------------------------------------

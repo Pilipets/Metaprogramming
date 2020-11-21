@@ -47,15 +47,16 @@ class JavaModifierUI:
 
     @staticmethod
     def process_files(action, files, touch_docs):
+        print('%d files collected, initializing the process...' % len(files))
+
         modifier = JavaModifierCore()
         modifier.initialize()
-
         func = modifier.modify_one
         if action in ('--verify', '-v'):
             func = modifier.verify_one
 
         success_cnt, errors_cnt = 0, 0
-        for file in files:
+        for idx, file in enumerate(files):
             try:
                 with open(file, "r", encoding='utf-8') as fin:
                     javacode = fin.read()
@@ -66,6 +67,9 @@ class JavaModifierUI:
                 errors_cnt += 1
             else:
                 success_cnt += 1
+
+            if (idx+1) % 100 == 0:
+                print(f'{idx+1} files processed')
 
         modifier.finalize()
 
@@ -81,7 +85,7 @@ class JavaModifierUI:
 
         core = JavaModifierCore()
         core.initialize()
-        core.modify_one(file_path, javacode)
+        core.modify_one(file_path, javacode, False, False)
         core.finalize()
 
         print('END'.center(60, '-'))

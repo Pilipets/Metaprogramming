@@ -29,7 +29,7 @@ def generate_method_doc(method : MethodStruct, col_indent):
              'please specify method description here.',
              '']
 
-    cols = [[] for _ in range(3)]
+    cols = [[''] for _ in range(3)]
 
     has_params = False
     if method._params:
@@ -43,7 +43,7 @@ def generate_method_doc(method : MethodStruct, col_indent):
         cols[0].append(return_sym)
         cols[2].append(return_text)
         has_return = True
-
+      
     widths = [max(map(len, col)) for col in cols]
     padding = [1, 2, 0]
 

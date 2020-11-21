@@ -62,12 +62,12 @@ class AdvancedStructuresConsumer(StructuresConsumer):
 
         annotation = None
         if (isinstance(tokens[idx], java_tokens.Annotation)
-                and tokens[idx+1].value in ('interface')
+                and tokens[idx+1].value == 'interface'
                     and isinstance(tokens[idx+2], java_tokens.Identifier)):
-            annotation = AnnotationStruct(tokens[idx+2])
+            annotation = AnnotationStruct(tokens[idx+2].value)
 
         if not annotation: return False
-        cls.consume_res = (annotation, idx+3)
+        self.consume_res = (annotation, idx+3)
         return True
 
     def try_anotation_invocations(self, idx, tokens):

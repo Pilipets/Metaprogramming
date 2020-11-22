@@ -1,5 +1,3 @@
-from collections import defaultdict
-
 from .resolvers.global_resolver import GlobalNamesResolver
 from .resolvers.file_resolver import FileResolver
 

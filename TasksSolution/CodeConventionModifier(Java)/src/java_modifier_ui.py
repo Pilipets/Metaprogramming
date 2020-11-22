@@ -1,4 +1,5 @@
 import os, sys
+from timeit import default_timer as timer
 
 from src.core.java_modifier_core import JavaModifierCore
 
@@ -48,20 +49,22 @@ class JavaModifierUI:
     @staticmethod
     def process_files(action, files, touch_docs):
         print('%d files collected, initializing the process...' % len(files))
-
+        start = timer()
         modifier = JavaModifierCore()
-        modifier.initialize()
+        modifier.initialize(files)
+
+        seconds, start = round(timer() - start, 4), timer()
+        print(f'Initialization completed in {seconds} seconds')
+
         func = modifier.modify_one
         if action in ('--verify', '-v'):
             func = modifier.verify_one
 
+        start = timer()
         success_cnt, errors_cnt = 0, 0
         for idx, file in enumerate(files):
             try:
-                with open(file, "r", encoding='utf-8') as fin:
-                    javacode = fin.read()
-
-                func(file, javacode, touch_docs)
+                func(file, touch_docs)
             except Exception as ex:
                 print("Exception received when processing file={}, ex={}".format(file, ex))
                 errors_cnt += 1
@@ -69,7 +72,9 @@ class JavaModifierUI:
                 success_cnt += 1
 
             if (idx+1) % 100 == 0:
-                print(f'{idx+1} files processed')
+                percents = round((idx+1)/len(files)*100, 3)
+                seconds = round(timer() - start, 4)
+                print(f'{idx+1}({percents}%) files processed in {seconds} seconds')
 
         modifier.finalize()
 
@@ -78,14 +83,11 @@ class JavaModifierUI:
     @staticmethod
     def run_debug():
         print('START'.center(60, '-'))
-        javacode = ''
         file_path = os.path.join("input", "code.java")
-        with open(file_path, "r", encoding='utf-8') as fin:
-            javacode = fin.read()
 
         core = JavaModifierCore()
-        core.initialize()
-        core.modify_one(file_path, javacode, False, False)
+        core.initialize([file_path])
+        core.modify_one(file_path, touch_docs = False, produce_file = False)
         core.finalize()
 
         print('END'.center(60, '-'))

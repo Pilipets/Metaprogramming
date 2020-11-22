@@ -6,6 +6,10 @@ class DummyClass {
         __other var = new DoItNow() {
             put(x, y);
         };
+
+        class InsideClass {
+
+        }
     }
 
     /**

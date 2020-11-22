@@ -92,9 +92,9 @@ def test_try_var_type():
         assert type._is_array == out[2]
 
 var_single_data = [
-    ('Foo<T[], U<Te, SDsd>>[][][] var', ('Foo', 'var')),
-    ('Type<?> rs', ('Type', 'rs')),
-    ('Wyg ass', ('Wyg', 'ass'))
+    ('Foo<T[], U<Te, SDsd>>[][][] var   ;', ('Foo', 'var')),
+    ('Type<?> rs ,', ('Type', 'rs')),
+    ('Wyg ass =', ('Wyg', 'ass'))
 ]
 def test_try_var_single_declaration():
     for in_txt, out in var_single_data:
@@ -103,7 +103,7 @@ def test_try_var_single_declaration():
         assert consumer.try_var_single_declaration(0, tokens)
         var, end = consumer.get_consume_res()
 
-        assert end == len(tokens)
+        assert end == len(tokens) - 1
         assert var._type._name == out[0]
         assert var._names[0] == out[1]
 

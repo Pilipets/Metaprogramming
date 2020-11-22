@@ -268,6 +268,10 @@ class StructuresConsumer:
             idx += 1
 
         if not var_name: return False
+        if (idx < len(tokens) and not (
+            isinstance(tokens[idx], (java_tokens.Separator, java_tokens.Operator))
+                and tokens[idx].value in '),;=')):
+            return False
 
         var_struct = MultiVarStruct(var_type, [var_name])
         self.consume_res = (var_struct, idx)

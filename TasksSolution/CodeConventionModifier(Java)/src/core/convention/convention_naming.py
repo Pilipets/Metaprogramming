@@ -34,6 +34,10 @@ class ConventionNaming:
             elif ch.islower() or ch.isdigit():
                 while idx < len(x) and (x[idx].islower() or x[idx].isdigit()): idx += 1
 
+            else:
+                # Something wrong is passed here
+                idx += 1
+
             if start != idx: res.append(x[start:idx])
 
         return res

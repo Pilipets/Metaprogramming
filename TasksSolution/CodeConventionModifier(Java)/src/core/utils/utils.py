@@ -26,7 +26,7 @@ def setup_logger(logger_name, level=logging.WARNING, formatter = FormatterType.E
 
     return logger
 
-out_logger = setup_logger('renamed', logging.INFO, FormatterType.SHORT)
+out_logger = setup_logger('RENAMED', logging.INFO, FormatterType.SHORT)
 
 def unwind_tokens(tokens):
     res = []

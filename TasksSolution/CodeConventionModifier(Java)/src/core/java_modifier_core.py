@@ -1,4 +1,4 @@
-import copy, logging
+from logging import DEBUG as logging_DEBUG
 
 from .tokenizer import java_tokens
 from .tokenizer.java_lexer import tokenize
@@ -8,34 +8,40 @@ from .analyzer.names_resolver import NamesResolver
 from .utils.utils import setup_logger, ModifierError
 
 # Initialize logging
-core_logger = setup_logger(__name__, logging.DEBUG)
+core_logger = setup_logger(__name__, logging_DEBUG)
 
 class JavaModifierCore:
     def __init__(self):
         pass
 
-    def initialize(self):
+    def _prepare_one(self, fp):
+        javacode = ''
+        with open(fp, 'r') as fin:
+            javacode = fin.read()
+
+        tokens = list(tokenize(javacode, raise_errors=True))
+        stack = [java_tokens.JavaToken('')]
+        consumer = Consumer()
+        return tokens, stack, consumer
+
+    def initialize(self, file_paths):
         core_logger.debug('Initializing modify...'.center(60, '-'))
 
         self.names_resolver = NamesResolver()
+        resolver = self.names_resolver.get_global_resolver()
 
-    def verify_one(self, file_path, text, touch_docs):
-        self.modify_one(file_path, text, touch_docs, produce_file = False)
+        for fp in file_paths:
+            self._analyze_one(*self._prepare_one(fp), resolver, True)
 
-    def modify_one(self, file_path, text, touch_docs, produce_file = True):
-        #Aliases
-        names_resolver = self.names_resolver
+    def verify_one(self, file_path, touch_docs):
+        self.modify_one(file_path, touch_docs, produce_file = False)
 
+    def modify_one(self, file_path, touch_docs, produce_file = True):
         # Initialization part
-        tokens = tuple(tokenize(text, raise_errors=True))
-        changed_tokens = copy.deepcopy(tokens)
+        tokens, stack, consumer = self._prepare_one(file_path)
 
-        resolver = names_resolver.new_file_resolver(
-            file_path, tokens, changed_tokens,
-            produce_file, touch_docs)
-
-        stack = [java_tokens.JavaToken('')]
-        consumer = Consumer()
+        resolver = self.names_resolver.new_file_resolver(file_path, tokens,
+                                                         produce_file, touch_docs)
 
         # Analyzing part
         core_logger.debug(f'Analyzing "{file_path}"'.center(60, '-'))
@@ -48,18 +54,20 @@ class JavaModifierCore:
     def finalize(self):
         core_logger.debug('Finalizing modify...'.center(60, '-'))
 
-        self.names_resolver.close_all_resolvers()
+        self.names_resolver.close()
         self.names_resolver = None
 
-    def _analyze_one(self, tokens, stack, consumer, resolver):
+    def _analyze_one(self, tokens, stack, consumer, resolver, preprocess_flag = False):
         idx = 0
         while idx < len(tokens):
+
             # ----------------------Specials and not important--------------------
             if isinstance(tokens[idx], java_tokens.Separator):
                 idx = self._process_separator(idx, tokens, stack)
                 continue
 
-            elif isinstance(tokens[idx], java_tokens.Comment):
+            elif ((preprocess_flag and len(stack) > 3)
+                    or isinstance(tokens[idx], java_tokens.Comment)):
                 idx += 1
                 continue
 
@@ -82,20 +90,14 @@ class JavaModifierCore:
             if consumer.try_class_declaration(idx, tokens):
                 cls, idx = consumer.get_consume_res()
 
-                core_logger.debug('Class declaration: {}'.format(cls))
-
                 resolver.add_name_declaration(NameType.CLASS, cls, stack)
                 resolver.add_doc_declaration((doc_idx, start_idx, idx), NameType.CLASS, stack)
-
                 stack.append(tokens[start_idx])
 
             elif consumer.try_annotation_declaration(idx, tokens):
                 cls, idx = consumer.get_consume_res()
 
-                core_logger.debug('Annotation declaration: {}'.format(cls))
-
                 resolver.add_name_declaration(NameType.ANNOTATION, cls, stack)
-
                 stack.append(tokens[start_idx+1])
 
             elif consumer.try_anonymous_class(idx, tokens):
@@ -109,8 +111,6 @@ class JavaModifierCore:
                         and consumer.try_method_declaration(idx, tokens)):
                 method, idx = consumer.get_consume_res()
 
-                core_logger.debug('Method declaration: {}'.format(method))
-
                 resolver.add_name_declaration(NameType.METHOD, method, stack)
                 resolver.add_doc_declaration((doc_idx, start_idx, idx), NameType.METHOD, stack)
 
@@ -119,16 +119,14 @@ class JavaModifierCore:
                 vars, idx = consumer.get_consume_res()
 
                 if 'static' in modifiers and 'final' in modifiers:
-                    core_logger.debug('Const vars declaration: {}'.format(vars))
-
                     resolver.add_name_declaration(NameType.CONST_VARIABLE, vars, stack)
             
                 else:
-                    core_logger.debug('Vars declaration: {}'.format(vars))
                     resolver.add_name_declaration(NameType.VARIABLE, vars, stack)
 
             elif doc_idx == idx:
                 idx += 1
+
 
             # -------------------------------------------------------------------
 
@@ -136,8 +134,7 @@ class JavaModifierCore:
         if len(stack) != 1:
             raise ModifierError('Invalid Java code semantics encountered, stack size:', len(stack))
 
-        if not resolver.process_declarations():
-            core_logger.debug('Postponing renaming for "{}"'.format(resolver.get_file_path()))
+        resolver.close()
 
     def _process_separator(self, idx, tokens, stack):
         cur = tokens[idx]

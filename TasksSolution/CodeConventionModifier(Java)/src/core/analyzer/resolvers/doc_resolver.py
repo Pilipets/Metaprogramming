@@ -10,12 +10,10 @@ StructPos = namedtuple('StructPos', ['doc', 'start', 'end'])
 
 class ScopeDocResolver:
     def _reset(self):
-        self._p_resolver = None
         self._changed_tokens = list()
         self._pending = list()
 
-    def __init__(self, p_resolver, changed_tokens):
-        self._p_resolver = p_resolver
+    def __init__(self, changed_tokens):
         self._changed_tokens = changed_tokens
         self._pending = list()
 

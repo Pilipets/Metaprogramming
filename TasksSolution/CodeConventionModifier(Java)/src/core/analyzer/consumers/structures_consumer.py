@@ -1,4 +1,4 @@
-from ...tokenizer import java_tokens
+from . import java_tokens
 
 class TemplateStruct:
     def __init__(self, names, str):

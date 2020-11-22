@@ -1,5 +1,6 @@
-from src.core.analyzer.consumers.structures_consumer import StructuresConsumer as Consumer
-from src.core.tokenizer.java_lexer import tokenize
+from src.core.analyzer import StructuresConsumer as Consumer
+
+from . import tokenize
 
 consumer = Consumer.get_consumer()
 
@@ -119,13 +120,3 @@ def test_try_stacked_chars_data():
         _, end = consumer.get_consume_res()
 
         assert end == len(tokens)
-
-if __name__ == '__main__':
-    test_try_template_declaration()
-    test_try_template_invocation()
-
-    test_try_class_declaration()
-    test_try_var_type()
-    test_try_var_single_declaration()
-
-    test_try_stacked_chars_data()

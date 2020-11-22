@@ -2,10 +2,10 @@ from logging import DEBUG as logging_DEBUG
 
 from .tokenizer import java_tokens
 from .tokenizer.java_lexer import tokenize
-from .convention.convention_naming import NameType
-from .analyzer.advanced_consumer import AdvancedStructuresConsumer as Consumer
-from .analyzer.names_resolver import NamesResolver
-from .utils.utils import setup_logger, ModifierError
+from .convention import NameType
+from .analyzer import AdvancedConsumer as Consumer
+from .analyzer import NamesResolver
+from .utils import setup_logger, ModifierError
 
 # Initialize logging
 core_logger = setup_logger(__name__, logging_DEBUG)

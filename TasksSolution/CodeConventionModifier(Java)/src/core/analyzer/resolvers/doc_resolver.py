@@ -1,10 +1,10 @@
 from collections import namedtuple
 
-from ...analyzer.advanced_consumer import AdvancedStructuresConsumer as Consumer
-from ...convention.convention_naming import NameType
+from ..consumers import AdvancedConsumer as Consumer
+from ...convention import NameType
 from ...tokenizer.java_tokens import MultiLineComment
 from ...utils.utils import out_logger
-from ...analyzer.consumers.doc_generator import generate_method_doc, generate_class_doc
+from ...convention.doc_generator import generate_method_doc, generate_class_doc
 
 StructPos = namedtuple('StructPos', ['doc', 'start', 'end'])
 

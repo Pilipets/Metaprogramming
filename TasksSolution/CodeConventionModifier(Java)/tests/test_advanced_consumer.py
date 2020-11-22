@@ -1,5 +1,6 @@
-from src.core.analyzer.advanced_consumer import AdvancedStructuresConsumer as Consumer
-from src.core.tokenizer.java_lexer import tokenize
+from src.core.analyzer import AdvancedConsumer as Consumer
+
+from . import tokenize
 
 consumer = Consumer.get_consumer()
 
@@ -96,7 +97,3 @@ def test_try_method_declaration():
             assert x._names[0] == y[1]
 
 # TODO: add tests for annotation declaration, invocations, anonymous classes
-
-if __name__ == '__main__':
-    test_try_multiple_vars_declaration()
-    test_try_method_declaration()

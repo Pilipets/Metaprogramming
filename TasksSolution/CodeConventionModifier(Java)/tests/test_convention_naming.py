@@ -1,4 +1,4 @@
-from src.core.convention.convention_naming import get_convention_rename, ConventionNaming, NameType
+from src.core.convention import get_convention_rename, ConventionNaming, NameType
 
 const_vars_data = [
     ("_23dummy$___var23Or32This", "DUMMY_VAR23_OR32_THIS"),
@@ -57,12 +57,8 @@ methods_vars_data = [
     ("_23$", "")
 ]
 def test_method_vars_rename():
-    for _in, _out in class_vars_data:
+    for _in, _out in methods_vars_data:
         assert _out == ConventionNaming.get_method_name(_in)
         assert _out == get_convention_rename(NameType.METHOD, _in)
         assert _out == ConventionNaming.get_variable_name(_in)
         assert _out == get_convention_rename(NameType.VARIABLE, _in)
-
-if __name__ == '__main__':
-    test_const_vars_rename()
-    test_class_vars_rename()

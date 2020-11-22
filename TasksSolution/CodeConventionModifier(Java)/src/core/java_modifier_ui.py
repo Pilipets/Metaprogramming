@@ -1,7 +1,7 @@
 import os, sys
 from timeit import default_timer as timer
 
-from src.core.java_modifier_core import JavaModifierCore
+from .java_modifier_core import JavaModifierCore
 
 class JavaModifierUI:
     def __init__(self, *args, **kwargs):
@@ -33,10 +33,10 @@ class JavaModifierUI:
 "         JavaDoc for top-level classes, methods. If not provided, only the renaming part is done;\n"
 "      -> action{--modify, -m, --verify, -v} - optional argument. Specifies the execution mode:\n"
 "         either modifies or verifies the input files considering 'option' arguments. If '-m'\n"
-"         flag is set, creates 'modfied_*.java' files with the applied convention fixes.\n"
-"    4. To RUN the application, you must execute the java_modifier_app.py script with the\n"
+"         flag is set, creates 'modified_*.java' files with the applied convention fixes.\n"
+"    4. To RUN the application, you must execute the __main__.py script with the\n"
 "       respective arguments, ending with the input_path.\n"
-"       Example: python3 CodeConventionModifier\(Java\)/java_modifier_app.py -m -d --doc\n"
+"       Example: python3 CodeConventionModifier\(Java\)/src/__main__.py -m -d --doc\n"
 "       /mnt/e/Documents/input_files\n"
 "-----------------------------------------------------------------------------------------------------\n"
 "                             Feel free to modify the code as you wish!!!\n")

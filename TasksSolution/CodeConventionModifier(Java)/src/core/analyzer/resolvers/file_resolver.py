@@ -2,12 +2,13 @@ import os
 from copy import deepcopy
 from logging import DEBUG as logging_DEBUG
 
-from .scope_resolver import ScopeNamesResolver
-from .doc_resolver import ScopeDocResolver
 from ...utils.utils import out_logger, setup_logger, tricky_reformat, unwind_tokens
 from ...convention.convention_naming import NameType, ConventionNaming
-from ...tokenizer.java_lexer import Identifier
+from ...tokenizer.java_tokens import Identifier
+
 from .global_resolver import AbstractResolver
+from .scope_resolver import ScopeNamesResolver
+from .doc_resolver import ScopeDocResolver
 
 logger = setup_logger(__name__, logging_DEBUG)
 

@@ -1,5 +1,6 @@
-from .consumers.structures_consumer import StructuresConsumer, ClassStruct, MultiVarStruct, VarTypeStruct
-from ...core.tokenizer import java_tokens
+from . import java_tokens
+
+from .structures_consumer import StructuresConsumer, ClassStruct, MultiVarStruct, VarTypeStruct
 
 class MethodStruct:
     def __init__(self, templ, var_type, name, params):

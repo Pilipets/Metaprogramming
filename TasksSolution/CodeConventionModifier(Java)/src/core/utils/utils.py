@@ -1,11 +1,9 @@
 import logging, os, sys
 
-from ...core.tokenizer import java_tokens
+from ..tokenizer import java_tokens
 
 class ModifierError(Exception):
     pass
-
-rel_path = os.path.join(os.path.split(sys.argv[0])[0], 'output')
 
 class FormatterType:
     EXTENSIVE = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
@@ -26,6 +24,8 @@ def setup_logger(logger_name, level=logging.WARNING, formatter = FormatterType.E
 
     return logger
 
+rel_path = os.path.join(os.path.split(sys.argv[0])[0], 'output')
+os.makedirs(rel_path, exist_ok = True)
 out_logger = setup_logger('RENAMED', logging.INFO, FormatterType.SHORT)
 
 def unwind_tokens(tokens):

@@ -4,7 +4,7 @@
     <SchemaVersion>2.0</SchemaVersion>
     <ProjectGuid>a7b7ba9a-c13f-4043-8def-6c6b22a528c5</ProjectGuid>
     <ProjectHome>.</ProjectHome>
-    <StartupFile>java_modifier_app.py</StartupFile>
+    <StartupFile>src\__main__.py</StartupFile>
     <SearchPath>
     </SearchPath>
     <WorkingDirectory>.</WorkingDirectory>
@@ -25,13 +25,34 @@
     <EnableUnmanagedDebugging>false</EnableUnmanagedDebugging>
   </PropertyGroup>
   <ItemGroup>
-    <Compile Include="java_modifier_app.py">
+    <Compile Include="src\core\analyzer\consumers\__init__.py">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="src\core\analyzer\advanced_consumer.py">
+    <Compile Include="src\core\analyzer\resolvers\__init__.py">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="src\core\analyzer\consumers\doc_generator.py">
+    <Compile Include="src\core\analyzer\__init__.py">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="src\core\convention\__init__.py">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="src\core\tokenizer\__init__.py">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="src\core\utils\__init__.py">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="src\core\__init__.py">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="src\__main__.py">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="src\core\analyzer\consumers\advanced_consumer.py">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="src\core\convention\doc_generator.py">
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="src\core\analyzer\resolvers\doc_resolver.py">
@@ -56,13 +77,13 @@
     <Compile Include="src\core\analyzer\consumers\structures_consumer.py">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="src\core\others\temporary_unused.txt">
+    <Compile Include="miscellaneous\temporary_unused.txt">
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="src\core\utils\utils.py">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="src\java_modifier_ui.py">
+    <Compile Include="src\core\java_modifier_ui.py">
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="src\core\tokenizer\java_lexer.py" />
@@ -76,6 +97,9 @@
     <Compile Include="tests\test_structures_consumer.py">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="tests\__init__.py">
+      <SubType>Code</SubType>
+    </Compile>
   </ItemGroup>
   <ItemGroup>
     <Folder Include="input\" />
@@ -87,10 +111,9 @@
     <Folder Include="src\core\analyzer\resolvers\" />
     <Folder Include="src\core\convention\" />
     <Folder Include="tests\" />
-    <Folder Include="output\" />
     <Folder Include="src\" />
     <Folder Include="src\core\" />
-    <Folder Include="src\core\others\" />
+    <Folder Include="miscellaneous\" />
     <Folder Include="src\core\utils\" />
     <Folder Include="src\core\tokenizer\" />
   </ItemGroup>
@@ -98,11 +121,8 @@
     <Content Include="input\code.java" />
     <Content Include="input\test_general\code1.java" />
     <Content Include="input\test_general\code2.java" />
-    <Content Include="input\test_javadoc\code.java" />
-    <Content Include="input\test_reformat\code.java" />
-    <Content Include="output\renamed.log" />
-    <Content Include="output\src.core.java_modifier_core.log" />
-    <Content Include="output\src.core.utils.names_resolver.log" />
+    <Content Include="input\test_javadoc\test_javadoc.java" />
+    <Content Include="input\test_reformat\test_reformat.java" />
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)\Python Tools\Microsoft.PythonTools.targets" />
   <!-- Uncomment the CoreCompile target to enable the Build command in

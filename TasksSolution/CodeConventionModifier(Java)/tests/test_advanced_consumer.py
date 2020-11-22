@@ -1,6 +1,5 @@
 from src.core.analyzer import AdvancedConsumer as Consumer
-
-from . import tokenize
+from src.core.tokenizer.java_lexer import tokenize
 
 consumer = Consumer.get_consumer()
 

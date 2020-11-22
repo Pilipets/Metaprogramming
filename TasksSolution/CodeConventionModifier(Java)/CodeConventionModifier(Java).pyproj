@@ -15,6 +15,7 @@
     <CommandLineArguments>-m -f --doc C:\Users\Druid\source\repos\Metaprogramming\TasksSolution\CodeConventionModifier(Java)\input\code.java</CommandLineArguments>
     <EnableNativeCodeDebugging>False</EnableNativeCodeDebugging>
     <TestFramework>Pytest</TestFramework>
+    <IsWindowsApplication>False</IsWindowsApplication>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">
     <DebugSymbols>true</DebugSymbols>
@@ -44,6 +45,9 @@
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="src\core\__init__.py">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="src\__init__.py">
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="src\__main__.py">

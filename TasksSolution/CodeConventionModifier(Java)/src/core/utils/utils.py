@@ -24,7 +24,7 @@ def setup_logger(logger_name, level=logging.WARNING, formatter = FormatterType.E
 
     return logger
 
-rel_path = os.path.join(os.path.split(sys.argv[0])[0], 'output')
+rel_path = 'output'
 os.makedirs(rel_path, exist_ok = True)
 out_logger = setup_logger('RENAMED', logging.INFO, FormatterType.SHORT)
 

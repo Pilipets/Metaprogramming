@@ -15,7 +15,8 @@ class JavaModifierUI:
 "Description:\n"
 "    Briefly, the app uses command-line arguments to format names and generate JavaDoc in\n"
 "    .java files collected from the given directory, project, file according to the convention.\n"
-"    Creates RENAMED.log with all the convention fixes and may generate 'modified_*.java files\n"
+"    Creates RENAMED.log along with the internal logs describing all the applied fixes in the\n"
+"    'output' folder relative to the working directory and may generate 'modified_*.java' files\n"
 "    depending on the given command-line arguments.\n"
 "Usage instructions:\n"
 "    1. Use --admin command-line option to run run_debug(...) method from java_modifier_ui.py\n"
@@ -85,7 +86,7 @@ class JavaModifierUI:
         modifier.initialize(files)
 
         seconds, start = round(timer() - start, 4), timer()
-        print(f'Initialization completed in {seconds} seconds')
+        print(f'Initialization completed in {seconds} seconds.')
 
         func = modifier.modify_one
         if action in ('--verify', '-v'):
@@ -97,7 +98,7 @@ class JavaModifierUI:
             try:
                 func(file, touch_docs)
             except Exception as ex:
-                print("Exception received when processing file={}, ex={}".format(file, ex))
+                print("Exception received when processing file={}, ex={}.".format(file, ex))
                 errors_cnt += 1
             else:
                 success_cnt += 1
@@ -105,11 +106,12 @@ class JavaModifierUI:
             if (idx+1) % 100 == 0:
                 percents = round((idx+1)/len(files)*100, 3)
                 seconds = round(timer() - start, 4)
-                print(f'{idx+1}({percents}%) files processed in {seconds} seconds')
+                print(f'{idx+1}({percents}%) files processed in {seconds} seconds.')
 
         modifier.finalize()
 
-        print('Processed %d files successfully, %d files with errors' % (success_cnt, errors_cnt))
+        print('Processed %d files successfully, %d files with errors.' % (success_cnt, errors_cnt))
+        print('View the result output in the "%s" folder.' % os.path.join(os.getcwd(), 'output'))
 
     @staticmethod
     def run_debug():
@@ -128,7 +130,7 @@ class JavaModifierUI:
         params = set(sys.argv)
 
         if len(sys.argv) != len(params) or len(params) < 2:
-            JavaModifierUI.report_error('incorrect parameters amount of the script')
+            JavaModifierUI.report_error('incorrect parameters count of the script')
 
         if '--admin' in params:
             JavaModifierUI.run_debug()

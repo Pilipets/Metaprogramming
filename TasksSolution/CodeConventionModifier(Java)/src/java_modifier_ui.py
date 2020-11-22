@@ -8,7 +8,38 @@ class JavaModifierUI:
         raise NotImplementedError('{} not intended to be instantiated'.format(
             self.__class__))
 
-    help_text = ('Dummy help info!!!'.center(50, '-'))
+        raise NotImplementedError("not intended to initialize the class")
+
+    help_text = (
+"------------------Java code convention modifying console application---------------------\n"
+"Description:\n"
+"    Briefly, the app uses command-line arguments to format names and generate JavaDoc in\n"
+"    .java files collected from the given directory, project, file according to the convention.\n"
+"    Creates RENAMED.log with all the convention fixes and may generate 'modified_*.java files\n"
+"    depending on the given command-line arguments.\n"
+"Usage instructions:\n"
+"    1. Use --admin command-line option to run run_debug(...) method from java_modifier_ui.py\n"
+"       - debug purposes. You can modify this method as you want.\n"
+"    2. Use --help cmd-line argument to print the description info.\n"
+"    3. The app supports up to 4 additional arguments:\n"
+"      -> input_path{'string'} - required argument. It is a relative or absolute path to the\n"
+"         folder, project, file; that is expecting to be processed by the app.\n"
+"         Must be the last execution argument;\n"
+"      -> option{-(p|d|f)} - required argument. Specifies the execution policy - directory\n"
+"         recursively, directory without recursion, one file. The app uses the input path and\n"
+"         provided option argument to get the files with .java format that don't start with\n"
+"         'modified_' aka reserved prefix;\n"
+"      -> option{--doc} - optional argument. Specifies that the app will validate/generate\n"
+"         JavaDoc for top-level classes, methods. If not provided, only the renaming part is done;\n"
+"      -> action{--modify, -m, --verify, -v} - optional argument. Specifies the execution mode:\n"
+"         either modifies or verifies the input files considering 'option' arguments. If '-m'\n"
+"         flag is set, creates 'modfied_*.java' files with the applied convention fixes.\n"
+"    4. To RUN the application, you must execute the java_modifier_app.py script with the\n"
+"       respective arguments, ending with the input_path.\n"
+"       Example: python3 CodeConventionModifier\(Java\)/java_modifier_app.py -m -d --doc\n"
+"       /mnt/e/Documents/input_files\n"
+"-----------------------------------------------------------------------------------------------------\n"
+"                             Feel free to modify the code as you wish!!!\n")
 
     @staticmethod
     def report_error(err):

@@ -30,6 +30,10 @@ def test_try_multiple_vars_declaration():
 
 methods_data = [
     (
+        'Map<String, byte[]> getCustomMetadata()',
+        ('Map', 'getCustomMetadata')
+    ),
+    (
         'wtf.TestSimple()',
         None
     ),

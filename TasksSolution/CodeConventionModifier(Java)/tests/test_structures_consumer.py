@@ -4,6 +4,7 @@ from src.core.tokenizer.java_lexer import tokenize
 consumer = Consumer.get_consumer()
 
 templates_invocation_data = [
+    ('<String, byte[]>', (True, ['String', 'byte'])),
     ('<Try, ?, Object[]>', (True, ['Try', 'Object'])),
     ('<Object<Yet.Simple.Temp<Another>, v[]>>', (True, ['Object', 'Temp', 'Another', 'v'])),
     ('<T, Y, Z>', (True, ['T', 'Y', 'Z'])),
@@ -25,7 +26,6 @@ def test_try_template_invocation():
 
         assert end == len(tokens)
         assert tmpl._names == out[1]
-
 
 templates_declaration_data = [
     ('<T super Bar & yh.Abba, U, Z>', (True, ['T', 'U', 'Z'])),

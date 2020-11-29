@@ -113,9 +113,10 @@ class FileResolver(AbstractResolver):
         logger.debug('Closing file resolver for "{}"'.format(self._path))
         out_logger.info('Renaming for file "{}"'.format(self._path).center(80, '-'))
 
-        renamed, out_path = self._get_cmp_renamed_file_path(self._path)
-        if renamed: out_logger.info('Renaming file: {} -> {}'.format(renamed[0], renamed[1]))
-        out_logger.info('Output path: {}'.format(out_path))
+        if self._produce_file:
+            renamed, out_path = self._get_cmp_renamed_file_path(self._path)
+            if renamed: out_logger.info('Renaming file: {} -> {}'.format(renamed[0], renamed[1]))
+            out_logger.info('Output path: {}'.format(out_path))
 
         n_idx = self._scope_resolver.close()
         d_idx = self._doc_resolver.close()

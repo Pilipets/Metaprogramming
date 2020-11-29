@@ -195,6 +195,9 @@ class StructuresConsumer:
 
             if state == 1:
                 if cur.value == '?': next_state = 2
+                elif isinstance(cur, java_tokens.BasicType):
+                    names.append(cur.value)
+                    next_state = 4
                 elif self.try_outer_identifier(idx, tokens):
                     name, idx = self.consume_res
                     names.append(name)

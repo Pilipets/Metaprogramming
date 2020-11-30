@@ -1,6 +1,6 @@
 from . import java_tokens
 
-from .structures_consumer import StructuresConsumer, ClassStruct, MultiVarStruct, VarTypeStruct
+from .structures_consumer import StructuresConsumer, VarTypeStruct
 
 class MethodStruct:
     def __init__(self, templ, var_type, name, params):
@@ -17,18 +17,47 @@ class MethodStruct:
         res += ')'
         return res
 
-class AnnotationStruct(ClassStruct):
-    def __init__(self, name):
-        super().__init__(name, None)
-
-class AnnotationInvocationsStruct:
-    def __init__(self, annotations):
-        self._annotations = annotations
+class MultiVarStruct:
+    def __init__(self, var_type, var_names):
+        self._type = var_type
+        self._names = var_names
 
     def __str__(self):
-        return ', '.join(str(x) for x in self._annotations)
+        res = "%s %s" % (self._type, ', '.join(self._names))
+        return res
+
+class ClassStruct:
+    def __init__(self, name, templ):
+        self._name = name
+        self._templ = templ
+
+    def __str__(self):
+        res = self._name
+        if self._templ: res += f' {self._templ}'
+        return res
 
 class AdvancedStructuresConsumer(StructuresConsumer):
+    def try_class_declaration(self, idx, tokens):
+        self.consume_res = None
+        if idx + 1 >= len(tokens): return False
+
+        class_name = None
+        if (tokens[idx].value in ('class', 'interface')
+                and isinstance(tokens[idx+1], java_tokens.Identifier)):
+            class_name = tokens[idx+1].value
+            idx += 2
+
+        else:
+            return False
+
+        tmpl = None
+        if (self.try_template_declaration(idx, tokens)):
+            tmpl, idx = self.consume_res
+
+        class_struct = ClassStruct(class_name, tmpl)
+        self.consume_res = class_struct, idx
+        return True
+
     # Notice this might be object creation with initialization as well
     def try_anonymous_class(self, idx, tokens):
         self.consume_res = None
@@ -57,40 +86,23 @@ class AdvancedStructuresConsumer(StructuresConsumer):
         self.consume_res = (res, idx)
         return True
 
-    def try_annotation_declaration(self, idx, tokens):
-        self.consume_res = None
-        if idx + 2 >= len(tokens): return False
+    def try_var_single_declaration(self, idx, tokens):
+        if not self.try_var_type(idx, tokens): return False
+        var_type, idx = self.consume_res
 
-        annotation = None
-        if (isinstance(tokens[idx], java_tokens.Annotation)
-                and tokens[idx+1].value == 'interface'
-                    and isinstance(tokens[idx+2], java_tokens.Identifier)):
-            annotation = AnnotationStruct(tokens[idx+2].value)
+        var_name = None
+        if idx < len(tokens) and isinstance(tokens[idx], java_tokens.Identifier):
+            var_name = tokens[idx].value
+            idx += 1
 
-        if not annotation: return False
-        self.consume_res = (annotation, idx+3)
-        return True
+        if not var_name: return False
+        if (idx < len(tokens) and not (
+            isinstance(tokens[idx], (java_tokens.Separator, java_tokens.Operator))
+                and tokens[idx].value in '),;=')):
+            return False
 
-    def try_anotation_invocations(self, idx, tokens):
-        self.consume_res = None
-
-        annotations = []
-        while idx+1 < len(tokens):
-            if (isinstance(tokens[idx], java_tokens.Annotation)
-                    and self.try_outer_identifier(idx+1, tokens)):
-                name, idx = self.consume_res
-                annotations.append(AnnotationStruct(name))
-
-            else:
-                break
-
-            if self.try_stacked_chars('()', idx, tokens):
-                idx = self.consume_res[-1]
-
-        if not annotations: return False
-
-        annotations = AnnotationInvocationsStruct(annotations)
-        self.consume_res = (annotations, idx)
+        var_struct = MultiVarStruct(var_type, [var_name])
+        self.consume_res = (var_struct, idx)
         return True
    
     def try_multiple_vars_declaration(self, idx, tokens):

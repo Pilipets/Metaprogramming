@@ -8,15 +8,19 @@ class TemplateStruct:
     def __str__(self):
         return self._str
 
-class ClassStruct:
-    def __init__(self, name, templ):
+class AnnotationStruct():
+    def __init__(self, name):
         self._name = name
-        self._templ = templ
 
     def __str__(self):
-        res = self._name
-        if self._templ: res += f' {self._templ}'
-        return res
+        return f'@{self._name}'
+
+class AnnotationInvocationsStruct:
+    def __init__(self, annotations):
+        self._annotations = annotations
+
+    def __str__(self):
+        return ', '.join(str(x) for x in self._annotations)
 
 class VarTypeStruct:
     def __init__(self, name, templ, is_array):
@@ -30,17 +34,7 @@ class VarTypeStruct:
         if self._is_array: res += ' [...]'
         return res
 
-class MultiVarStruct:
-    def __init__(self, var_type, var_names):
-        self._type = var_type
-        self._names = var_names
-
-    def __str__(self):
-        res = "%s %s" % (self._type, ', '.join(self._names))
-        return res
-
 class StructuresConsumer:
-
     def __init__(self):
         self.consume_res = None
 
@@ -105,25 +99,40 @@ class StructuresConsumer:
         self.consume_res = (tokens[idx-1].value, idx)
         return True
 
-    def try_class_declaration(self, idx, tokens):
+    def try_annotation_declaration(self, idx, tokens):
         self.consume_res = None
-        if idx + 1 >= len(tokens): return False
+        if idx + 2 >= len(tokens): return False
 
-        class_name = None
-        if (tokens[idx].value in ('class', 'interface')
-                and isinstance(tokens[idx+1], java_tokens.Identifier)):
-            class_name = tokens[idx+1].value
-            idx += 2
+        annotation = None
+        if (isinstance(tokens[idx], java_tokens.Annotation)
+                and tokens[idx+1].value == 'interface'
+                    and isinstance(tokens[idx+2], java_tokens.Identifier)):
+            annotation = AnnotationStruct(tokens[idx+2].value)
 
-        else:
-            return False
+        if not annotation: return False
+        self.consume_res = (annotation, idx+3)
+        return True
 
-        tmpl = None
-        if (self.try_template_declaration(idx, tokens)):
-            tmpl, idx = self.consume_res
+    def try_anotation_invocations(self, idx, tokens):
+        self.consume_res = None
 
-        class_struct = ClassStruct(class_name, tmpl)
-        self.consume_res = class_struct, idx
+        annotations = []
+        while idx+1 < len(tokens):
+            if (isinstance(tokens[idx], java_tokens.Annotation)
+                    and self.try_outer_identifier(idx+1, tokens)):
+                name, idx = self.consume_res
+                annotations.append(name)
+
+            else:
+                break
+
+            if self.try_stacked_chars('()', idx, tokens):
+                idx = self.consume_res[-1]
+
+        if not annotations: return False
+
+        annotations = AnnotationInvocationsStruct(annotations)
+        self.consume_res = (annotations, idx)
         return True
     
     def try_template_declaration(self, idx, tokens):
@@ -151,9 +160,17 @@ class StructuresConsumer:
                 elif cur.value == '>': next_state, open_cnt = 5, open_cnt-1
 
             elif state == 3:
-                if self.try_outer_identifier(idx, tokens):
-                    idx = self.consume_res[-1]-1
-                    next_state = 4
+                if self.try_anotation_invocations(idx, tokens):
+                    idx = self.consume_res[-1]
+
+                    if self.try_outer_identifier(idx, tokens):
+                        idx = self.consume_res[-1]-1
+                        next_state = 4
+
+
+                elif self.try_outer_identifier(idx, tokens):
+                        idx = self.consume_res[-1]-1
+                        next_state = 4
                 
             elif state == 4:
                 if cur.value == '&': next_state = 3
@@ -197,17 +214,29 @@ class StructuresConsumer:
                 if cur.value == '?': next_state = 2
                 elif isinstance(cur, java_tokens.BasicType):
                     names.append(cur.value)
-                    next_state = 4
-                elif self.try_outer_identifier(idx, tokens):
-                    name, idx = self.consume_res
-                    names.append(name)
+                    next_state = 8
 
-                    idx -= 1
-                    next_state = 4
+                elif self.try_anotation_invocations(idx, tokens):
+                    idx = self.consume_res[-1]
+
+                    if self.try_outer_identifier(idx, tokens):
+                        name, idx = self.consume_res
+                        names.append(name)
+
+                        idx -= 1
+                        next_state = 4
+
+                elif self.try_outer_identifier(idx, tokens):
+                        name, idx = self.consume_res
+                        names.append(name)
+
+                        idx -= 1
+                        next_state = 4
 
             elif state == 2:
                 if cur.value == ',': next_state = 1
                 elif cur.value == '>': next_state, open_cnt = 5, open_cnt-1
+                elif cur.value in ('extends', 'super'): next_state = 9
                 
             elif state == 4:
                 if cur.value == '<': next_state, open_cnt = 1, open_cnt+1
@@ -222,6 +251,21 @@ class StructuresConsumer:
 
             elif state == 7:
                 if cur.value == ']': next_state = 5
+
+            elif state == 8:
+                if cur.value == '[': next_state = 7
+
+            elif state == 9:
+                if self.try_anotation_invocations(idx, tokens):
+                    idx = self.consume_res[-1]
+
+                    if self.try_outer_identifier(idx, tokens):
+                        idx = self.consume_res[-1]-1
+                        next_state = 4
+
+                elif self.try_outer_identifier(idx, tokens):
+                        idx = self.consume_res[-1]-1
+                        next_state = 4
 
             if next_state is None: break
             state, idx = next_state, idx+1
@@ -259,23 +303,4 @@ class StructuresConsumer:
 
         var_type_struct = VarTypeStruct(type_name, templ, is_array)
         self.consume_res = (var_type_struct, idx)
-        return True
-
-    def try_var_single_declaration(self, idx, tokens):
-        if not self.try_var_type(idx, tokens): return False
-        var_type, idx = self.consume_res
-
-        var_name = None
-        if idx < len(tokens) and isinstance(tokens[idx], java_tokens.Identifier):
-            var_name = tokens[idx].value
-            idx += 1
-
-        if not var_name: return False
-        if (idx < len(tokens) and not (
-            isinstance(tokens[idx], (java_tokens.Separator, java_tokens.Operator))
-                and tokens[idx].value in '),;=')):
-            return False
-
-        var_struct = MultiVarStruct(var_type, [var_name])
-        self.consume_res = (var_struct, idx)
         return True

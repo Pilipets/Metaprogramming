@@ -11,23 +11,27 @@ class AbstractResolver(ABC):
         raise NotImplementedError("Not expected to be instantiated")
 
     # ------------------------------PUBLIC---------------------------------
-    def add_doc_declaration(self, pos, type, stack):
+    def add_doc_declaration(self, pos, type, modifiers, stack):
         pass
 
-    def add_name_declaration(self, type, ins, stack):
-        is_global = self._is_global_scope(stack)
+    def add_name_declaration(self, type, ins, modifiers, stack):
+        is_global = self._is_global_scope(modifiers, stack)
 
         if type == NameType.VARIABLE or type == NameType.CONST_VARIABLE:
             self._add_var_declaration(is_global, type, ins)
 
-        elif type == NameType.CLASS or type == NameType.ANNOTATION:
+        elif type == NameType.CLASS:
             self._add_class_declaration(is_global, type, ins)
+
+        elif type == NameType.ANNOTATION:
+            self._add_annotation_declaration(is_global, type, ins)
 
         elif type == NameType.METHOD:
             self._add_method_declaration(is_global, type, ins)
 
     # ----------------------PRIVATE----------------------------
-    def _is_global_scope(self, stack):
+    def _is_global_scope(self, modifiers, stack):
+        if 'private' in modifiers: return False
         if (len(stack) == 1 or
                 (len(stack) == 3 and stack[-1].value == '{'
                     and stack[-2].value in ('class', 'interface'))):
@@ -66,6 +70,13 @@ class GlobalNamesResolver(dict, AbstractResolver):
 
         logger.debug("Adding global class declaration: %s", cls)
         self[cls._name] = ConventionNaming.get_class_name(cls._name)
+
+    def _add_annotation_declaration(self, is_global, type, ann):
+        if is_global: return
+
+        logger.debug("Adding global annotation declaration: %s", ann)
+        resolver = self._scope_resolver
+        resolver[ann._name] = ConventionNaming.get_annotation_name(ann._name)
 
     def _add_method_declaration(self, is_global, type, method):
         if not is_global: return

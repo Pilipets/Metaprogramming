@@ -16,8 +16,9 @@ class ConventionNaming:
         return name[idx:len(name)]
 
     @staticmethod
-    def _get_name_partitions(name : str):
+    def _get_name_partitions(name : str, append_upper = False):
         x = ConventionNaming._strip_invalid_prefix(name)
+
         res = []
         idx = 0
         while idx < len(x):
@@ -27,12 +28,19 @@ class ConventionNaming:
                 start = idx
                 continue
 
-            if ch.isupper() or ch.isdigit():
-                while idx < len(x) and (x[idx].isupper() or x[idx].isdigit()): idx += 1
-                while idx < len(x) and (x[idx].islower() or x[idx].isdigit()): idx += 1
+            if ch.isupper():
+                if append_upper:
+                    while idx < len(x) and x[idx].isupper():
+                        idx += 1
+                else:
+                    idx += 1
+                while idx < len(x) and x[idx].islower(): idx += 1
+                while idx < len(x) and x[idx].isdigit(): idx += 1
 
             elif ch.islower() or ch.isdigit():
-                while idx < len(x) and (x[idx].islower() or x[idx].isdigit()): idx += 1
+                while idx < len(x) and x[idx].isdigit(): idx += 1
+                while idx < len(x) and x[idx].islower(): idx += 1
+                while idx < len(x) and x[idx].isdigit(): idx += 1
 
             else:
                 # Something wrong is passed here
@@ -44,27 +52,28 @@ class ConventionNaming:
 
     @staticmethod
     def get_constant_name(name : str):
-
-        res = ConventionNaming._get_name_partitions(name)
+        res = ConventionNaming._get_name_partitions(name, True)
         return '_'.join(x.upper() for x in res)
 
     @staticmethod
     def get_class_name(name : str):
-
-        res = ConventionNaming._get_name_partitions(name)
+        res = ConventionNaming._get_name_partitions(name, False)
         return ''.join(x.capitalize() for x in res)
 
     @staticmethod
     def get_annotation_name(name : str):
-        return ConventionNaming.get_class_name(name)
+        res = ConventionNaming._get_name_partitions(name, False)
+        return ''.join(x.capitalize() for x in res)
 
     @staticmethod
     def get_method_name(name : str):
-        return ConventionNaming.get_variable_name(name)
+        res = ConventionNaming._get_name_partitions(name, '_' in name)
+        if not res: return ''
+        return res[0].lower() + ''.join(x.capitalize() for x in res[1:])
 
     @staticmethod
     def get_variable_name(name : str):
-        res = ConventionNaming._get_name_partitions(name)
+        res = ConventionNaming._get_name_partitions(name, '_' in name or name.isupper())
         if not res: return ''
         return res[0].lower() + ''.join(x.capitalize() for x in res[1:])
 

@@ -1,30 +1,32 @@
+// Licensed to the Software Freedom Conservancy (SFC) under one
+// or more contributor license agreements.  See the NOTICE file
+// distributed with this work for additional information
+// regarding copyright ownership.  The SFC licenses this file
+// to you under the Apache License, Version 2.0 (the
+// "License"); you may not use this file except in compliance
+// with the License.  You may obtain a copy of the License at
+//
+//   http://www.apache.org/licenses/LICENSE-2.0
+//
+// Unless required by applicable law or agreed to in writing,
+// software distributed under the License is distributed on an
+// "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+// KIND, either express or implied.  See the License for the
+// specific language governing permissions and limitations
+// under the License.
 
-class DummyClass {
-    @GoRoutine
-    @Service
-    public class Before____TripService<Hard, Class extends __other> {
-        __other var = new DoItNow() {
-            put(x, y);
-        };
+package com.thoughtworks.selenium;
 
-        class InsideClass {
-
-        }
-    }
-
-    /**
-      * Registers the text to display in a tool tip.   The text 
-      * displays when the cursor lingers over the component.
-      *
-      * @param text  the string to display.  If the text is null, 
-      *              the tool tip is turned off for this component.
-      */
-    public <T, Another super Where.Test<S, Fd[]>> void setToolTipText(String text, Yet WrongName) {
-        int how_awesome_is_it = <D, U>method(hi);
-    }
-
-    public <T, Another super Where.Test<S, Fd[]>> TryComplex[][][] setToolTipText(
-        String __text, Yet WrongName, Another sddddddddddddd) {
-        int how_awesome_is_it = <D, U>method(hi);
-    }
+/**
+ * An enumeration of logging levels
+ *
+ *
+ * @author nelsons
+ *
+ */
+public class SeleniumLogLevels {
+  public static final String DEBUG = "debug";
+  public static final String INFO = "info";
+  public static final String WARN = "warn";
+  public static final String ERROR = "error";
 }

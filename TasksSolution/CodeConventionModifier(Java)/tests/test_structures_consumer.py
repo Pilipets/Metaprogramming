@@ -4,6 +4,8 @@ from src.core.tokenizer.java_lexer import tokenize
 consumer = Consumer.get_consumer()
 
 templates_invocation_data = [
+    ('<SingleSource<? extends T>, What.Publisher<? extends Heh.T>>', (True, ['SingleSource', 'Publisher'])),
+    ('<@NonNull T>', (True, ['T'])),
     ('<String, byte[]>', (True, ['String', 'byte'])),
     ('<Try, ?, Object[]>', (True, ['Try', 'Object'])),
     ('<Object<Yet.Simple.Temp<Another>, v[]>>', (True, ['Object', 'Temp', 'Another', 'v'])),
@@ -51,24 +53,6 @@ def test_try_template_declaration():
         assert end == len(tokens)
         assert tmpl._names == out[1]
 
-
-class_data = [
-    ('class Foo<T extends Bar & Abba, U>', ('Foo', True, 11)),
-    ('class Simple extends Whatever implements Damn<T, Y>', ('Simple', False, 2)),
-    ('class Another  {', ('Another', False, 2))
-]
-def test_try_class_declaration():
-    for in_txt, out in class_data:
-        tokens = list(tokenize(in_txt))
-        
-        assert consumer.try_class_declaration(0, tokens)
-        cls, end = consumer.get_consume_res()
-
-        assert cls._name == out[0]
-        assert bool(cls._templ) == out[1]
-        assert end == out[2]
-
-
 var_type_data = [
     ('E<>', ('E', True, False)),
     ('E<?>', ('E', True, False)),
@@ -91,22 +75,6 @@ def test_try_var_type():
         assert bool(type._templ) == out[1]
         assert type._is_array == out[2]
 
-var_single_data = [
-    ('Foo<T[], U<Te, SDsd>>[][][] var   ;', ('Foo', 'var')),
-    ('Type<?> rs ,', ('Type', 'rs')),
-    ('Wyg ass =', ('Wyg', 'ass'))
-]
-def test_try_var_single_declaration():
-    for in_txt, out in var_single_data:
-        tokens = list(tokenize(in_txt))
-        
-        assert consumer.try_var_single_declaration(0, tokens)
-        var, end = consumer.get_consume_res()
-
-        assert end == len(tokens) - 1
-        assert var._type._name == out[0]
-        assert var._names[0] == out[1]
-
 stacked_chars_data = [
     ('{sdsd method(,(e = ;){dd{}dsfd}2323d = ;}', '{}'),
     ('( <other<sdfs>>; {sdsd method(,(e = ;){dd{}dsfd}232)3d = ;} })', '()')
@@ -119,3 +87,5 @@ def test_try_stacked_chars_data():
         _, end = consumer.get_consume_res()
 
         assert end == len(tokens)
+
+# TODO: add tests for annotation declaration, invocations

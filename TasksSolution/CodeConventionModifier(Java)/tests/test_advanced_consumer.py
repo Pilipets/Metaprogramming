@@ -3,6 +3,39 @@ from src.core.tokenizer.java_lexer import tokenize
 
 consumer = Consumer.get_consumer()
 
+class_data = [
+    ('class Foo<T extends Bar & Abba, U>', ('Foo', True, 11)),
+    ('class Simple extends Whatever implements Damn<T, Y>', ('Simple', False, 2)),
+    ('class Another  {', ('Another', False, 2))
+]
+def test_try_class_declaration():
+    for in_txt, out in class_data:
+        tokens = list(tokenize(in_txt))
+        
+        assert consumer.try_class_declaration(0, tokens)
+        cls, end = consumer.get_consume_res()
+
+        assert cls._name == out[0]
+        assert bool(cls._templ) == out[1]
+        assert end == out[2]
+
+var_single_data = [
+    ('Foo<T[], U<Te, SDsd>>[][][] var   ;', ('Foo', 'var')),
+    ('Type<?> rs ,', ('Type', 'rs')),
+    ('Wyg ass =', ('Wyg', 'ass'))
+]
+def test_try_var_single_declaration():
+    for in_txt, out in var_single_data:
+        tokens = list(tokenize(in_txt))
+        
+        assert consumer.try_var_single_declaration(0, tokens)
+        var, end = consumer.get_consume_res()
+
+        assert end == len(tokens) - 1
+        assert var._type._name == out[0]
+        assert var._names[0] == out[1]
+
+
 vars_multi_declaration_data = [
     ('var scope =)', ('var', ('scope',))),
     ('int var)', ('int', ('var',))),
@@ -29,6 +62,10 @@ def test_try_multiple_vars_declaration():
             assert name == out[1][idx]
 
 methods_data = [
+    (
+        '<T> Function<SingleSource<? extends T>, Publisher<? extends T>> toFlowable()',
+        ('Function', 'toFlowable')
+    ),
     (
         'Map<String, byte[]> getCustomMetadata()',
         ('Map', 'getCustomMetadata')
@@ -99,4 +136,4 @@ def test_try_method_declaration():
             assert x._type._name == y[0]
             assert x._names[0] == y[1]
 
-# TODO: add tests for annotation declaration, invocations, anonymous classes
+# TODO: add tests for anonymous classes

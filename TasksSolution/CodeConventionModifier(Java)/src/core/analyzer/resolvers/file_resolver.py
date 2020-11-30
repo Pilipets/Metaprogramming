@@ -50,8 +50,9 @@ class FileResolver(AbstractResolver):
     # ----------------------PRIVATE----------------------------
 
     def _add_var_declaration(self, is_global, type, vars):
-        logger.debug("Adding local vars declaration: %s", vars)
+        if is_global: return
 
+        logger.debug("Adding local vars declaration: %s", vars)
         resolver = self._scope_resolver
         if type == NameType.VARIABLE:
             renamer = ConventionNaming.get_variable_name
@@ -62,8 +63,9 @@ class FileResolver(AbstractResolver):
             resolver[x] = renamer(x)
 
     def _add_class_declaration(self, is_global, type, cls):
-        logger.debug("Adding global class declaration: %s", cls)
+        if is_global: return
 
+        logger.debug("Adding local class declaration: %s", cls)
         resolver = self._scope_resolver
         resolver[cls._name] = ConventionNaming.get_class_name(cls._name)
 
@@ -71,10 +73,18 @@ class FileResolver(AbstractResolver):
         for x in cls._templ._names:
             resolver[x] = ConventionNaming.get_class_name(x)
 
-    def _add_method_declaration(self, is_global, type, method):
-        logger.debug("Adding global method declaration: %s", method)
-        resolver = self._scope_resolver
+    def _add_annotation_declaration(self, is_global, type, ann):
+        if is_global: return
 
+        logger.debug("Adding local annotation declaration: %s", ann)
+        resolver = self._scope_resolver
+        resolver[ann._name] = ConventionNaming.get_annotation_name(ann._name)
+
+    def _add_method_declaration(self, is_global, type, method):
+        if is_global: return
+
+        logger.debug("Adding local method declaration: %s", method)
+        resolver = self._scope_resolver
         if not method._type:
             resolver[method._name] = ConventionNaming.get_class_name(method._name)
         else:
@@ -102,8 +112,8 @@ class FileResolver(AbstractResolver):
     def get_file_path(self):
         return self._path
 
-    def add_doc_declaration(self, pos, type, stack):
-        if not (self._touch_docs and self._is_global_scope(stack)):
+    def add_doc_declaration(self, pos, type, modifiers, stack):
+        if not (self._touch_docs and self._is_global_scope(modifiers, stack)):
             return
 
         if type == NameType.CLASS or type == NameType.METHOD:

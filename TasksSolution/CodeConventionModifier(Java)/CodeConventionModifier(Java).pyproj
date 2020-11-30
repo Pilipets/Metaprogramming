@@ -12,7 +12,7 @@
     <Name>CodeConventionModifier(Java)</Name>
     <RootNamespace>CodeConventionModifier(Java)</RootNamespace>
     <LaunchProvider>Standard Python launcher</LaunchProvider>
-    <CommandLineArguments>-m -f --doc C:\Users\Druid\source\repos\Metaprogramming\TasksSolution\CodeConventionModifier(Java)\input\code.java</CommandLineArguments>
+    <CommandLineArguments>-v -p E:\Downloads\java-code\test4\elasticsearch</CommandLineArguments>
     <EnableNativeCodeDebugging>False</EnableNativeCodeDebugging>
     <TestFramework>Pytest</TestFramework>
     <IsWindowsApplication>False</IsWindowsApplication>
@@ -107,6 +107,7 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="input\" />
+    <Folder Include="input\test_general2\" />
     <Folder Include="input\test_javadoc\" />
     <Folder Include="input\test_reformat\" />
     <Folder Include="input\test_general\" />
@@ -123,6 +124,7 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="input\code.java" />
+    <Content Include="input\test_general2\code.java" />
     <Content Include="input\test_general\code1.java" />
     <Content Include="input\test_general\code2.java" />
     <Content Include="input\test_javadoc\test_javadoc.java" />

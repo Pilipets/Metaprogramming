@@ -31,7 +31,10 @@ class JavaModifierCore:
         resolver = self.names_resolver.get_global_resolver()
 
         for fp in file_paths:
-            self._analyze_one(*self._prepare_one(fp), resolver, True)
+            try:
+                self._analyze_one(*self._prepare_one(fp), resolver, True)
+            except Exception as ex:
+                print("Exception received when initializing the file={}, ex={}.".format(fp, ex))
 
     def verify_one(self, file_path, touch_docs):
         self.modify_one(file_path, touch_docs, produce_file = False)
@@ -90,14 +93,14 @@ class JavaModifierCore:
             if consumer.try_class_declaration(idx, tokens):
                 cls, idx = consumer.get_consume_res()
 
-                resolver.add_name_declaration(NameType.CLASS, cls, stack)
-                resolver.add_doc_declaration((doc_idx, start_idx, idx), NameType.CLASS, stack)
+                resolver.add_name_declaration(NameType.CLASS, cls, modifiers, stack)
+                resolver.add_doc_declaration((doc_idx, start_idx, idx), NameType.CLASS, modifiers, stack)
                 stack.append(tokens[start_idx])
 
             elif consumer.try_annotation_declaration(idx, tokens):
                 cls, idx = consumer.get_consume_res()
 
-                resolver.add_name_declaration(NameType.ANNOTATION, cls, stack)
+                resolver.add_name_declaration(NameType.ANNOTATION, cls, modifiers, stack)
                 stack.append(tokens[start_idx+1])
 
             elif consumer.try_anonymous_class(idx, tokens):
@@ -111,18 +114,18 @@ class JavaModifierCore:
                         and consumer.try_method_declaration(idx, tokens)):
                 method, idx = consumer.get_consume_res()
 
-                resolver.add_name_declaration(NameType.METHOD, method, stack)
-                resolver.add_doc_declaration((doc_idx, start_idx, idx), NameType.METHOD, stack)
+                resolver.add_name_declaration(NameType.METHOD, method, modifiers, stack)
+                resolver.add_doc_declaration((doc_idx, start_idx, idx), NameType.METHOD, modifiers, stack)
 
             elif (consumer.try_multiple_vars_declaration(idx, tokens)
                     or consumer.try_var_single_declaration(idx, tokens)):
                 vars, idx = consumer.get_consume_res()
 
                 if 'static' in modifiers and 'final' in modifiers:
-                    resolver.add_name_declaration(NameType.CONST_VARIABLE, vars, stack)
+                    resolver.add_name_declaration(NameType.CONST_VARIABLE, vars, modifiers, stack)
             
                 else:
-                    resolver.add_name_declaration(NameType.VARIABLE, vars, stack)
+                    resolver.add_name_declaration(NameType.VARIABLE, vars, modifiers, stack)
 
             elif doc_idx == idx:
                 idx += 1

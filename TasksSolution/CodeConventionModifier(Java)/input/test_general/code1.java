@@ -87,6 +87,10 @@ public class BeforeTripService {
          return new ResponseEntity<>(HttpStatus.NO_CONTENT);
       }
 
+      Trips__StorageDriver temp = new Trips__StorageDriver();
+      temp.addPendingTrip(...);
+
+
       trip.setDriverId(driverId);
       trip.setStatus(TripForDB.TripStatus.ACCEPTED);
 

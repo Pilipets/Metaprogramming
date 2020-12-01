@@ -50,7 +50,6 @@ class FileResolver(AbstractResolver):
     # ----------------------PRIVATE----------------------------
 
     def _add_var_declaration(self, is_global, type, vars):
-        if is_global: return
 
         logger.debug("Adding local vars declaration: %s", vars)
         resolver = self._scope_resolver
@@ -63,7 +62,6 @@ class FileResolver(AbstractResolver):
             resolver[x] = renamer(x)
 
     def _add_class_declaration(self, is_global, type, cls):
-        if is_global: return
 
         logger.debug("Adding local class declaration: %s", cls)
         resolver = self._scope_resolver
@@ -74,14 +72,12 @@ class FileResolver(AbstractResolver):
             resolver[x] = ConventionNaming.get_class_name(x)
 
     def _add_annotation_declaration(self, is_global, type, ann):
-        if is_global: return
 
         logger.debug("Adding local annotation declaration: %s", ann)
         resolver = self._scope_resolver
         resolver[ann._name] = ConventionNaming.get_annotation_name(ann._name)
 
     def _add_method_declaration(self, is_global, type, method):
-        if is_global: return
 
         logger.debug("Adding local method declaration: %s", method)
         resolver = self._scope_resolver

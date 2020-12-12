@@ -4,13 +4,14 @@
     <SchemaVersion>2.0</SchemaVersion>
     <ProjectGuid>a9616c3c-9f9a-4436-bede-98beb77adec8</ProjectGuid>
     <ProjectHome>.</ProjectHome>
-    <StartupFile>Py2SqlOrm.py</StartupFile>
+    <StartupFile>__main__.py</StartupFile>
     <SearchPath>
     </SearchPath>
     <WorkingDirectory>.</WorkingDirectory>
     <OutputPath>.</OutputPath>
     <Name>Py2SqlOrm</Name>
     <RootNamespace>Py2SqlOrm</RootNamespace>
+    <InterpreterId>MSBuild|env|$(MSBuildProjectFullPath)</InterpreterId>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">
     <DebugSymbols>true</DebugSymbols>
@@ -21,7 +22,40 @@
     <EnableUnmanagedDebugging>false</EnableUnmanagedDebugging>
   </PropertyGroup>
   <ItemGroup>
-    <Compile Include="Py2SqlOrm.py" />
+    <Compile Include="py2sql\mapper\sql_mapping.py">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="py2sql\mapper\__init__.py">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="py2sql\sql\sql_column.py">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="py2sql\sql\sql_types.py">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="py2sql\sql\__init__.py">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="__main__.py" />
+    <Compile Include="py2sql\orm.py" />
+    <Compile Include="py2sql\__init__.py" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="py2sql\" />
+    <Folder Include="py2sql\mapper\" />
+    <Folder Include="py2sql\sql\" />
+  </ItemGroup>
+  <ItemGroup>
+    <Interpreter Include="env\">
+      <Id>env</Id>
+      <Version>3.7</Version>
+      <Description>env (Python 3.7 (64-bit))</Description>
+      <InterpreterPath>Scripts\python.exe</InterpreterPath>
+      <WindowsInterpreterPath>Scripts\pythonw.exe</WindowsInterpreterPath>
+      <PathEnvironmentVariable>PYTHONPATH</PathEnvironmentVariable>
+      <Architecture>X64</Architecture>
+    </Interpreter>
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)\Python Tools\Microsoft.PythonTools.targets" />
   <!-- Uncomment the CoreCompile target to enable the Build command in

@@ -29,7 +29,13 @@ class Student:
     age = Column(int)
     interests = Column(sql_types.Json())
 
-print(orm.db_engine())
-#print(orm.save_class(Student))
+#print(orm.db_engine())
+orm.save_class(Student)
 #print(orm.db_tables())
+del Student.id
+Student.weird = Column(sql_types.Number(real=True))
+
 print(orm.db_table_structure(Student))
+orm.save_class(Student)
+print(orm.db_table_structure(Student))
+print(orm.delete_class(Student))

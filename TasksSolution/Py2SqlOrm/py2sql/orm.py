@@ -92,17 +92,32 @@ class Py2SQL:
                 where table_name = :tb''', [get_table_name(cls)])
             return cursor.fetchone()[0] > 0
 
-    def save_class(self, cls):
-        if self.__table_exists(cls): return False
-
-        sql_stmt = mapping.get_table_create_stmt(cls)
+    def __commit_or_rollback(self, sql_stmt):
+        if type(sql_stmt) != list: sql_stmt = [sql_stmt]
         try:
             with self.__conn.cursor() as cursor:
-                cursor.execute(sql_stmt)
+                for x in sql_stmt:
+                    cursor.execute(x)
         except Exception as ex:
             logging.log(logging.ERROR, ex)
             self.__conn.rollback()
-            return False
         else:
             self.__conn.commit()
-            return True
+
+
+    def save_class(self, cls):
+        attributes = self.db_table_structure(cls)
+        if attributes:
+            sql_stmts = mapping.get_alter_table_stmt(cls, attributes)
+            if not sql_stmts: return
+            self.__commit_or_rollback(sql_stmts)
+
+        else:
+            sql_stmt = mapping.get_table_create_stmt(cls)
+            self.__commit_or_rollback(sql_stmt)
+
+    def delete_class(self, cls):
+        if not self.__table_exists(cls): return
+
+        sql_stmt = mapping.get_table_delete_stmt(cls)
+        self.__commit_or_rollback(sql_stmt)

@@ -114,6 +114,7 @@ class Py2SQL:
 
         else:
             sql_stmt = mapping.get_table_create_stmt(cls)
+            if not sql_stmt: return
             self.__commit_or_rollback(sql_stmt)
 
     def delete_class(self, cls):
@@ -121,3 +122,17 @@ class Py2SQL:
 
         sql_stmt = mapping.get_table_delete_stmt(cls)
         self.__commit_or_rollback(sql_stmt)
+
+    def __get_all_subclasses(self, cls):
+        return set(cls.__subclasses__()).union(
+            [s for c in cls.__subclasses__() for s in self.__get_all_subclasses(c)])
+
+    def save_hierarchy(self, root_cls):
+        for cls in self.__get_all_subclasses(root_cls):
+            self.save_class(cls)
+        self.save_class(root_cls)
+
+    def delete_hierarchy(self, root_cls):
+        for cls in self.__get_all_subclasses(root_cls):
+            self.delete_class(cls)
+        self.delete_class(root_cls)

@@ -30,12 +30,26 @@ class Student:
     interests = Column(sql_types.Json())
 
 #print(orm.db_engine())
-orm.save_class(Student)
+#orm.save_class(Student)
 #print(orm.db_tables())
-del Student.id
-Student.weird = Column(sql_types.Number(real=True))
+#del Student.id
+#Student.weird = Column(sql_types.Number(real=True))
 
-print(orm.db_table_structure(Student))
-orm.save_class(Student)
-print(orm.db_table_structure(Student))
+#print(orm.db_table_structure(Student))
+#orm.save_class(Student)
+#print(orm.db_table_structure(Student))
 print(orm.delete_class(Student))
+
+class Other(Student):
+    pass
+
+class Good(Student):
+    pass
+
+class Again(Other, Good):
+    pass
+
+orm.save_hierarchy(Student)
+print(orm.db_tables())
+orm.delete_hierarchy(Student)
+print(orm.db_tables())

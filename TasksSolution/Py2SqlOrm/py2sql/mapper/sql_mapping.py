@@ -24,13 +24,13 @@ def _map_column(name, val):
 
 def get_table_create_stmt(cls):
     table_name = get_table_name(cls)
-    exec_stmt = [f"CREATE TABLE {table_name} (\n    "]
+    exec_stmt = [f"CREATE TABLE {table_name} (\n    ", None, '\n)']
 
     to_insert = _get_columns(cls)
-    col_sql = [_map_column(name, val) for name, val in to_insert.items()]
+    if not to_insert: return None
 
-    exec_stmt.append(',\n    '.join(col_sql))
-    exec_stmt.append('\n)')
+    col_sql = [_map_column(name, val) for name, val in to_insert.items()]
+    exec_stmt[1] = ',\n    '.join(col_sql)
 
     return ''.join(exec_stmt)
 

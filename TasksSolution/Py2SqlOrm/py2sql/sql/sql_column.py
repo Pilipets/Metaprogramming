@@ -2,7 +2,8 @@ from . import sql_types
 
 allowed_python_types = {
     str, int, float,
-    list, tuple, frozenset, set, dict
+    list, tuple, frozenset, set, dict,
+    object
 }
 
 class Column():

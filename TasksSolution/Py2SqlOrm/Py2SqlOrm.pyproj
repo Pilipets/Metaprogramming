@@ -37,6 +37,9 @@
     <Compile Include="py2sql\sql\__init__.py">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="usage.py">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="__main__.py" />
     <Compile Include="py2sql\orm.py" />
     <Compile Include="py2sql\__init__.py" />

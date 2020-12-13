@@ -114,6 +114,7 @@ class Py2SQL:
 
         else:
             sql_stmt = mapping.get_table_create_stmt(cls)
+            print(sql_stmt)
             if not sql_stmt: return
             self.__commit_or_rollback(sql_stmt)
 
@@ -136,3 +137,6 @@ class Py2SQL:
         for cls in self.__get_all_subclasses(root_cls):
             self.delete_class(cls)
         self.delete_class(root_cls)
+
+    def save_object(self, obj):
+        pass

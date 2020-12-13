@@ -10,3 +10,7 @@ oracle_client_dir = 'E:\Downloads\instantclient-basiclite-windows.x64-19.9.0.0.0
 
 orm = Py2SQL(oracle_client_dir)
 orm.db_connect(conn_info)
+
+import usage
+
+usage.test2(orm)

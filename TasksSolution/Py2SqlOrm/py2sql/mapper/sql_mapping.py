@@ -2,7 +2,7 @@ from ..sql import Column
 from ..sql.sql_types import String
 
 def get_table_name(cls):
-    name = getattr(cls, '__table__name__', cls.__name__)
+    name = getattr(cls, '__table_name__', cls.__name__)
     return name.upper()
 
 def _get_columns(cls):
@@ -19,6 +19,11 @@ def _map_column(name, val):
         stmt.append(f'{sql_type.__name__}({sql_type.length})')
     else:
         stmt.append(sql_type.__name__)
+        
+    if not val.nullable: stmt.append('NOT NULL')
+    if val.auto_increment: stmt.append("GENERATED ALWAYS as IDENTITY(START with 1 INCREMENT by 1)")
+    if val.primary_key: stmt.append('PRIMARY KEY')
+    if val.default: stmt.append(f'DEFAULT {val.default}')
 
     return ' '.join(stmt)
 

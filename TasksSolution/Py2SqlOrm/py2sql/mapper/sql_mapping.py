@@ -1,15 +1,6 @@
-from ..sql import Column
 from ..sql.sql_types import String
 
-def get_table_name(cls):
-    name = getattr(cls, '__table_name__', cls.__name__)
-    return name.upper()
-
-def _get_columns(cls):
-    fields = {}
-    for k, v in cls.__dict__.items():
-        if isinstance(v, Column): fields.update({k.upper(): v})
-    return fields
+from .utils import *
 
 def _map_column(name, val):
     sql_type = val.sql_type
@@ -21,26 +12,27 @@ def _map_column(name, val):
         stmt.append(sql_type.__name__)
         
     if not val.nullable: stmt.append('NOT NULL')
-    if val.auto_increment: stmt.append("GENERATED ALWAYS as IDENTITY(START with 1 INCREMENT by 1)")
-    if val.primary_key: stmt.append('PRIMARY KEY')
     if val.default: stmt.append(f'DEFAULT {val.default}')
 
     return ' '.join(stmt)
 
 def get_table_create_stmt(cls):
     table_name = get_table_name(cls)
-    exec_stmt = [f"CREATE TABLE {table_name} (\n    ", None, '\n)']
+    exec_stmt = [
+        f"CREATE TABLE {table_name} (\n    ",
+        "HIDDEN_KEY_ID NUMBER GENERATED ALWAYS AS IDENTITY (START WITH 1 INCREMENT BY 1),\n    ",
+        None, '\n)']
 
-    to_insert = _get_columns(cls)
+    to_insert = get_columns(cls)
     if not to_insert: return None
 
     col_sql = [_map_column(name, val) for name, val in to_insert.items()]
-    exec_stmt[1] = ',\n    '.join(col_sql)
+    exec_stmt[2] = ',\n    '.join(col_sql)
 
     return ''.join(exec_stmt)
 
 def get_alter_table_stmt(cls, attributes):
-    new_dict = _get_columns(cls)
+    new_dict = get_columns(cls)
     cur_dict = {x[1] : x[2] for x in attributes}
 
     create_dict = lambda arr, mapper: {k:mapper[k] for k in arr}
@@ -77,3 +69,48 @@ def get_table_delete_stmt(cls):
     table_name = get_table_name(cls)
     exec_stmt = [f"DROP TABLE {table_name}"]
     return ''.join(exec_stmt)
+
+def get_object_insert_stmt(obj):
+    table_columns = get_columns(obj.__class__)
+    obj_columns = {x.upper() : y for x, y in vars(obj).items() if x.upper() in table_columns}
+
+    if not obj_columns: return None
+    exec_stmt = ""\
+        "INSERT INTO {}\n"\
+        "({})\n"\
+        "VALUES ({})\n"\
+        "returning HIDDEN_KEY_ID into :id".format(
+            get_table_name(obj.__class__),
+            ', '.join(obj_columns.keys()),
+            ', '.join(str(map_value(table_columns[x].sql_type, y)) for x, y in obj_columns.items())
+        )
+    return exec_stmt
+
+def get_object_update_stmt(obj):
+    table_columns = get_columns(obj.__class__)
+    obj_columns = {x.upper() : y for x, y in vars(obj).items() if x.upper() in table_columns}
+
+    if not obj_columns: return None
+
+    exec_stmt = ""\
+        "UPDATE {}\n"\
+        "SET\n"\
+        "    {}\n"\
+        "WHERE HIDDEN_KEY_ID = {}".format(
+            get_table_name(obj.__class__),
+            ',\n    '.join('{}={}'.format(
+                x, str(map_value(table_columns[x].sql_type, y))) for x, y in obj_columns.items()),
+            getattr(obj, '__HIDDEN_KEY_ID')
+        )
+    return exec_stmt
+
+def get_object_delete_stmt(obj):
+    table_columns = get_columns(obj.__class__)
+
+    exec_stmt = ""\
+        "DELETE FROM {}\n"\
+        "WHERE HIDDEN_KEY_ID = {}".format(
+            get_table_name(obj.__class__),
+            getattr(obj, '__HIDDEN_KEY_ID')
+    )
+    return exec_stmt

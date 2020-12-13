@@ -2,7 +2,8 @@ import os
 import cx_Oracle
 import logging
 
-from .mapper import mapping, get_table_name
+from .mapper import mapping
+from .mapper import get_table_name
 
 logging.basicConfig(level=logging.DEBUG)
 class DbConfig:
@@ -76,11 +77,11 @@ class Py2SQL:
             cursor.execute('''
                 select column_id, column_name, data_type
                 from user_tab_columns
-                where table_name = :tb
+                where table_name = :tb and column_name != 'HIDDEN_KEY_ID'
                 order by column_id''', [get_table_name(cls)])
 
             for row in cursor:
-                attributes.append(row)
+                attributes.append((row[0]-1, row[1], row[2]))
 
         return attributes
 
@@ -101,8 +102,10 @@ class Py2SQL:
         except Exception as ex:
             logging.log(logging.ERROR, ex)
             self.__conn.rollback()
+            return False
         else:
             self.__conn.commit()
+            return True
 
 
     def save_class(self, cls):
@@ -114,7 +117,6 @@ class Py2SQL:
 
         else:
             sql_stmt = mapping.get_table_create_stmt(cls)
-            print(sql_stmt)
             if not sql_stmt: return
             self.__commit_or_rollback(sql_stmt)
 
@@ -139,4 +141,28 @@ class Py2SQL:
         self.delete_class(root_cls)
 
     def save_object(self, obj):
-        pass
+        if getattr(obj, '__HIDDEN_KEY_ID', None):
+            sql_stmt = mapping.get_object_update_stmt(obj)
+            if sql_stmt: self.__commit_or_rollback(sql_stmt)
+            return
+
+        sql_stmt = mapping.get_object_insert_stmt(obj)
+        print(sql_stmt)
+        if not sql_stmt: return
+
+        try:
+            with self.__conn.cursor() as cursor:
+                id = cursor.var(cx_Oracle.NUMBER)
+                cursor.execute(sql_stmt, id=id)
+        except Exception as ex:
+            logging.log(logging.ERROR, ex)
+            self.__conn.rollback()
+        else:
+            setattr(obj, '__HIDDEN_KEY_ID', int(id.getvalue()[0]))
+            self.__conn.commit()
+
+    def delete_object(self, obj):
+        if not getattr(obj, '__HIDDEN_KEY_ID', None): return
+
+        sql_stmt = mapping.get_object_delete_stmt(obj)
+        if self.__commit_or_rollback(sql_stmt): delattr(obj, '__HIDDEN_KEY_ID')

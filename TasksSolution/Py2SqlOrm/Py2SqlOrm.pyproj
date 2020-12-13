@@ -25,6 +25,9 @@
     <Compile Include="py2sql\mapper\sql_mapping.py">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="py2sql\mapper\utils.py">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="py2sql\mapper\__init__.py">
       <SubType>Code</SubType>
     </Compile>

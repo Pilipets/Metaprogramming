@@ -1,4 +1,5 @@
 class SqlType:
+    """Basic class of the sql entity type"""
     def __init__(self):
         self.python_type = None
 

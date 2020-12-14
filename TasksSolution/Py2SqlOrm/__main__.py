@@ -14,4 +14,5 @@ print(orm.db_engine())
 
 import usage
 
-usage.test5(orm)
+print(help(orm.db_table_size))
+#usage.test5(orm)

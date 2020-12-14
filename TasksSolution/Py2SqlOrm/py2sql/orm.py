@@ -7,16 +7,22 @@ from .mapper import get_table_name
 
 logging.basicConfig(level=logging.DEBUG)
 class DbConfig:
+    """Configuration class that is used in Py2SQL to establish
+    connection using the provided config"""
     def __init__(self, username, password, dns):
         self.username = username
         self.password = password
-        self.dns = dns
+        self.dns = dns # dns: user/password@dsn
 
 class OrmException(Exception):
     pass
 
 class Py2SQL:
+    """The class that represents object relationship mapping from Python
+    into SQL and Oracle DBMS"""
     def __init__(self, lib_dir : str = None):
+        """Initializes cx_Oracle with the provided connection libraries
+        path by lib_dir or 'ORACLE_CLIENT' environment variables"""
         if not lib_dir:
             lib_dir = os.getenv('ORACLE_CLIENT', None)
 
@@ -29,8 +35,14 @@ class Py2SQL:
         self.__conn = None
         self.__dns = ''
 
+    def db_size(self):
+        """Returns size(in MB) of Oracle Database"""
+        with self.__conn.cursor() as cursor:
+            cursor.execute("SELECT sum(bytes)/1024/1024 size_in_mb FROM dba_data_files")
+            return row.fetchone()[0]
+
     def db_connect(self, config : DbConfig):
-        # dns: user/password@dsn
+        """Initializes and saves connection to database using config"""
         self.__conn = cx_Oracle.connect(
             config.username, config.password,
             config.dns, encoding='UTF-8')
@@ -41,18 +53,22 @@ class Py2SQL:
         self.__dns = config.dns
     
     def db_disconnect(self):
+        """Disconnects from the connected database"""
         self.__conn.close()
         logging.log(logging.DEBUG, f"Disconnected from {self.__dns}")
 
     def db_engine(self):
+        """Returns name, version of used DBMS"""
         with self.__conn.cursor() as cursor:
             cursor.execute("SELECT banner FROM v$version WHERE ROWNUM = 1")
             return cursor.fetchone()[0]
 
     def db_name(self):
+        """Returns name of the connected database"""
         return self.__dns
 
     def db_tables(self):
+        """Returns list of names of existing tables in the database"""
         with self.__conn.cursor() as cursor:
             cursor.execute("SELECT table_name FROM user_tables")
 
@@ -60,6 +76,9 @@ class Py2SQL:
             return table_names
 
     def db_table_size(self, cls):
+        """Returns size of the table represented by cls class.
+        If not empty and exists - size in MB.
+        Otherwise - 0."""
         with self.__conn.cursor() as cursor:
             cursor.execute(
                 "select round(bytes/1024/1024,3)|| 'MB'\n"\
@@ -68,10 +87,11 @@ class Py2SQL:
                 tb=get_table_name(cls))
 
             row = cursor.fetchone()
-            return row[0] if row else None
+            return row[0] if row else 0
 
 
     def db_table_structure(self, cls):
+        """Returns ordered table columns with their types"""
         attributes = []
         with self.__conn.cursor() as cursor:
             cursor.execute(
@@ -88,6 +108,8 @@ class Py2SQL:
         return attributes
 
     def __table_exists(self, cls):
+        """Checks if a table already exists in the database:
+        Returns true if so, false - otherwise"""
         with self.__conn.cursor() as cursor:
             cursor.execute(
                 "select count(*)\n"\
@@ -98,6 +120,9 @@ class Py2SQL:
             return cursor.fetchone()[0] > 0
 
     def __commit_or_rollback(self, sql_stmt):
+        """Executes SQL statements specified by sql_stmt:
+        Makes commit in the end or rollback if an error happened.
+        Returns error status"""
         if type(sql_stmt) != list: sql_stmt = [sql_stmt]
         try:
             with self.__conn.cursor() as cursor:
@@ -113,6 +138,7 @@ class Py2SQL:
 
 
     def save_class(self, cls):
+        """Saves or updates(if present) table in the database, represented by cls"""
         attributes = self.db_table_structure(cls)
         if attributes:
             sql_stmts = mapping.get_alter_table_stmt(cls, attributes)
@@ -125,26 +151,33 @@ class Py2SQL:
             self.__commit_or_rollback(sql_stmt)
 
     def delete_class(self, cls):
+        """Deletes(if present) table in the database, represented by cls"""
         if not self.__table_exists(cls): return
 
         sql_stmt = mapping.get_table_delete_stmt(cls)
         self.__commit_or_rollback(sql_stmt)
 
     def __get_all_subclasses(self, cls):
+        """Collects recursively all unique subclasses of cls class"""
         return set(cls.__subclasses__()).union(
             [s for c in cls.__subclasses__() for s in self.__get_all_subclasses(c)])
 
     def save_hierarchy(self, root_cls):
+        """Save class hierarchy in the connected database - invokes
+        save_class method on root class and all its unique subclasses."""
         for cls in self.__get_all_subclasses(root_cls):
             self.save_class(cls)
         self.save_class(root_cls)
 
     def delete_hierarchy(self, root_cls):
+        """Delete class hierarchy in the connected database - invokes
+        delete_class method on root class and all its unique subclasses."""
         for cls in self.__get_all_subclasses(root_cls):
             self.delete_class(cls)
         self.delete_class(root_cls)
 
     def save_object(self, obj):
+        """Save or updates object representation of obj in database"""
         if getattr(obj, '__HIDDEN_KEY_ID', None):
             sql_stmt = mapping.get_object_update_stmt(obj)
             if sql_stmt: self.__commit_or_rollback(sql_stmt)
@@ -166,6 +199,7 @@ class Py2SQL:
             self.__conn.commit()
 
     def delete_object(self, obj):
+        """Delete if present object representation of obj in database"""
         if not getattr(obj, '__HIDDEN_KEY_ID', None): return
 
         sql_stmt = mapping.get_object_delete_stmt(obj)

@@ -10,6 +10,7 @@ allowed_python_types = {
 }
 
 class Column():
+    """The class that represents sql table column"""
     def __init__(self, data_type, nullable=True, default=None):
         self.nullable = nullable
 
@@ -31,6 +32,7 @@ class Column():
             self.default = None
 
 def get_sql_from_python(type):
+    """Returns sql type associated with the provided python type"""
     if type == str:
         return sql_types.String()
     elif type == int:

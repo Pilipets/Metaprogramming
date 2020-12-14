@@ -1,5 +1,5 @@
 """
-This module serves as top level for Python to SQL object relationship mapping.
+This package serves as top level for Python to SQL object relationship mapping.
 Among the most used objects are Py2SQL, DbConfig, and Column, sql_types.
 1. Py2SQL and DbConfig are used to instantiate ORM and connect it with the database.
 2. Column, sql_types are used to specify fields that are mapped to the database, and

@@ -96,3 +96,27 @@ def test4(orm):
     orm.delete_object(s1)
     orm.delete_object(s2)
     print(orm.db_table_size(Student))
+
+def test5(orm):
+    class Student:
+        __table_name__ = "student_extended"
+
+        name = Column(sql_types.String())
+        age = Column(sql_types.Number(32), nullable=False)
+        interests = Column(sql_types.Json())
+
+        def __init__(self, name, age, interests):
+            self.name = name
+            self.age = age
+            self.interests = interests
+
+
+    orm.delete_class(Student)
+    orm.save_class(Student)
+    print(orm.db_tables())
+    print(orm.db_table_size(Student))
+    for i in range(1):
+        s = Student(f'Student{i}', i, [i, i+1, i+2])
+        orm.save_object(s)
+
+    print(orm.db_table_size(Student))

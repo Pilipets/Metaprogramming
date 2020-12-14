@@ -32,7 +32,7 @@ def map_value(sql_type, val):
     elif sql_type.__class__ == sql_types.Json:
         text = dumps(val, cls=PythonObjectEncoder)
         return f"'{text}'"
-    elif val:
+    elif val is not None:
         return sql_type.python_type(val)
 
 def get_table_name(cls):

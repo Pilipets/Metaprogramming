@@ -14,6 +14,4 @@ print(orm.db_engine())
 
 import usage
 
-usage.test2(orm)
-usage.test3(orm)
-usage.test4(orm)
+usage.test5(orm)

@@ -61,10 +61,10 @@ class Py2SQL:
 
     def db_table_size(self, cls):
         with self.__conn.cursor() as cursor:
-            cursor.execute('''
-                select round(bytes/1024/1024,3)|| 'MB'
-                from user_segments
-                where segment_name=:tb''',
+            cursor.execute(
+                "select round(bytes/1024/1024,3)|| 'MB'\n"\
+                "from user_segments\n"\
+                "where segment_name=:tb",
                 tb=get_table_name(cls))
 
             row = cursor.fetchone()
@@ -74,11 +74,13 @@ class Py2SQL:
     def db_table_structure(self, cls):
         attributes = []
         with self.__conn.cursor() as cursor:
-            cursor.execute('''
-                select column_id, column_name, data_type
-                from user_tab_columns
-                where table_name = :tb and column_name != 'HIDDEN_KEY_ID'
-                order by column_id''', [get_table_name(cls)])
+            cursor.execute(
+                "select column_id, column_name, data_type\n"\
+                "from user_tab_columns\n"
+                "where table_name = :tb and column_name != 'HIDDEN_KEY_ID'\n"\
+                "order by column_id",
+                [get_table_name(cls)]
+            )
 
             for row in cursor:
                 attributes.append((row[0]-1, row[1], row[2]))
@@ -87,10 +89,12 @@ class Py2SQL:
 
     def __table_exists(self, cls):
         with self.__conn.cursor() as cursor:
-            cursor.execute('''
-                select count(*)
-                from user_tables
-                where table_name = :tb''', [get_table_name(cls)])
+            cursor.execute(
+                "select count(*)\n"\
+                "from user_tables\n"\
+                "where table_name = :tb",
+                [get_table_name(cls)]
+            )
             return cursor.fetchone()[0] > 0
 
     def __commit_or_rollback(self, sql_stmt):
@@ -147,7 +151,6 @@ class Py2SQL:
             return
 
         sql_stmt = mapping.get_object_insert_stmt(obj)
-        print(sql_stmt)
         if not sql_stmt: return
 
         try:
@@ -156,6 +159,7 @@ class Py2SQL:
                 cursor.execute(sql_stmt, id=id)
         except Exception as ex:
             logging.log(logging.ERROR, ex)
+            print(sql_stmt)
             self.__conn.rollback()
         else:
             setattr(obj, '__HIDDEN_KEY_ID', int(id.getvalue()[0]))

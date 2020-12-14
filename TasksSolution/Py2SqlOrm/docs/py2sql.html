@@ -1,0 +1,54 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<html><head><title>Python: package py2sql</title>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+</head><body bgcolor="#f0f0f8">
+
+<table width="100%" cellspacing=0 cellpadding=2 border=0 summary="heading">
+<tr bgcolor="#7799ee">
+<td valign=bottom>&nbsp;<br>
+<font color="#ffffff" face="helvetica, arial">&nbsp;<br><big><big><strong>py2sql</strong></big></big></font></td
+><td align=right valign=bottom
+><font color="#ffffff" face="helvetica, arial"><a href=".">index</a><br><a href="file:/mnt/c/Users/Druid/source/repos/Metaprogramming/TasksSolution/Py2SqlOrm/py2sql/__init__.py">/mnt/c/Users/Druid/source/repos/Metaprogramming/TasksSolution/Py2SqlOrm/py2sql/__init__.py</a></font></td></tr></table>
+    <p><tt>This&nbsp;module&nbsp;serves&nbsp;as&nbsp;top&nbsp;level&nbsp;for&nbsp;Python&nbsp;to&nbsp;SQL&nbsp;object&nbsp;relationship&nbsp;mapping.<br>
+Among&nbsp;the&nbsp;most&nbsp;used&nbsp;objects&nbsp;are&nbsp;Py2SQL,&nbsp;DbConfig,&nbsp;and&nbsp;Column,&nbsp;sql_types.<br>
+1.&nbsp;Py2SQL&nbsp;and&nbsp;DbConfig&nbsp;are&nbsp;used&nbsp;to&nbsp;instantiate&nbsp;ORM&nbsp;and&nbsp;connect&nbsp;it&nbsp;with&nbsp;the&nbsp;database.<br>
+2.&nbsp;Column,&nbsp;sql_types&nbsp;are&nbsp;used&nbsp;to&nbsp;specify&nbsp;fields&nbsp;that&nbsp;are&nbsp;mapped&nbsp;to&nbsp;the&nbsp;database,&nbsp;and<br>
+the&nbsp;type&nbsp;used&nbsp;in&nbsp;the&nbsp;mapping&nbsp;-&nbsp;respectively.<br>
+&nbsp;<br>
+One&nbsp;must&nbsp;instantiate&nbsp;Py2SQL&nbsp;with&nbsp;a&nbsp;path&nbsp;to&nbsp;oracle&nbsp;client&nbsp;libraries,&nbsp;or&nbsp;set<br>
+ORACLE_CLIENT&nbsp;environment&nbsp;variable.<br>
+Then&nbsp;use&nbsp;database&nbsp;config&nbsp;to&nbsp;initialize&nbsp;the&nbsp;connection&nbsp;before&nbsp;using&nbsp;ORM,<br>
+example:<br>
+conn_info&nbsp;=&nbsp;DbConfig(<br>
+&nbsp;&nbsp;&nbsp;&nbsp;username&nbsp;=&nbsp;'temp_user',<br>
+&nbsp;&nbsp;&nbsp;&nbsp;password&nbsp;=&nbsp;'temp_password',<br>
+&nbsp;&nbsp;&nbsp;&nbsp;dns&nbsp;=&nbsp;'localhost:1521/orclpdb'<br>
+)<br>
+&nbsp;<br>
+oracle_client_dir&nbsp;=&nbsp;'instantclient-basiclite-windows.x64-19.9.0.0.0dbru\instantclient_19_9'<br>
+&nbsp;<br>
+orm&nbsp;=&nbsp;Py2SQL(oracle_client_dir)<br>
+orm.db_connect(conn_info)<br>
+&nbsp;<br>
+To&nbsp;save&nbsp;specified&nbsp;object&nbsp;in&nbsp;the&nbsp;database&nbsp;the&nbsp;user&nbsp;must&nbsp;define&nbsp;what&nbsp;fields&nbsp;are&nbsp;expected<br>
+to&nbsp;be&nbsp;mapped&nbsp;with&nbsp;Column(...)&nbsp;class&nbsp;variable.<br>
+Example:<br>
+&nbsp;&nbsp;&nbsp;&nbsp;class&nbsp;Student:<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;__table_name__&nbsp;=&nbsp;"another_table"<br>
+&nbsp;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;id&nbsp;=&nbsp;Column(int)<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;name&nbsp;=&nbsp;Column(str,&nbsp;default='sdfd')<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;age&nbsp;=&nbsp;Column(int,&nbsp;nullable=False)<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;interests&nbsp;=&nbsp;Column(sql_types.Json())</tt></p>
+<p>
+<table width="100%" cellspacing=0 cellpadding=2 border=0 summary="section">
+<tr bgcolor="#aa55cc">
+<td colspan=3 valign=bottom>&nbsp;<br>
+<font color="#ffffff" face="helvetica, arial"><big><strong>Package Contents</strong></big></font></td></tr>
+    
+<tr><td bgcolor="#aa55cc"><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</tt></td><td>&nbsp;</td>
+<td width="100%"><table width="100%" summary="list"><tr><td width="25%" valign=top><a href="py2sql.mapper.html"><strong>mapper</strong>&nbsp;(package)</a><br>
+</td><td width="25%" valign=top><a href="py2sql.orm.html">orm</a><br>
+</td><td width="25%" valign=top><a href="py2sql.sql.html"><strong>sql</strong>&nbsp;(package)</a><br>
+</td><td width="25%" valign=top></td></tr></table></td></tr></table>
+</body></html>

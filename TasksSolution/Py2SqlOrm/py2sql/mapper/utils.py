@@ -7,6 +7,7 @@ import sys
 
 import traceback 
 class PythonObjectEncoder(JSONEncoder):
+    """Custom python encoder to convert Python value to SQL value"""
     def default(self, obj):
         try:
             if isinstance(obj, (list, dict, str, int, float, bool, type(None))):

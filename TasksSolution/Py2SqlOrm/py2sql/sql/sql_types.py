@@ -5,6 +5,7 @@ class SqlType:
 
 
 class Number(SqlType):
+    """SQL number type including NUMBER, FLOAT, ..."""
     __name__ = 'NUMBER'
 
     def __init__(self, length=0, real=False):
@@ -16,6 +17,7 @@ class Number(SqlType):
             self.__name__ = 'FLOAT'
 
 class String(SqlType):
+    """SQL variable length ascii string type"""
     __name__ = 'VARCHAR2'
 
     def __init__(self, length=255):
@@ -24,6 +26,6 @@ class String(SqlType):
 
 
 class Json(String):
-
+    """SQL text type aka String(4000)"""
     def __init__(self):
         super().__init__(4000)

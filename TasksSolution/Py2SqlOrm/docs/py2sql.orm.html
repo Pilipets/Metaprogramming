@@ -1,0 +1,189 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<html><head><title>Python: module py2sql.orm</title>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+</head><body bgcolor="#f0f0f8">
+
+<table width="100%" cellspacing=0 cellpadding=2 border=0 summary="heading">
+<tr bgcolor="#7799ee">
+<td valign=bottom>&nbsp;<br>
+<font color="#ffffff" face="helvetica, arial">&nbsp;<br><big><big><strong><a href="py2sql.html"><font color="#ffffff">py2sql</font></a>.orm</strong></big></big></font></td
+><td align=right valign=bottom
+><font color="#ffffff" face="helvetica, arial"><a href=".">index</a><br><a href="file:/mnt/c/Users/Druid/source/repos/Metaprogramming/TasksSolution/Py2SqlOrm/py2sql/orm.py">/mnt/c/Users/Druid/source/repos/Metaprogramming/TasksSolution/Py2SqlOrm/py2sql/orm.py</a></font></td></tr></table>
+    <p></p>
+<p>
+<table width="100%" cellspacing=0 cellpadding=2 border=0 summary="section">
+<tr bgcolor="#aa55cc">
+<td colspan=3 valign=bottom>&nbsp;<br>
+<font color="#ffffff" face="helvetica, arial"><big><strong>Modules</strong></big></font></td></tr>
+    
+<tr><td bgcolor="#aa55cc"><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</tt></td><td>&nbsp;</td>
+<td width="100%"><table width="100%" summary="list"><tr><td width="25%" valign=top><a href="cx_Oracle.html">cx_Oracle</a><br>
+</td><td width="25%" valign=top><a href="logging.html">logging</a><br>
+</td><td width="25%" valign=top><a href="py2sql.mapper.sql_mapping.html">py2sql.mapper.sql_mapping</a><br>
+</td><td width="25%" valign=top><a href="os.html">os</a><br>
+</td></tr></table></td></tr></table><p>
+<table width="100%" cellspacing=0 cellpadding=2 border=0 summary="section">
+<tr bgcolor="#ee77aa">
+<td colspan=3 valign=bottom>&nbsp;<br>
+<font color="#ffffff" face="helvetica, arial"><big><strong>Classes</strong></big></font></td></tr>
+    
+<tr><td bgcolor="#ee77aa"><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</tt></td><td>&nbsp;</td>
+<td width="100%"><dl>
+<dt><font face="helvetica, arial"><a href="builtins.html#Exception">builtins.Exception</a>(<a href="builtins.html#BaseException">builtins.BaseException</a>)
+</font></dt><dd>
+<dl>
+<dt><font face="helvetica, arial"><a href="py2sql.orm.html#OrmException">OrmException</a>
+</font></dt></dl>
+</dd>
+<dt><font face="helvetica, arial"><a href="builtins.html#object">builtins.object</a>
+</font></dt><dd>
+<dl>
+<dt><font face="helvetica, arial"><a href="py2sql.orm.html#DbConfig">DbConfig</a>
+</font></dt><dt><font face="helvetica, arial"><a href="py2sql.orm.html#Py2SQL">Py2SQL</a>
+</font></dt></dl>
+</dd>
+</dl>
+ <p>
+<table width="100%" cellspacing=0 cellpadding=2 border=0 summary="section">
+<tr bgcolor="#ffc8d8">
+<td colspan=3 valign=bottom>&nbsp;<br>
+<font color="#000000" face="helvetica, arial"><a name="DbConfig">class <strong>DbConfig</strong></a>(<a href="builtins.html#object">builtins.object</a>)</font></td></tr>
+    
+<tr bgcolor="#ffc8d8"><td rowspan=2><tt>&nbsp;&nbsp;&nbsp;</tt></td>
+<td colspan=2><tt><a href="#DbConfig">DbConfig</a>(username,&nbsp;password,&nbsp;dns)<br>
+&nbsp;<br>
+Configuration&nbsp;class&nbsp;that&nbsp;is&nbsp;used&nbsp;in&nbsp;<a href="#Py2SQL">Py2SQL</a>&nbsp;to&nbsp;establish<br>
+connection&nbsp;using&nbsp;the&nbsp;provided&nbsp;config<br>&nbsp;</tt></td></tr>
+<tr><td>&nbsp;</td>
+<td width="100%">Methods defined here:<br>
+<dl><dt><a name="DbConfig-__init__"><strong>__init__</strong></a>(self, username, password, dns)</dt><dd><tt>Initialize&nbsp;self.&nbsp;&nbsp;See&nbsp;help(type(self))&nbsp;for&nbsp;accurate&nbsp;signature.</tt></dd></dl>
+
+<hr>
+Data descriptors defined here:<br>
+<dl><dt><strong>__dict__</strong></dt>
+<dd><tt>dictionary&nbsp;for&nbsp;instance&nbsp;variables&nbsp;(if&nbsp;defined)</tt></dd>
+</dl>
+<dl><dt><strong>__weakref__</strong></dt>
+<dd><tt>list&nbsp;of&nbsp;weak&nbsp;references&nbsp;to&nbsp;the&nbsp;object&nbsp;(if&nbsp;defined)</tt></dd>
+</dl>
+</td></tr></table> <p>
+<table width="100%" cellspacing=0 cellpadding=2 border=0 summary="section">
+<tr bgcolor="#ffc8d8">
+<td colspan=3 valign=bottom>&nbsp;<br>
+<font color="#000000" face="helvetica, arial"><a name="OrmException">class <strong>OrmException</strong></a>(<a href="builtins.html#Exception">builtins.Exception</a>)</font></td></tr>
+    
+<tr bgcolor="#ffc8d8"><td rowspan=2><tt>&nbsp;&nbsp;&nbsp;</tt></td>
+<td colspan=2><tt>Common&nbsp;base&nbsp;class&nbsp;for&nbsp;all&nbsp;non-exit&nbsp;exceptions.<br>&nbsp;</tt></td></tr>
+<tr><td>&nbsp;</td>
+<td width="100%"><dl><dt>Method resolution order:</dt>
+<dd><a href="py2sql.orm.html#OrmException">OrmException</a></dd>
+<dd><a href="builtins.html#Exception">builtins.Exception</a></dd>
+<dd><a href="builtins.html#BaseException">builtins.BaseException</a></dd>
+<dd><a href="builtins.html#object">builtins.object</a></dd>
+</dl>
+<hr>
+Data descriptors defined here:<br>
+<dl><dt><strong>__weakref__</strong></dt>
+<dd><tt>list&nbsp;of&nbsp;weak&nbsp;references&nbsp;to&nbsp;the&nbsp;object&nbsp;(if&nbsp;defined)</tt></dd>
+</dl>
+<hr>
+Methods inherited from <a href="builtins.html#Exception">builtins.Exception</a>:<br>
+<dl><dt><a name="OrmException-__init__"><strong>__init__</strong></a>(self, /, *args, **kwargs)</dt><dd><tt>Initialize&nbsp;self.&nbsp;&nbsp;See&nbsp;help(type(self))&nbsp;for&nbsp;accurate&nbsp;signature.</tt></dd></dl>
+
+<hr>
+Static methods inherited from <a href="builtins.html#Exception">builtins.Exception</a>:<br>
+<dl><dt><a name="OrmException-__new__"><strong>__new__</strong></a>(*args, **kwargs)<font color="#909090"><font face="helvetica, arial"> from <a href="builtins.html#type">builtins.type</a></font></font></dt><dd><tt>Create&nbsp;and&nbsp;return&nbsp;a&nbsp;new&nbsp;<a href="builtins.html#object">object</a>.&nbsp;&nbsp;See&nbsp;help(type)&nbsp;for&nbsp;accurate&nbsp;signature.</tt></dd></dl>
+
+<hr>
+Methods inherited from <a href="builtins.html#BaseException">builtins.BaseException</a>:<br>
+<dl><dt><a name="OrmException-__delattr__"><strong>__delattr__</strong></a>(self, name, /)</dt><dd><tt>Implement&nbsp;delattr(self,&nbsp;name).</tt></dd></dl>
+
+<dl><dt><a name="OrmException-__getattribute__"><strong>__getattribute__</strong></a>(self, name, /)</dt><dd><tt>Return&nbsp;getattr(self,&nbsp;name).</tt></dd></dl>
+
+<dl><dt><a name="OrmException-__reduce__"><strong>__reduce__</strong></a>(...)</dt><dd><tt>Helper&nbsp;for&nbsp;pickle.</tt></dd></dl>
+
+<dl><dt><a name="OrmException-__repr__"><strong>__repr__</strong></a>(self, /)</dt><dd><tt>Return&nbsp;repr(self).</tt></dd></dl>
+
+<dl><dt><a name="OrmException-__setattr__"><strong>__setattr__</strong></a>(self, name, value, /)</dt><dd><tt>Implement&nbsp;setattr(self,&nbsp;name,&nbsp;value).</tt></dd></dl>
+
+<dl><dt><a name="OrmException-__setstate__"><strong>__setstate__</strong></a>(...)</dt></dl>
+
+<dl><dt><a name="OrmException-__str__"><strong>__str__</strong></a>(self, /)</dt><dd><tt>Return&nbsp;str(self).</tt></dd></dl>
+
+<dl><dt><a name="OrmException-with_traceback"><strong>with_traceback</strong></a>(...)</dt><dd><tt><a href="builtins.html#Exception">Exception</a>.<a href="#OrmException-with_traceback">with_traceback</a>(tb)&nbsp;--<br>
+set&nbsp;self.<strong>__traceback__</strong>&nbsp;to&nbsp;tb&nbsp;and&nbsp;return&nbsp;self.</tt></dd></dl>
+
+<hr>
+Data descriptors inherited from <a href="builtins.html#BaseException">builtins.BaseException</a>:<br>
+<dl><dt><strong>__cause__</strong></dt>
+<dd><tt>exception&nbsp;cause</tt></dd>
+</dl>
+<dl><dt><strong>__context__</strong></dt>
+<dd><tt>exception&nbsp;context</tt></dd>
+</dl>
+<dl><dt><strong>__dict__</strong></dt>
+</dl>
+<dl><dt><strong>__suppress_context__</strong></dt>
+</dl>
+<dl><dt><strong>__traceback__</strong></dt>
+</dl>
+<dl><dt><strong>args</strong></dt>
+</dl>
+</td></tr></table> <p>
+<table width="100%" cellspacing=0 cellpadding=2 border=0 summary="section">
+<tr bgcolor="#ffc8d8">
+<td colspan=3 valign=bottom>&nbsp;<br>
+<font color="#000000" face="helvetica, arial"><a name="Py2SQL">class <strong>Py2SQL</strong></a>(<a href="builtins.html#object">builtins.object</a>)</font></td></tr>
+    
+<tr bgcolor="#ffc8d8"><td rowspan=2><tt>&nbsp;&nbsp;&nbsp;</tt></td>
+<td colspan=2><tt><a href="#Py2SQL">Py2SQL</a>(lib_dir:&nbsp;str&nbsp;=&nbsp;None)<br>
+&nbsp;<br>
+The&nbsp;class&nbsp;that&nbsp;represents&nbsp;<a href="builtins.html#object">object</a>&nbsp;relationship&nbsp;mapping&nbsp;from&nbsp;Python<br>
+into&nbsp;SQL&nbsp;and&nbsp;Oracle&nbsp;DBMS<br>&nbsp;</tt></td></tr>
+<tr><td>&nbsp;</td>
+<td width="100%">Methods defined here:<br>
+<dl><dt><a name="Py2SQL-__init__"><strong>__init__</strong></a>(self, lib_dir: str = None)</dt><dd><tt>Initializes&nbsp;cx_Oracle&nbsp;with&nbsp;the&nbsp;provided&nbsp;connection&nbsp;libraries<br>
+path&nbsp;by&nbsp;lib_dir&nbsp;or&nbsp;'ORACLE_CLIENT'&nbsp;environment&nbsp;variables</tt></dd></dl>
+
+<dl><dt><a name="Py2SQL-db_connect"><strong>db_connect</strong></a>(self, config: py2sql.orm.DbConfig)</dt><dd><tt>Initializes&nbsp;and&nbsp;saves&nbsp;connection&nbsp;to&nbsp;database&nbsp;using&nbsp;config</tt></dd></dl>
+
+<dl><dt><a name="Py2SQL-db_disconnect"><strong>db_disconnect</strong></a>(self)</dt><dd><tt>Disconnects&nbsp;from&nbsp;the&nbsp;connected&nbsp;database</tt></dd></dl>
+
+<dl><dt><a name="Py2SQL-db_engine"><strong>db_engine</strong></a>(self)</dt><dd><tt>Returns&nbsp;name,&nbsp;version&nbsp;of&nbsp;used&nbsp;DBMS</tt></dd></dl>
+
+<dl><dt><a name="Py2SQL-db_name"><strong>db_name</strong></a>(self)</dt><dd><tt>Returns&nbsp;name&nbsp;of&nbsp;the&nbsp;connected&nbsp;database</tt></dd></dl>
+
+<dl><dt><a name="Py2SQL-db_size"><strong>db_size</strong></a>(self)</dt><dd><tt>Returns&nbsp;size(in&nbsp;MB)&nbsp;of&nbsp;Oracle&nbsp;Database</tt></dd></dl>
+
+<dl><dt><a name="Py2SQL-db_table_size"><strong>db_table_size</strong></a>(self, cls)</dt><dd><tt>Returns&nbsp;size&nbsp;of&nbsp;the&nbsp;table&nbsp;represented&nbsp;by&nbsp;cls&nbsp;class.<br>
+If&nbsp;not&nbsp;empty&nbsp;and&nbsp;exists&nbsp;-&nbsp;size&nbsp;in&nbsp;MB.<br>
+Otherwise&nbsp;-&nbsp;0.</tt></dd></dl>
+
+<dl><dt><a name="Py2SQL-db_table_structure"><strong>db_table_structure</strong></a>(self, cls)</dt><dd><tt>Returns&nbsp;ordered&nbsp;table&nbsp;columns&nbsp;with&nbsp;their&nbsp;types</tt></dd></dl>
+
+<dl><dt><a name="Py2SQL-db_tables"><strong>db_tables</strong></a>(self)</dt><dd><tt>Returns&nbsp;list&nbsp;of&nbsp;names&nbsp;of&nbsp;existing&nbsp;tables&nbsp;in&nbsp;the&nbsp;database</tt></dd></dl>
+
+<dl><dt><a name="Py2SQL-delete_class"><strong>delete_class</strong></a>(self, cls)</dt><dd><tt>Deletes(if&nbsp;present)&nbsp;table&nbsp;in&nbsp;the&nbsp;database,&nbsp;represented&nbsp;by&nbsp;cls</tt></dd></dl>
+
+<dl><dt><a name="Py2SQL-delete_hierarchy"><strong>delete_hierarchy</strong></a>(self, root_cls)</dt><dd><tt>Delete&nbsp;class&nbsp;hierarchy&nbsp;in&nbsp;the&nbsp;connected&nbsp;database&nbsp;-&nbsp;invokes<br>
+delete_class&nbsp;method&nbsp;on&nbsp;root&nbsp;class&nbsp;and&nbsp;all&nbsp;its&nbsp;unique&nbsp;subclasses.</tt></dd></dl>
+
+<dl><dt><a name="Py2SQL-delete_object"><strong>delete_object</strong></a>(self, obj)</dt><dd><tt>Delete&nbsp;if&nbsp;present&nbsp;<a href="builtins.html#object">object</a>&nbsp;representation&nbsp;of&nbsp;obj&nbsp;in&nbsp;database</tt></dd></dl>
+
+<dl><dt><a name="Py2SQL-save_class"><strong>save_class</strong></a>(self, cls)</dt><dd><tt>Saves&nbsp;or&nbsp;updates(if&nbsp;present)&nbsp;table&nbsp;in&nbsp;the&nbsp;database,&nbsp;represented&nbsp;by&nbsp;cls</tt></dd></dl>
+
+<dl><dt><a name="Py2SQL-save_hierarchy"><strong>save_hierarchy</strong></a>(self, root_cls)</dt><dd><tt>Save&nbsp;class&nbsp;hierarchy&nbsp;in&nbsp;the&nbsp;connected&nbsp;database&nbsp;-&nbsp;invokes<br>
+save_class&nbsp;method&nbsp;on&nbsp;root&nbsp;class&nbsp;and&nbsp;all&nbsp;its&nbsp;unique&nbsp;subclasses.</tt></dd></dl>
+
+<dl><dt><a name="Py2SQL-save_object"><strong>save_object</strong></a>(self, obj)</dt><dd><tt>Save&nbsp;or&nbsp;updates&nbsp;<a href="builtins.html#object">object</a>&nbsp;representation&nbsp;of&nbsp;obj&nbsp;in&nbsp;database</tt></dd></dl>
+
+<hr>
+Data descriptors defined here:<br>
+<dl><dt><strong>__dict__</strong></dt>
+<dd><tt>dictionary&nbsp;for&nbsp;instance&nbsp;variables&nbsp;(if&nbsp;defined)</tt></dd>
+</dl>
+<dl><dt><strong>__weakref__</strong></dt>
+<dd><tt>list&nbsp;of&nbsp;weak&nbsp;references&nbsp;to&nbsp;the&nbsp;object&nbsp;(if&nbsp;defined)</tt></dd>
+</dl>
+</td></tr></table></td></tr></table>
+</body></html>

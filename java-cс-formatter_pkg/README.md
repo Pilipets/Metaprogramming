@@ -1,8 +1,8 @@
-<h2>Java code convention formatting console application</h2>
+<h2>Java code convention modifying console application</h2>
 
 <h4>Description:</h4>
 Briefly, the app uses command-line arguments to format names and generate JavaDoc in
-.java files collected from the given directory, project, file according to the convention.<br>Creates RENAMED.log along with the internal logs describing all the applied fixes in the 'output' folder relative to the working directory and may generate 'modified_*.java' files depending on the given command-line arguments.
+.java files collected from the given directory, project, file according to the convention.<br>Creates RENAMED.log with all the convention fixes and may generate 'modified_*.java files depending on the given command-line arguments.
 
 <h4>Usage instructions:</h4>
 <ol>
